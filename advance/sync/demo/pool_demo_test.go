@@ -33,3 +33,7 @@ func (u *User) Reset() {
 	u.ID = 0
 	u.Name = ""
 }
+
+func (u *User) ChangeName(newName string) {
+	u.Name = newName
+}

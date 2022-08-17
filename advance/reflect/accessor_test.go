@@ -7,9 +7,13 @@ import (
 
 func TestReflectAccessor_Field(t *testing.T) {
 	testCases := []struct {
-		name    string
-		entity  interface{}
-		field   string
+		name string
+
+		// 这个是输入
+		entity interface{}
+		field  string
+
+		// 这个是期望输出
 		wantVal int
 		wantErr error
 	}{

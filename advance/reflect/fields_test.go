@@ -2,11 +2,12 @@ package reflect
 
 import (
 	"errors"
-	"gitbub.com/flycash/geekbang-middle-camp/advance/reflect/types"
+	"gitee.com/geektime-geekbang/geektime-go/advance/reflect/types"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
+// TDD => test driven development
 func TestIterateFields(t *testing.T) {
 	up := &types.User{}
 	up2 := &up
@@ -63,7 +64,7 @@ func TestIterateFields(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			res, err := IterateFields(tc.input)
+			res, err := iterateFields(tc.input)
 			assert.Equal(t, tc.wantErr, err)
 			if err != nil {
 				return
@@ -75,10 +76,12 @@ func TestIterateFields(t *testing.T) {
 
 func TestSetField(t *testing.T) {
 	testCases := []struct {
-		name    string
-		field   string
-		newVal  any
-		entity  any
+		name string
+
+		field  string
+		entity any
+		newVal any
+
 		wantErr error
 	}{
 		{
@@ -97,11 +100,13 @@ func TestSetField(t *testing.T) {
 			name:    "invalid field",
 			entity:  &types.User{},
 			field:   "invalid_field",
-			wantErr: errors.New("不可修改字段"),
+			wantErr: errors.New("字段不存在"),
 		},
 		{
-			name:   "pass",
-			entity: &types.User{},
+			name: "pass",
+			entity: &types.User{
+				Name: "",
+			},
 			field:  "Name",
 			newVal: "Tom",
 		},

@@ -9,8 +9,10 @@ import (
 
 func TestIterate(t *testing.T) {
 	testCases := []struct {
-		name    string
-		input   any
+		name string
+
+		input any
+		
 		wantRes []any
 		wantErr error
 	}{

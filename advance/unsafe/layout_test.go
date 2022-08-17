@@ -2,7 +2,7 @@ package unsafe
 
 import (
 	"fmt"
-	"gitbub.com/flycash/geekbang-middle-camp/advance/unsafe/types"
+	"gitee.com/geektime-geekbang/geektime-go/advance/unsafe/types"
 	"testing"
 	"unsafe"
 )

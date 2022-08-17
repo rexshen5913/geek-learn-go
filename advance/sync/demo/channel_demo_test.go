@@ -2,6 +2,7 @@ package demo
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
@@ -77,9 +78,14 @@ func (b *Broker1) Subscribe(consume func(s string)) {
 
 func (b *Broker1) Start() {
 	go func() {
-		s := <-b.ch
-		for _, c := range b.consumers {
-			c(s)
+		for {
+			s, ok := <-b.ch
+			if !ok {
+				return
+			}
+			for _, c := range b.consumers {
+				c(s)
+			}
 		}
 	}()
 }
@@ -87,10 +93,36 @@ func (b *Broker1) Start() {
 func NewBroker1() *Broker1 {
 	b := &Broker1{ch: make(chan string, 10), consumers: make([]func(s string), 0, 10)}
 	go func() {
-		s := <-b.ch
-		for _, c := range b.consumers {
-			c(s)
+		for {
+			s, ok := <-b.ch
+			if !ok {
+				return
+			}
+			for _, c := range b.consumers {
+				c(s)
+			}
 		}
 	}()
 	return b
+}
+
+func TestBroker1(t *testing.T) {
+	b := NewBroker1()
+	str1 := ""
+	b.Subscribe(func(s string) {
+		str1 = str1 + s
+	})
+
+	str2 := ""
+	b.Subscribe(func(s string) {
+		str2 = str2 + s
+	})
+
+	b.Produce("hello")
+	b.Produce(" ")
+	b.Produce("world")
+
+	time.Sleep(time.Second)
+	assert.Equal(t, "hello world", str1)
+	assert.Equal(t, "hello world", str2)
 }

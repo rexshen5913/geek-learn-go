@@ -1,7 +1,7 @@
 package reflect
 
 import (
-	"gitbub.com/flycash/geekbang-middle-camp/advance/reflect/types"
+	"gitee.com/geektime-geekbang/geektime-go/advance/reflect/types"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -9,8 +9,10 @@ import (
 
 func TestIterateFuncs(t *testing.T) {
 	testCases := []struct {
-		name    string
-		input   any
+		name string
+
+		input any
+
 		wantRes map[string]*FuncInfo
 		wantErr error
 	}{
