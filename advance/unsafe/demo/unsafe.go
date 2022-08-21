@@ -53,7 +53,7 @@ func (u *UnsafeAccessor) FieldAny(field string) (any, error) {
 		return 0, errors.New("不存在字段")
 	}
 
-	res := reflect.NewAt(meta.typ, unsafe.Pointer(uintptr(u.entityAddr)+meta.offset))
+	res := reflect.NewAt(meta.typ, unsafe.Pointer(uintptr(u.entityAddr)+meta.offset)).Elem()
 	// 计算地址了
 	return res.Interface(), nil
 }
