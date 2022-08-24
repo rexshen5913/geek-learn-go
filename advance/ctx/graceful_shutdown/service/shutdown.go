@@ -51,7 +51,6 @@ func (app *App) StartAndServe() {
 				} else {
 					log.Printf("服务器%s异常退出", srv.name)
 				}
-
 			}
 		}()
 	}
@@ -98,6 +97,7 @@ type serverMux struct {
 }
 
 func (s *serverMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// 只是在考虑到 CPU 高速缓存的时候，会存在短时间的不一致性
 	if s.reject {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		_, _ = w.Write([]byte("服务已关闭"))

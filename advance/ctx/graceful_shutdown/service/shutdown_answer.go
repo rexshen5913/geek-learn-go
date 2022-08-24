@@ -49,6 +49,7 @@ func NewApp(servers []*Server, opts ...Option) *App {
 	for _, opt := range opts {
 		opt(res)
 	}
+
 	return res
 }
 
@@ -99,6 +100,7 @@ func (app *App) shutdown() {
 	}
 
 	log.Println("等待正在执行请求完结")
+	// 这里可以改造为实时统计正在处理的请求数量，为0 则下一步
 	time.Sleep(app.waitTime)
 
 	log.Println("开始关闭服务器")
