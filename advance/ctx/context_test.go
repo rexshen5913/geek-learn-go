@@ -7,14 +7,14 @@ import (
 	"time"
 )
 
-func TestContext(t *testing.T) {
-	ctx := context.Background()
-	parent := context.WithValue(ctx, "my key", "my value")
-	sub := context.WithValue(ctx, "my key", "my new value")
-
-	fmt.Printf("%v \n", parent.Value("my key"))
-	fmt.Printf("%v \n", sub.Value("my key"))
-}
+// func TestContext(t *testing.T) {
+// 	ctx := context.Background()
+// 	parent := context.WithValue(ctx, "my key", "my value")
+// 	sub := context.WithValue(ctx, "my key", "my new value")
+//
+// 	fmt.Printf("%v \n", parent.Value("my key"))
+// 	fmt.Printf("%v \n", sub.Value("my key"))
+// }
 
 func TestContext_timeout(t *testing.T) {
 	bg := context.Background()

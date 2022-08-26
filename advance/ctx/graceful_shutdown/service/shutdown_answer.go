@@ -125,11 +125,12 @@ func (app *App) shutdown() {
 		c := cb
 		go func() {
 			ctx, cancel := context.WithTimeout(context.Background(), app.cbTimeout)
-			ctx.Done()
 			c(ctx)
 			cancel()
+			wg.Done()
 		}()
 	}
+	wg.Wait()
 	// 释放资源
 	log.Println("开始释放资源")
 	app.close()

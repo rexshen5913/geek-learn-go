@@ -84,6 +84,9 @@ func (app *App) close() {
 	log.Println("应用关闭")
 }
 
+// Server 本身可以是很多种 Server，例如 http server
+// 或者 RPC server
+// 理论上来说，如果你设计一个脚手架的框架，那么 Server 应该是一个接口
 type Server struct {
 	srv  *http.Server
 	name string
