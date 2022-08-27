@@ -6,6 +6,8 @@ import (
 
 var errInvalidEntity = errors.New("invalid entity")
 
+// InsertStmt 作业里面我们这个只是生成 SQL，所以在处理 sql.NullString 之类的接口
+// 只需要判断有没有实现 driver.Valuer 就可以了
 func InsertStmt(entity interface{}) (string, []interface{}, error) {
 
 	// val := reflect.ValueOf(entity)
