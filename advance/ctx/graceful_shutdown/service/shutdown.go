@@ -133,7 +133,7 @@ func (s *Server) rejectReq() {
 	s.mux.reject = true
 }
 
-func (s *Server) stop() error {
+func (s *Server) stop(ctx context.Context) error {
 	log.Printf("服务器%s关闭中", s.name)
-	return s.srv.Shutdown(context.Background())
+	return s.srv.Shutdown(ctx)
 }

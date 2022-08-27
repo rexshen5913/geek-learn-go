@@ -51,6 +51,7 @@ func parseFiles(srcFiles []string) ([]http.ServiceDefinition, error) {
 	for _, src := range srcFiles {
 		fmt.Println(src)
 		// 你需要利用 annotation 里面的东西来扫描 src，然后生成 file
+		panic("implement me")
 		var file annotation.File
 
 		for _, typ := range file.Types {

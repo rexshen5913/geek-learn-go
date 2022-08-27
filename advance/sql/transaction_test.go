@@ -14,6 +14,8 @@ func (s *sqlTestSuite) TestTx() {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// 这种依旧没有在事务里面
+	// s.db.Exec()
 	res, err := tx.ExecContext(ctx, "INSERT INTO `test_model`(`id`, `first_name`, `age`, `last_name`) VALUES (2, 'Tom', 20, 'Jerry')")
 	if err != nil {
 		t.Fatal(err)

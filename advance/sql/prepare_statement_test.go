@@ -7,6 +7,7 @@ import (
 
 func (s *sqlTestSuite) TestPrepareStatement() {
 	t := s.T()
+
 	stmt, err := s.db.Prepare("SELECT * FROM `test_model` WHERE `id` = ?")
 	if err != nil {
 		t.Fatal(err)

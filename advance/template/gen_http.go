@@ -20,9 +20,36 @@ type Method struct {
 	RespTypeName string
 }
 
-// 这是你们的作业，你们需要补全这个 template
 const serviceTpl = `
-
+{{- $service :=.GenName -}}
+type {{ $service }} struct {
+    Endpoint string
+    Path string
+	Client http.Client
+}
+{{range $idx, $method := .Methods}}
+func (s *{{$service}}) {{$method.Name}}(ctx context.Context, req *{{$method.ReqTypeName}}) (*{{$method.RespTypeName}}, error) {
+	url := s.Endpoint + s.Path + "/{{$method.Name}}"
+	bs, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	body := &bytes.Buffer{}
+	body.Write(bs)
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", url, body)
+	if err != nil {
+		return nil, err
+	}
+	httpResp, err := s.Client.Do(httpReq)
+	if err != nil {
+		return nil, err
+	}
+	bs, err = ioutil.ReadAll(httpResp.Body)
+	resp := &{{$method.RespTypeName}}{}
+	err = json.Unmarshal(bs, resp)
+	return resp, err
+}
+{{end}}
 `
 
 func Gen(writer io.Writer, def *ServiceDefinition) error {
