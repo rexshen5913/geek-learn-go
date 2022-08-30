@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -63,7 +64,6 @@ func (r *router) addRoute(method string, path string, handler HandleFunc) {
 		panic(fmt.Sprintf("web: 路由冲突[%s]", path))
 	}
 	root.handler = handler
-	root.route = path
 }
 
 // findRoute 查找对应的节点
@@ -94,6 +94,19 @@ func (r *router) findRoute(method string, path string) (*matchInfo, bool) {
 	return mi, true
 }
 
+type nodeType int
+
+const (
+	// 静态路由
+	nodeTypeStatic = iota
+	// 正则路由
+	nodeTypeReg
+	// 路径参数路由
+	nodeTypeParam
+	// 通配符路由
+	nodeTypeAny
+)
+
 // node 代表路由树的节点
 // 路由树的匹配顺序是：
 // 1. 静态完全匹配
@@ -101,19 +114,25 @@ func (r *router) findRoute(method string, path string) (*matchInfo, bool) {
 // 3. 通配符匹配：*
 // 这是不回溯匹配
 type node struct {
+	typ nodeType
+
 	path string
 	// children 子节点
 	// 子节点的 path => node
 	children map[string]*node
 	// handler 命中路由之后执行的逻辑
 	handler HandleFunc
-	// route 到达该节点的完整的路由路径
-	route string
 
 	// 通配符 * 表达的节点，任意匹配
 	starChild *node
 
 	paramChild *node
+	// 正则路由和参数路由都会使用这个字段
+	paramName string
+
+	// 正则表达式
+	regChild *node
+	regExpr  *regexp.Regexp
 }
 
 // child 返回子节点
