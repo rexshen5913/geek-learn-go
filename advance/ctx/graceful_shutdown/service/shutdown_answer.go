@@ -72,23 +72,21 @@ func (app *App) StartAndServe() {
 	// ch := make(...) 首先创建一个接收系统信号的 channel ch
 	// 定义要监听的目标信号 signals []os.Signal
 	// 调用 signal
-	ch := make(chan os.Signal, 1)
+	ch := make(chan os.Signal, 2)
 	signal.Notify(ch, signals...)
-	select {
-	case <-ch:
-		println("hello")
-		go func() {
-			select {
-			case <-ch:
-				log.Printf("强制退出")
-				os.Exit(1)
-			case <-time.After(app.shutdownTimeout):
-				log.Printf("超时强制退出")
-				os.Exit(1)
-			}
-		}()
-		app.shutdown()
-	}
+	<-ch
+	println("hello")
+	go func() {
+		select {
+		case <-ch:
+			log.Printf("强制退出")
+			os.Exit(1)
+		case <-time.After(app.shutdownTimeout):
+			log.Printf("超时强制退出")
+			os.Exit(1)
+		}
+	}()
+	app.shutdown()
 }
 
 // shutdown 你要设计这里面的执行步骤。具体的每一个步骤可以使用 time.Sleep 来模拟
@@ -185,6 +183,11 @@ func (s *Server) Start() error {
 
 func (s *Server) rejectReq() {
 	s.mux.reject = true
+}
+
+func (s *Server) stop1(ctx context.Context) error {
+	log.Printf("服务器%s关闭中", s.name)
+	return s.srv.Shutdown(ctx)
 }
 
 func (s *Server) stop() error {
