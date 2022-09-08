@@ -1,3 +1,5 @@
+//go:build homework
+
 package homework
 
 import (

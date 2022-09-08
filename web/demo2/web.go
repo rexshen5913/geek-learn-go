@@ -31,10 +31,11 @@ func Start() {
 
 type Context struct {
 	Req    *http.Request
-	Writer http.ResponseWriter
+	Resp   http.ResponseWriter
+	Params map[string]string
 }
 
-type HandleFunc func(*Context)
+type HandleFunc func(ctx *Context)
 
 type Server interface {
 	http.Handler
@@ -48,10 +49,52 @@ type Server interface {
 }
 
 type HTTPServer struct {
+	router
 }
 
-func (m *HTTPServer) AddRoute(method, path string, handler HandleFunc) {
+func NewHTTPServer() *HTTPServer {
+	return &HTTPServer{
+		router: newRouter(),
+	}
+}
 
+// 实现这个方法
+// user/123
+
+// /user/*
+// /user/:id
+// /user/:name(.+)
+func (m *HTTPServer) AddRoute(method, path string, handler HandleFunc) {
+	m.addRoute(method, path, handler)
+}
+
+func (m *HTTPServer) serve(ctx *Context) {
+	mi, ok := m.findRoute(ctx.Req.Method, ctx.Req.URL.Path)
+	// 没找到，404
+	if !ok || mi.n.handler == nil {
+		ctx.Resp.WriteHeader(http.StatusNotFound)
+		ctx.Resp.Write([]byte("404 了"))
+		return
+	}
+	ctx.Params = mi.pathParams
+	mi.n.handler(ctx)
+}
+
+func (m *HTTPServer) Group(prefix string) *Group {
+	return &Group{
+		prefix: prefix,
+		s:      m,
+	}
+}
+
+type Group struct {
+	// ms []Middleware
+	prefix string
+	s      Server
+}
+
+func (m *Group) AddRoute(method, path string, handler HandleFunc) {
+	m.s.AddRoute(method, m.prefix+path, handler)
 }
 
 func (m *HTTPServer) Get(path string, handler HandleFunc) {
@@ -95,15 +138,11 @@ func (m *HTTPSServer) Start(addr string) error {
 
 func (m *HTTPServer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	ctx := &Context{
-		Req:    request,
-		Writer: writer,
+		Req:  request,
+		Resp: writer,
 	}
 	// 接下来就是
 	// 查找路由
 	// 执行业务逻辑
 	m.serve(ctx)
-}
-
-func (m *HTTPServer) serve(ctx *Context) {
-
 }

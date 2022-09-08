@@ -20,6 +20,7 @@ type Server interface {
 	// 我们并不采取这种设计方案
 	// addRoute(method string, path string, handlers... HandleFunc)
 }
+
 // 确保 HTTPServer 肯定实现了 Server 接口
 var _ Server = &HTTPServer{}
 
@@ -27,11 +28,11 @@ type ServerOption func(server *HTTPServer)
 
 type HTTPServer struct {
 	router
-	mdls []Middleware
+	mdls      []Middleware
 	tplEngine TemplateEngine
 }
 
-func NewHTTPServer(opts...ServerOption) *HTTPServer {
+func NewHTTPServer(opts ...ServerOption) *HTTPServer {
 	s := &HTTPServer{
 		router: newRouter(),
 	}
@@ -49,7 +50,7 @@ func ServerWithTemplateEngine(engine TemplateEngine) ServerOption {
 	}
 }
 
-func (s *HTTPServer) Use(mdls...Middleware) {
+func (s *HTTPServer) Use(mdls ...Middleware) {
 	if s.mdls == nil {
 		s.mdls = mdls
 		return
@@ -59,21 +60,21 @@ func (s *HTTPServer) Use(mdls...Middleware) {
 
 // UseV1 会执行路由匹配，只有匹配上了的 mdls 才会生效
 // 这个只需要稍微改造一下路由树就可以实现
-func (s *HTTPServer) UseV1(path string, mdls...Middleware) {
+func (s *HTTPServer) UseV1(path string, mdls ...Middleware) {
 	panic("implement me")
 }
 
 // ServeHTTP HTTPServer 处理请求的入口
 func (s *HTTPServer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	ctx := &Context{
-		Req:  request,
-		Resp: writer,
-		tplEngine:  s.tplEngine,
+		Req:       request,
+		Resp:      writer,
+		tplEngine: s.tplEngine,
 	}
 	// 最后一个应该是 HTTPServer 执行路由匹配，执行用户代码
 	root := s.serve
 	// 从后往前组装
-	for i := len(s.mdls) - 1; i >= 0; i -- {
+	for i := len(s.mdls) - 1; i >= 0; i-- {
 		root = s.mdls[i](root)
 	}
 	// 第一个应该是回写响应的
@@ -104,7 +105,7 @@ func (s *HTTPServer) Get(path string, handler HandleFunc) {
 
 func (s *HTTPServer) serve(ctx *Context) {
 	mi, ok := s.findRoute(ctx.Req.Method, ctx.Req.URL.Path)
-	if !ok || mi.n == nil || mi.n.handler == nil{
+	if !ok || mi.n == nil || mi.n.handler == nil {
 		ctx.RespStatusCode = 404
 		return
 	}
@@ -122,4 +123,3 @@ func (s *HTTPServer) flashResp(ctx *Context) {
 		log.Fatalln("回写响应失败", err)
 	}
 }
-
