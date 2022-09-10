@@ -1,6 +1,7 @@
 package web
 
 import (
+	"log"
 	"net/http"
 )
 
@@ -15,73 +16,61 @@ type Server interface {
 
 	// addRoute 注册一个路由
 	// method 是 HTTP 方法
-	addRoute(method string, path string, handler HandleFunc)
+	addRoute(method string, path string, handler HandleFunc, mdls...Middleware)
 	// 我们并不采取这种设计方案
 	// addRoute(method string, path string, handlers... HandleFunc)
 }
-
 // 确保 HTTPServer 肯定实现了 Server 接口
 var _ Server = &HTTPServer{}
 
-type ServerOption func(server *HTTPServer)
-
 type HTTPServer struct {
 	router
-	ms        []Middleware
-	tplEngine TemplateEngine
+	mdls []Middleware
 }
 
-func NewHTTPServer(opts ...ServerOption) *HTTPServer {
-	s := &HTTPServer{
+func NewHTTPServer() *HTTPServer {
+	return &HTTPServer{
 		router: newRouter(),
 	}
+}
 
-	for _, opt := range opts {
-		opt(s)
+func (s *HTTPServer) Use(mdls...Middleware) {
+	if s.mdls == nil {
+		s.mdls = mdls
+		return
 	}
-
-	return s
+	s.mdls = append(s.mdls, mdls...)
 }
 
-func ServerWithTemplateEngine(engine TemplateEngine) ServerOption {
-	return func(server *HTTPServer) {
-		server.tplEngine = engine
-	}
+// UseV1 会执行路由匹配，只有匹配上了的 mdls 才会生效
+// 这个只需要稍微改造一下路由树就可以实现
+func (s *HTTPServer) UseV1(method string, path string, mdls...Middleware) {
+	s.addRoute(method, path, nil, mdls...)
 }
-func (s *HTTPServer) Use(ms ...Middleware) {
-	s.ms = ms
-}
-
-var Debug bool
 
 // ServeHTTP HTTPServer 处理请求的入口
 func (s *HTTPServer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	ctx := &Context{
-		Req:       request,
-		Resp:      writer,
-		tplEngine: s.tplEngine,
-		// Ctx:  request.Context(),
+		Req:  request,
+		Resp: writer,
 	}
-
+	// 最后一个应该是 HTTPServer 执行路由匹配，执行用户代码
 	root := s.serve
-	for i := len(s.ms) - 1; i >= 0; i-- {
-		m := s.ms[i]
-		root = m(root)
+	// 从后往前组装
+	for i := len(s.mdls) - 1; i >= 0; i -- {
+		root = s.mdls[i](root)
 	}
-
-	var flushMdl Middleware = func(next HandleFunc) HandleFunc {
+	// 第一个应该是回写响应的
+	// 因为它在调用next之后才回写响应，
+	// 所以实际上 flashResp 是最后一个步骤
+	var m Middleware = func(next HandleFunc) HandleFunc {
 		return func(ctx *Context) {
 			next(ctx)
-			s.writeResp(ctx)
+			s.flashResp(ctx)
 		}
 	}
-	root = flushMdl(root)
+	root = m(root)
 	root(ctx)
-}
-
-func (s *HTTPServer) writeResp(ctx *Context) {
-	ctx.Resp.WriteHeader(ctx.RespStatusCode)
-	ctx.Resp.Write(ctx.RespData)
 }
 
 // Start 启动服务器
@@ -99,13 +88,22 @@ func (s *HTTPServer) Get(path string, handler HandleFunc) {
 
 func (s *HTTPServer) serve(ctx *Context) {
 	mi, ok := s.findRoute(ctx.Req.Method, ctx.Req.URL.Path)
-
-	if !ok || mi.n == nil || mi.n.handler == nil {
+	if !ok || mi.n == nil || mi.n.handler == nil{
 		ctx.RespStatusCode = 404
-		ctx.RespData = []byte("Not Found")
 		return
 	}
 	ctx.PathParams = mi.pathParams
 	ctx.MatchedRoute = mi.n.route
 	mi.n.handler(ctx)
 }
+
+func (s *HTTPServer) flashResp(ctx *Context) {
+	if ctx.RespStatusCode > 0 {
+		ctx.Resp.WriteHeader(ctx.RespStatusCode)
+	}
+	_, err := ctx.Resp.Write(ctx.RespData)
+	if err != nil {
+		log.Fatalln("回写响应失败", err)
+	}
+}
+

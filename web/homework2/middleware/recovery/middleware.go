@@ -1,7 +1,7 @@
 package recovery
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/web"
+	"gitee.com/geektime-geekbang/geektime-go/web/homework2"
 )
 
 type MiddlewareBuilder struct {
@@ -21,10 +21,7 @@ func (m *MiddlewareBuilder) Build() web.Middleware {
 					m.LogFunc(ctx)
 				}
 			}()
-
-			// 这里就是before route, before execute
 			next(ctx)
-			// 这里就是after route, after execute
 		}
 	}
 }

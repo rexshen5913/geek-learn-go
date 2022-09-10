@@ -1,10 +1,9 @@
 package errhdl
 
-import "gitee.com/geektime-geekbang/geektime-go/web"
+import "gitee.com/geektime-geekbang/geektime-go/web/homework2"
 
 type MiddlewareBuilder struct {
-	resp     map[int][]byte
-	redirect map[int]string
+	resp map[int][]byte
 }
 
 func NewMiddlewareBuilder() *MiddlewareBuilder {

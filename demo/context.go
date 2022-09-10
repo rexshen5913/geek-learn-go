@@ -8,10 +8,20 @@ import (
 )
 
 type Context struct {
-	Req          *http.Request
-	Resp         http.ResponseWriter
-	PathParams   map[string]string
+	// 用户不能使用 Req.Context()
+	Req  *http.Request
+	Resp http.ResponseWriter
+	// Ctx  context.Context
+
+	PathParams map[string]string
+
+	// 缓存住你的响应
+	RespStatusCode int
+	// RespData []byte
+	RespData     []byte
 	MatchedRoute string
+
+	tplEngine TemplateEngine
 }
 
 func (ctx *Context) BindJSON(val any) error {
@@ -52,9 +62,19 @@ func (ctx *Context) RespJSON(code int, val any) error {
 	if err != nil {
 		return err
 	}
-	ctx.Resp.WriteHeader(code)
-	_, err = ctx.Resp.Write(bs)
+	ctx.RespData = bs
+	ctx.RespStatusCode = code
 	return err
+}
+
+func (ctx *Context) Render(tplName string, val any) error {
+	data, err := ctx.tplEngine.Render(ctx.Req.Context(), tplName, val)
+	if err != nil {
+		return err
+	}
+	ctx.RespData = data
+	ctx.RespStatusCode = 200
+	return nil
 }
 
 func (ctx *Context) QueryValueV1(key string) StringValue {

@@ -23,6 +23,8 @@ func TestServer(t *testing.T) {
 
 	})
 
+	// s.Post("/upload", (&FileUploader{}).Upload)
+
 	s.Post("/user", func(ctx *Context) {
 		u := &User{}
 		err := ctx.BindJSON(u)
