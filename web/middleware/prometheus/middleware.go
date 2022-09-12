@@ -21,7 +21,7 @@ func (m *MiddlewareBuilder) Build() web.Middleware {
 		ConstLabels: m.ConstLabels,
 		Help:        m.Help,
 	}, []string{"pattern", "method", "status"})
-
+	prometheus.MustRegister(summaryVec)
 	return func(next web.HandleFunc) web.HandleFunc {
 		return func(ctx *web.Context) {
 			startTime := time.Now()
