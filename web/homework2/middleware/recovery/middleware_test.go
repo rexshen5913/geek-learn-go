@@ -1,7 +1,7 @@
 package recovery
 
 import (
-	"gitbub.com/flycash/geekbang-middle-camp/web/homework2"
+	"gitee.com/geektime-geekbang/geektime-go/web/homework2"
 	"log"
 	"testing"
 )
@@ -18,7 +18,7 @@ func TestMiddlewareBuilder_Build(t *testing.T) {
 
 	s.Use((&MiddlewareBuilder{
 		StatusCode: 500,
-		ErrMsg: "你 Panic 了",
+		ErrMsg:     "你 Panic 了",
 		LogFunc: func(ctx *web.Context) {
 			log.Println(ctx.Req.URL.Path)
 		},
