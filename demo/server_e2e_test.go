@@ -2,8 +2,6 @@ package web
 
 import (
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/demo/middleware/accesslog"
-	"gitee.com/geektime-geekbang/geektime-go/demo/middleware/repeat_body"
 	"sync"
 	"testing"
 )
@@ -13,7 +11,7 @@ import (
 func TestServer(t *testing.T) {
 	Debug = true
 	s := NewHTTPServer()
-	s.Use(repeat_body.Middleware(), accesslog.MiddlewareBuilder{}.Build())
+	// s.Use(repeat_body.Middleware(), accesslog.MiddlewareBuilder{}.Build())
 	s.Get("/", func(ctx *Context) {
 		ctx.Resp.Write([]byte("hello, world"))
 	})
