@@ -1,7 +1,7 @@
 package opentelemetry
 
 import (
-	web "gitee.com/geektime-geekbang/geektime-go/demo"
+	web "gitee.com/geektime-geekbang/geektime-go/web/demo3"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )

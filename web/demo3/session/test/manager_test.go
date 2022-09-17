@@ -1,10 +1,10 @@
 package test
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/web"
-	"gitee.com/geektime-geekbang/geektime-go/web/session"
-	"gitee.com/geektime-geekbang/geektime-go/web/session/cookie"
-	"gitee.com/geektime-geekbang/geektime-go/web/session/memory"
+	web "gitee.com/geektime-geekbang/geektime-go/web/demo3"
+	"gitee.com/geektime-geekbang/geektime-go/web/demo3/session"
+	"gitee.com/geektime-geekbang/geektime-go/web/demo3/session/cookie"
+	"gitee.com/geektime-geekbang/geektime-go/web/demo3/session/memory"
 	"github.com/google/uuid"
 	"net/http"
 	"testing"
@@ -23,8 +23,9 @@ func TestManager(t *testing.T) {
 			})),
 	}
 
-	s.Get("/login", func(ctx *web.Context) {
+	s.Post("/login", func(ctx *web.Context) {
 		// 前面就是你登录的时候一大堆的登录校验
+
 		id := uuid.New()
 		sess, err := m.InitSession(ctx, id.String())
 		if err != nil {
@@ -46,9 +47,10 @@ func TestManager(t *testing.T) {
 		}
 		val, err := sess.Get(ctx.Req.Context(), "mykey")
 		ctx.RespData = []byte(val)
+		ctx.RespStatusCode = 200
 	})
 
-	s.Get("/logout", func(ctx *web.Context) {
+	s.Post("/logout", func(ctx *web.Context) {
 		_ = m.RemoveSession(ctx)
 	})
 
@@ -62,7 +64,6 @@ func TestManager(t *testing.T) {
 					ctx.RespStatusCode = http.StatusUnauthorized
 					return
 				}
-				ctx.UserValues["sess"] = sess
 				_ = m.Refresh(ctx.Req.Context(), sess.ID())
 			}
 			next(ctx)

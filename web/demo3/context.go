@@ -22,6 +22,8 @@ type Context struct {
 	MatchedRoute string
 
 	tplEngine TemplateEngine
+
+	UserValues map[string]any
 }
 
 func (ctx *Context) BindJSON(val any) error {

@@ -2,7 +2,7 @@ package prometheus
 
 import (
 	"fmt"
-	web "gitee.com/geektime-geekbang/geektime-go/demo"
+	web "gitee.com/geektime-geekbang/geektime-go/web/demo3"
 	"github.com/prometheus/client_golang/prometheus"
 	"time"
 )

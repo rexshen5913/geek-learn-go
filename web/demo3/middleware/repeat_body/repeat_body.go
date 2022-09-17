@@ -1,7 +1,7 @@
 package repeat_body
 
 import (
-	web "gitee.com/geektime-geekbang/geektime-go/demo"
+	web "gitee.com/geektime-geekbang/geektime-go/web/demo3"
 	"io/ioutil"
 )
 
