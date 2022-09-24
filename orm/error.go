@@ -1,4 +1,3 @@
-
 package orm
 
 import "gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"

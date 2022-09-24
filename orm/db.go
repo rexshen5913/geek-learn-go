@@ -1,12 +1,14 @@
-
 package orm
 
 import (
 	"context"
 	"database/sql"
+	"database/sql/driver"
 	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
 	"gitee.com/geektime-geekbang/geektime-go/orm/internal/valuer"
 	"gitee.com/geektime-geekbang/geektime-go/orm/model"
+	"log"
+	"time"
 )
 
 type DBOption func(*DB)
@@ -14,6 +16,18 @@ type DBOption func(*DB)
 type DB struct {
 	core
 	db *sql.DB
+}
+
+// Wait 会等待数据库连接
+// 注意只能用于测试
+func (db *DB) Wait() error {
+	err := db.db.Ping()
+	for err == driver.ErrBadConn {
+		log.Printf("等待数据库启动...")
+		err = db.db.Ping()
+		time.Sleep(time.Second)
+	}
+	return err
 }
 
 // Open 创建一个 DB 实例。
@@ -27,11 +41,11 @@ func Open(driver string, dsn string, opts ...DBOption) (*DB, error) {
 	return OpenDB(db, opts...)
 }
 
-func OpenDB(db *sql.DB, opts ...DBOption) (*DB, error) {
+func OpenDB(db *sql.DB, opts...DBOption) (*DB, error) {
 	res := &DB{
 		core: core{
-			dialect:    MySQL,
-			r:          model.NewRegistry(),
+			dialect: MySQL,
+			r:  model.NewRegistry(),
 			valCreator: valuer.NewUnsafeValue,
 		},
 		db: db,
@@ -60,7 +74,7 @@ func DBUseReflectValuer() DBOption {
 	}
 }
 
-func DBWithMiddleware(ms ...Middleware) DBOption {
+func DBWithMiddleware(ms...Middleware) DBOption {
 	return func(db *DB) {
 		db.ms = ms
 	}

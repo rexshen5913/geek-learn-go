@@ -1,5 +1,3 @@
-
-
 package orm
 
 import (
@@ -7,7 +5,7 @@ import (
 )
 
 var (
-	MySQL   Dialect = &mysqlDialect{}
+	MySQL Dialect = &mysqlDialect{}
 	SQLite3 Dialect = &sqlite3Dialect{}
 )
 
@@ -19,6 +17,7 @@ type Dialect interface {
 }
 
 type standardSQL struct {
+
 }
 
 func (s *standardSQL) quoter() byte {
@@ -35,7 +34,7 @@ type mysqlDialect struct {
 	standardSQL
 }
 
-func (m *mysqlDialect) quoter() byte {
+func (m *mysqlDialect)  quoter() byte {
 	return '`'
 }
 
@@ -48,16 +47,16 @@ func (m *mysqlDialect) buildUpsert(b *builder,
 		}
 		switch assign := a.(type) {
 		case Column:
-			fd, ok := b.model.FieldMap[assign.name]
-			if !ok {
-				return errs.NewErrUnknownField(assign.name)
+			colName, err := b.colName(assign.table, assign.name)
+			if err != nil {
+				return err
 			}
-			b.quote(fd.ColName)
+			b.quote(colName)
 			b.sb.WriteString("=VALUES(")
-			b.quote(fd.ColName)
+			b.quote(colName)
 			b.sb.WriteByte(')')
 		case Assignment:
-			err := b.buildColumn(assign.column)
+			err := b.buildColumn(nil, assign.column)
 			if err != nil {
 				return err
 			}
@@ -74,7 +73,8 @@ type sqlite3Dialect struct {
 	standardSQL
 }
 
-func (s *sqlite3Dialect) quoter() byte {
+
+func (s *sqlite3Dialect)  quoter() byte {
 	return '`'
 }
 
@@ -87,7 +87,7 @@ func (s *sqlite3Dialect) buildUpsert(b *builder,
 			if i > 0 {
 				b.sb.WriteByte(',')
 			}
-			err := b.buildColumn(col)
+			err := b.buildColumn(nil, col)
 			if err != nil {
 				return err
 			}
@@ -102,15 +102,15 @@ func (s *sqlite3Dialect) buildUpsert(b *builder,
 		}
 		switch assign := a.(type) {
 		case Column:
-			fd, ok := b.model.FieldMap[assign.name]
-			if !ok {
-				return errs.NewErrUnknownField(assign.name)
+			colName, err := b.colName(assign.table, assign.name)
+			if err != nil {
+				return err
 			}
-			b.quote(fd.ColName)
+			b.quote(colName)
 			b.sb.WriteString("=excluded.")
-			b.quote(fd.ColName)
+			b.quote(colName)
 		case Assignment:
-			err := b.buildColumn(assign.column)
+			err := b.buildColumn(nil, assign.column)
 			if err != nil {
 				return err
 			}

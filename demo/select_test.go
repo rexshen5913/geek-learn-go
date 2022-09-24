@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 // SELECT * FROM xxx;
@@ -71,6 +72,7 @@ func TestSelector_Build(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		time.NewTimer(0)
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := tt.s.Build()
 			assert.Equal(t, tt.wantErr, err)
