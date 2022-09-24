@@ -94,7 +94,7 @@ func TestRegistry_get(t *testing.T) {
 			val: func() any {
 				// 我们把测试结构体定义在方法内部，防止被其它用例访问
 				type EmptyColumn struct {
-					FirstName uint64 `orm:"column="`
+					FirstName uint64 `orm:"column=first_name"`
 				}
 				return &EmptyColumn{}
 			}(),
