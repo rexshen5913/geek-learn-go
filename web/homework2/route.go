@@ -158,7 +158,7 @@ func (n *node) childrenOf(path string) []*node {
 		res = append(res, n.starChild)
 	}
 	if n.paramChild != nil {
-		res = append(res, n.starChild)
+		res = append(res, n.paramChild)
 	}
 	if static != nil {
 		res = append(res, static)
