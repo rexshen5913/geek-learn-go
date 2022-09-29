@@ -8,9 +8,11 @@ import (
 var (
 	ErrInputNil = errors.New("orm: 不支持 nil")
 	ErrPointerOnly = errors.New("orm: 只支持一级指针作为输入，例如 *User")
+	ErrTooManyReturnedColumns = errors.New("orm: 过多列")
 
 	// errUnsupportedExpressionType = errors.New("orm: 不支持的表达式")
 	ErrEmptyTableName = errors.New("orm: 表名为空")
+	ErrNoRows = errors.New("orm: 未找到数据")
 )
 
 type MyErr struct {
@@ -20,6 +22,10 @@ type MyErr struct {
 
 func (m MyErr) Error() string {
 	return "orm: " + m.code + m.msg
+}
+
+func NewErrUnknownColumn(name string) error {
+	return fmt.Errorf("orm: 未知列 %s", name)
 }
 
 func NewErrUnknownField(name string) error {

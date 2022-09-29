@@ -4,6 +4,10 @@ type Column struct {
 	name string
 }
 
+
+func (c Column) selectable() {}
+
+
 func (c Column) expr() {}
 
 type value struct {

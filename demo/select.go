@@ -3,7 +3,7 @@ package orm
 import (
 	"context"
 	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
-	"reflect"
+	model2 "gitee.com/geektime-geekbang/geektime-go/demo/model"
 	"strings"
 )
 
@@ -13,11 +13,23 @@ type Selector[T any] struct {
 	args []any
 	table string
 	where []Predicate
-	model *Model
-
+	model *model2.Model
 	db *DB
+
+	columns []Selectable
 }
 
+type Selectable interface {
+	selectable()
+}
+
+// s.Select("id", "age")
+func (s *Selector[T]) Select(cols...Selectable) *Selector[T] {
+	s.columns = cols
+	return s
+}
+
+// 万一我的 T 是基础类型
 func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
 	q, err := s.Build()
 	if err != nil {
@@ -28,41 +40,12 @@ func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 先看一下你返回了哪些列
-	cols, err := rows.Columns()
-	if err != nil {
-		return nil, err
-	}
-	rows.Next()
-	vals := make([]any, 0, len(cols))
-	eleVals := make([]reflect.Value, 0, len(cols))
-	for _, col := range cols {
-		fd := s.model.columnMap[col]
-		// fd.Type 是 int，那么  reflect.New(fd.typ) 是 *int
-		fdVal := reflect.New(fd.typ)
-		eleVals = append(eleVals, fdVal.Elem())
-
-		// 因为 Scan 要指针，所以我们在这里，不需要调用 Elem
-		vals = append(vals, fdVal.Interface())
-	}
-	// 要把 cols 映射过去字段
-
-	err = rows.Scan(vals...)
-	if err != nil {
-		return nil, err
-	}
-	// 咋办呢？我已经有 vals 了，接下来咋办？ vals= [123, "Ming", 18, "Deng"]
-
-	// 反射放回去 t 里面
 
 	t := new(T)
-	tVal := reflect.ValueOf(t).Elem()
-	for i, col := range cols {
-		fd := s.model.columnMap[col]
-		tVal.FieldByName(fd.goName).Set(eleVals[i])
-	}
+	val := s.db.valCreator(t, s.model)
+	// 在这里灵活切换反射或者 unsafe
 
-	return t, nil
+	return t, val.SetColumns(rows)
 }
 
 func (s *Selector[T]) GetMulti(ctx context.Context) ([]*T, error) {
@@ -92,10 +75,46 @@ func (s *Selector[T]) Build() (*Query, error) {
 	if err != nil {
 		return nil, err
 	}
-	s.sb.WriteString("SELECT * FROM ")
+	s.sb.WriteString("SELECT ")
+	if len(s.columns) == 0 {
+		s.sb.WriteByte('*')
+	} else {
+		for i, c := range s.columns {
+			if i > 0 {
+				s.sb.WriteByte(',')
+			}
+			switch col := c.(type) {
+			case Column:
+				fd, ok := s.model.FieldMap[col.name]
+				if !ok {
+					return nil, errs.NewErrUnknownField(col.name)
+				}
+				s.sb.WriteByte('`')
+				s.sb.WriteString(fd.ColName)
+				s.sb.WriteByte('`')
+			case Aggregate:
+				s.sb.WriteString(col.fn)
+				s.sb.WriteByte('(')
+				fd, ok := s.model.FieldMap[col.arg]
+				if !ok {
+					return nil, errs.NewErrUnknownField(col.arg)
+				}
+				s.sb.WriteByte('`')
+				s.sb.WriteString(fd.ColName)
+				s.sb.WriteByte('`')
+				s.sb.WriteByte(')')
+			case RawExpr:
+				s.sb.WriteString(col.raw)
+				if len(col.args) >0 {
+					s.args = append(s.args, col.args...)
+				}
+			}
+		}
+	}
+	s.sb.WriteString(" FROM ")
 	if s.table == "" {
 		s.sb.WriteByte('`')
-		s.sb.WriteString(s.model.tableName)
+		s.sb.WriteString(s.model.TableName)
 		s.sb.WriteByte('`')
 	} else {
 		s.sb.WriteString(s.table)
@@ -127,11 +146,11 @@ func (s *Selector[T]) buildExpression(e Expression) error {
 	switch exp := e.(type) {
 	case Column:
 		s.sb.WriteByte('`')
-		fd, ok := s.model.fieldMap[exp.name]
+		fd, ok := s.model.FieldMap[exp.name]
 		if !ok {
 			return errs.NewErrUnknownField(exp.name)
 		}
-		s.sb.WriteString(fd.colName)
+		s.sb.WriteString(fd.ColName)
 		s.sb.WriteByte('`')
 	case value:
 		s.sb.WriteByte('?')

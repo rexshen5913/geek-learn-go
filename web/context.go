@@ -38,6 +38,10 @@ type Context struct {
 	UserValues map[string]any
 }
 
+func (c *Context) RespSystemError(code int, msg string) error {
+
+}
+
 func (c *Context) BindJSON(val any) error {
 	if c.Req.Body == nil {
 		return errors.New("web: body 为 nil")

@@ -3,6 +3,7 @@ package orm
 import (
 	"context"
 	"database/sql"
+	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -143,6 +144,46 @@ func TestSelector_Get(t *testing.T) {
 				LastName: &sql.NullString{Valid: true, String: "Deng"},
 			},
 		},
+
+		{
+			// SELECT 出来的行数小于你结构体的行数
+			name:"less columns",
+			query: "SELECT .*",
+			mockErr: nil,
+			mockRows: func() *sqlmock.Rows{
+				rows := sqlmock.NewRows([]string{"id", "first_name"})
+				rows.AddRow([]byte("123"), []byte("Ming"))
+				return rows
+			}(),
+			wantVal: &TestModel{
+				Id: 123,
+				FirstName: "Ming",
+			},
+		},
+
+		{
+			name:"invalid columns",
+			query: "SELECT .*",
+			mockErr: nil,
+			mockRows: func() *sqlmock.Rows{
+				rows := sqlmock.NewRows([]string{"id", "first_name", "gender"})
+				rows.AddRow([]byte("123"), []byte("Ming"), []byte("male"))
+				return rows
+			}(),
+			wantErr: errs.NewErrUnknownColumn("gender"),
+		},
+
+		{
+			name:"more columns",
+			query: "SELECT .*",
+			mockErr: nil,
+			mockRows: func() *sqlmock.Rows{
+				rows := sqlmock.NewRows([]string{"id", "first_name", "age", "last_name",  "first_name"})
+				rows.AddRow([]byte("123"), []byte("Ming"), []byte("18"), []byte("Deng"), []byte("明明"))
+				return rows
+			}(),
+			wantErr: errs.ErrTooManyReturnedColumns,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -152,6 +193,7 @@ func TestSelector_Get(t *testing.T) {
 			mock.ExpectQuery(tc.query).WillReturnRows(tc.mockRows)
 		}
 	}
+
 
 	db, err := OpenDB(mockDB)
 	require.NoError(t, err)
@@ -173,4 +215,51 @@ func memoryDB(t *testing.T) *DB {
 		t.Fatal(err)
 	}
 	return orm
+}
+
+func TestSelector_Select(t *testing.T) {
+	db := memoryDB(t)
+	testCases := []struct {
+		name      string
+		q         QueryBuilder
+		wantQuery *Query
+		wantErr   error
+	}{
+		{
+			// 指定列
+			name: "specify columns",
+			q: NewSelector[TestModel](db).Select(C("Id"), C("Age")),
+			wantQuery: &Query{
+				SQL: "SELECT `id`,`age` FROM `test_model`;",
+			},
+		},
+		{
+			// 指定聚合函数
+			// AVG, COUNT, SUM, MIN, MAX(xxx)
+			name: "specify aggregate",
+			q: NewSelector[TestModel](db).Select(Min("Id"), Avg("Age")),
+			wantQuery: &Query{
+				SQL: "SELECT MIN(`id`),AVG(`age`) FROM `test_model`;",
+			},
+		},
+		{
+			// count distinct
+			name: "specify aggregate",
+			q: NewSelector[TestModel](db).Select(Raw("DISTINCT `first_name`")),
+			wantQuery: &Query{
+				SQL: "SELECT DISTINCT `first_name` FROM `test_model`;",
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			query, err := tc.q.Build()
+			assert.Equal(t, tc.wantErr, err)
+			if err != nil {
+				return
+			}
+			assert.Equal(t, tc.wantQuery, query)
+		})
+	}
 }

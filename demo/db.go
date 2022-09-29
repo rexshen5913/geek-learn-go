@@ -1,13 +1,19 @@
 package orm
 
-import "database/sql"
+import (
+	"database/sql"
+	"gitee.com/geektime-geekbang/geektime-go/demo/internal/valuer"
+	"gitee.com/geektime-geekbang/geektime-go/demo/model"
+)
 
 type DBOption func(*DB)
 
 // DB 是sql.DB 的装饰器
 type DB struct {
 	db *sql.DB
-	r *registry
+	r  model.Registry
+
+	valCreator valuer.Creator
 }
 
 // 如果用户指定了 registry，就用用户指定的，否则用默认的
@@ -32,13 +38,20 @@ func Open(driver string, dsn string, opts...DBOption) (*DB, error) {
 // sqlmock.Open 的 DB
 func OpenDB(db *sql.DB, opts...DBOption) (*DB, error) {
 	res := &DB{
-		r: &registry{},
-		db: db,
+		r:          model.NewRegistry(),
+		db:         db,
+		valCreator: valuer.NewUnsafeValue,
 	}
 	for _, opt := range opts {
 		opt(res)
 	}
 	return res, nil
+}
+
+func DBUseReflectValuer() DBOption {
+	return func(db *DB) {
+		db.valCreator = valuer.NewReflectValue
+	}
 }
 
 
@@ -50,7 +63,7 @@ func OpenDB(db *sql.DB, opts...DBOption) (*DB, error) {
 // 	return res
 // }
 
-func DBWithRegistry(r *registry) DBOption {
+func DBWithRegistry(r model.Registry) DBOption {
 	return func(db *DB) {
 		db.r = r
 	}

@@ -34,3 +34,14 @@ type Creator func(val interface{}, meta *model.Model) Value
 // 	// SetColumns 设置新值，column 是列名
 // 	SetColumns(val any, rows *sql.Rows) error
 // }
+
+type Setter interface {
+
+	// SetColumns 设置新值
+	SetColumns(val any, rows *sql.Rows) error
+}
+
+type Getter interface {
+	// Field 返回字段对应的值
+	Field(name string) (any, error)
+}
