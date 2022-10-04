@@ -5,7 +5,6 @@ import (
 	"crypto/sha1"
 	"errors"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/cache"
 	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/domainobject/entity"
 	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/repository"
 	"github.com/google/uuid"
@@ -21,7 +20,6 @@ type UserService interface {
 }
 
 type userService struct {
-	cache        cache.Cache
 	repo repository.UserRepository
 }
 
@@ -56,27 +54,6 @@ func (u *userService) Login(ctx context.Context, input entity.User) (entity.User
 	return usr, nil
 }
 
-// func (u *userService) match(ct uint64, reqPwd string, pwd string) bool {
-// 	encode := encryptPwdByMd5(reqPwd, generateSalt(ct))
-// 	return pwd == encode
-// }
-//
-// func (u *userService) cacheUser(ctx context.Context, key string, value *dto.User) {
-// 	if u.cache != nil {
-// 		if err := u.cache.Put(ctx, key, value, time.Hour); err != nil {
-// 			logs.Errorf("cache user error: %v", err)
-// 		}
-// 	}
-// }
-//
-// func (u *userService) invalidCache(ctx context.Context, key string) {
-// 	if u.cache != nil {
-// 		if err := u.cache.Delete(ctx, key); err != nil {
-// 			logs.Errorf("could not remove data from cache: %v", err)
-// 		}
-// 	}
-// }
-
 func(u *userService) CreateUser(ctx context.Context, user entity.User) (entity.User, error) {
 	if err := user.Check(); err != nil {
 		return entity.User{}, fmt.Errorf("%w, 原因 %v", ErrInvalidNewUser, err)
@@ -94,22 +71,6 @@ func (u *userService) encryptPwdByPbkdf2(raw string, salt string) string {
 	// pbkdf2 需要比较多的 CPU 的资源。不过考虑到注册用户整体上是非常非常低频的，那么你也不会介意使用这种复杂的加密算法
 	return fmt.Sprintf("%X", pbkdf2.Key([]byte(raw), []byte(salt), 4096, 32, sha1.New))
 }
-
-
-// func (u *userService) GetUserByEmail(ctx context.Context, req *dto.GetUserByEmailReq) (*dto.GetUserByEmailReply, error) {
-// 	if len(req.Email) == 0 {
-// 		return nil, errors.New("invalid email")
-// 	}
-//
-// 	um, err := dao.GetUserByEmail(ctx, req.Email)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-//
-// 	return &dto.GetUserByEmailReply{
-// 		User: um.ToPB(),
-// 	}, nil
-// }
 
 func (u *userService) ServiceName() string {
 	return "user"
