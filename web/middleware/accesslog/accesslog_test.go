@@ -16,6 +16,6 @@ func TestMiddlewareBuilder_Build(t *testing.T) {
 		time.Sleep(time.Second)
 		ctx.RespData = []byte("hello, user")
 	})
-	s.Use(b.Build())
+	s.UseAny("/*", b.Build())
 	s.Start(":8081")
 }

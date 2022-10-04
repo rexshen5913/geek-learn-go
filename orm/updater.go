@@ -10,10 +10,10 @@ type Updater[T any] struct {
 	assigns []Assignable
 	val *T
 	where []Predicate
-	sess session
+	sess  Session
 }
 
-func NewUpdater[T any](sess session) *Updater[T]{
+func NewUpdater[T any](sess Session) *Updater[T]{
 	c := sess.getCore()
 	return &Updater[T]{
 		builder: builder{
@@ -42,22 +42,25 @@ func (u *Updater[T]) Build() (*Query, error) {
 	if u.val == nil {
 		u.val = new(T)
 	}
-	model, err := u.r.Get(u.val)
-	if err != nil {
-		return nil, err
+	if u.model == nil {
+		model, err := u.r.Get(u.val)
+		if err != nil {
+			return nil, err
+		}
+		u.model = model
 	}
-	u.model = model
+
 	u.sb.WriteString("UPDATE ")
-	u.quote(model.TableName)
+	u.quote(u.model.TableName)
 	u.sb.WriteString(" SET ")
-	val := u.valCreator(u.val, model)
+	val := u.valCreator(u.val, u.model)
 	for i, a := range u.assigns {
 		if i > 0 {
 			u.sb.WriteByte(',')
 		}
 		switch assign := a.(type) {
 		case Column:
-			if err = u.buildColumn(assign.table, assign.name); err != nil {
+			if err := u.buildColumn(assign.table, assign.name); err != nil {
 				return nil, err
 			}
 			u.sb.WriteString("=?")
@@ -67,7 +70,7 @@ func (u *Updater[T]) Build() (*Query, error) {
 			}
 			u.addArgs(arg)
 		case Assignment:
-			if err = u.buildAssignment(assign); err != nil {
+			if err := u.buildAssignment(assign); err != nil {
 				return nil, err
 			}
 		default:
@@ -76,7 +79,7 @@ func (u *Updater[T]) Build() (*Query, error) {
 	}
 	if len(u.where) > 0 {
 		u.sb.WriteString(" WHERE ")
-		if err = u.buildPredicates(u.where);err != nil {
+		if err := u.buildPredicates(u.where);err != nil {
 			return nil, err
 		}
 	}
@@ -101,10 +104,18 @@ func (u *Updater[T]) Where(ps ...Predicate) *Updater[T] {
 }
 
 func (u *Updater[T]) Exec(ctx context.Context) Result {
-	q, err := u.Build()
-	if err != nil {
-		return Result{err: err}
+	if u.model == nil {
+		m, err := u.r.Get(new(T))
+		if err != nil {
+			return Result{
+				err: err,
+			}
+		}
+		u.model=m
 	}
-	res, err := u.sess.execContext(ctx, q.SQL, q.Args...)
-	return Result{err: err, res: res}
+	return exec(ctx, u.sess, u.core, &QueryContext{
+		builder: u,
+		Type:    "UPDATE",
+		Model:   u.model,
+	})
 }

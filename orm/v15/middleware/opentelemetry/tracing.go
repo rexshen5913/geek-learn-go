@@ -3,7 +3,7 @@ package opentelemetry
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm"
+	"gitee.com/geektime-geekbang/geektime-go/orm/v15"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -25,7 +25,7 @@ func (b *MiddlewareBuilder) Build() orm.Middleware {
 			reqCtx, span := b.Tracer.Start(ctx, qc.Type+ "-" + tbl, trace.WithAttributes())
 			defer span.End()
 			span.SetAttributes(attribute.String("component", "orm"))
-			q, err := qc.Builder.Build()
+			q, err := qc.builder.Build()
 			if err != nil {
 				span.RecordError(err)
 			}

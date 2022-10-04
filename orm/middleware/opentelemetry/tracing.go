@@ -14,7 +14,7 @@ type MiddlewareBuilder struct {
 	Tracer trace.Tracer
 }
 
-func (b *MiddlewareBuilder) Build() orm.Middleware {
+func (b MiddlewareBuilder) Build() orm.Middleware {
 	if b.Tracer == nil {
 		b.Tracer = otel.GetTracerProvider().Tracer(defaultInstrumentationName)
 	}
@@ -24,7 +24,7 @@ func (b *MiddlewareBuilder) Build() orm.Middleware {
 			reqCtx, span := b.Tracer.Start(ctx, qc.Type+"-"+tbl, trace.WithAttributes())
 			defer span.End()
 			span.SetAttributes(attribute.String("component", "orm"))
-			q, err := qc.Builder.Build()
+			q, err := qc.Query()
 			if err != nil {
 				span.RecordError(err)
 			}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
+	"gitee.com/geektime-geekbang/geektime-go/orm/model"
 )
 
 // Selector 用于构造 SELECT 语句
@@ -16,7 +17,7 @@ type Selector[T any] struct {
 	groupBy []Column
 	offset int
 	limit int
-	sess session
+	sess  Session
 }
 
 func (s *Selector[T]) Select(cols...Selectable) *Selector[T] {
@@ -31,9 +32,11 @@ func (s *Selector[T]) From(tbl TableReference) *Selector[T] {
 
 func (s *Selector[T]) Build() (*Query, error) {
 	var err error
-	s.model, err = s.r.Get(new(T))
-	if err != nil {
-		return nil, err
+	if s.model == nil {
+		s.model, err = s.r.Get(new(T))
+		if err != nil {
+			return nil, err
+		}
 	}
 	s.sb.WriteString("SELECT ")
 	if err = s.buildColumns(); err != nil {
@@ -93,11 +96,11 @@ func (s *Selector[T]) buildTable(table TableReference) error {
 	case nil:
 		s.quote(s.model.TableName)
 	case Table:
-		model, err := s.r.Get(tab.entity)
+		m, err := s.r.Get(tab.entity)
 		if err != nil {
 			return err
 		}
-		s.quote(model.TableName)
+		s.quote(m.TableName)
 		if tab.alias != "" {
 			s.sb.WriteString(" AS ")
 			s.quote(tab.alias)
@@ -227,9 +230,27 @@ func (s *Selector[T]) AsSubquery(alias string) Subquery {
 }
 
 func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
+	var (
+		m *model.Model
+		err error
+	)
+
+	// 子查询或者 JOIN 查询，我们无法得知它操作的就近是那张表
+	if s.table == nil {
+		// 没有指定表
+		s.table = TableOf(new(T))
+	}
+
+	if tbl, ok := s.table.(Table); ok {
+		m, err = s.r.Get(tbl.entity)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res := get[T](ctx, s.core, s.sess, &QueryContext{
-		Builder:s,
-		Type: "SELECT",
+		builder: s,
+		Type:    "SELECT",
+		Model:   m,
 	})
 	if res.Result != nil {
 		return res.Result.(*T), res.Err
@@ -254,7 +275,7 @@ func (s *Selector[T]) GetMulti(ctx context.Context) ([]*T, error) {
 	panic("implement me")
 }
 
-func NewSelector[T any](sess session) *Selector[T] {
+func NewSelector[T any](sess Session) *Selector[T] {
 	c := sess.getCore()
 	return &Selector[T]{
 		sess: sess,

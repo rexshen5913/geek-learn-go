@@ -2,7 +2,6 @@ package orm
 
 import (
 	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/model"
 	"strings"
 )
 
@@ -12,7 +11,6 @@ type builder struct {
 	args []any
 	dialect Dialect
 	quoter byte
-	model *model.Model
 }
 
 // buildColumn 构造列

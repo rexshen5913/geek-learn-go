@@ -14,7 +14,7 @@ type MiddlewareBuilder struct {
 	Help        string
 }
 
-func (m *MiddlewareBuilder) Build() orm.Middleware {
+func (m MiddlewareBuilder) Build() orm.Middleware {
 	summaryVec := prometheus.NewSummaryVec(prometheus.SummaryOpts{
 		Name:        m.Name,
 		Subsystem:   m.Subsystem,
@@ -27,7 +27,14 @@ func (m *MiddlewareBuilder) Build() orm.Middleware {
 			startTime := time.Now()
 			defer func() {
 				endTime := time.Now()
-				summaryVec.WithLabelValues(qc.Type, qc.Model.TableName).
+				typ := "unknown"
+				// 原生查询才会走到这里
+				tblName := "unknown"
+				if qc.Model != nil  {
+					typ = qc.Model.TableName
+					tblName = qc.Model.TableName
+				}
+				summaryVec.WithLabelValues(typ, tblName).
 					Observe(float64(endTime.Sub(startTime).Milliseconds()))
 			}()
 			return next(ctx, qc)

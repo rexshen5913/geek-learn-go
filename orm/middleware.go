@@ -9,10 +9,21 @@ type QueryContext struct {
 	// Type 声明查询类型。即 SELECT, UPDATE, DELETE 和 INSERT
 	Type string
 
-	// Builder 使用的时候，大多数情况下你需要转换到具体的类型
+	// builder 使用的时候，大多数情况下你需要转换到具体的类型
 	// 才能篡改查询
-	Builder QueryBuilder
-	Model *model.Model
+	builder QueryBuilder
+	Model   *model.Model
+
+	q *Query
+}
+
+func (qc *QueryContext) Query() (*Query, error) {
+	if qc.q != nil {
+		return qc.q, nil
+	}
+	var err error
+	qc.q, err = qc.builder.Build()
+	return qc.q, err
 }
 
 type QueryResult struct {

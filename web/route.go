@@ -24,7 +24,7 @@ func newRouter() router {
 // - 不能在同一个位置注册不同的参数路由，例如 /user/:id 和 /user/:name 冲突
 // - 不能在同一个位置同时注册通配符路由和参数路由，例如 /user/:id 和 /user/* 冲突
 // - 同名路径参数，在路由匹配的时候，值会被覆盖。例如 /user/:id/abc/:id，那么 /user/123/abc/456 最终 id = 456
-func (r *router) addRoute(method string, path string, handler HandleFunc) {
+func (r *router) addRoute(method string, path string, handler HandleFunc, ms...Middleware) {
 	if path == "" {
 		panic("web: 路由是空字符串")
 	}
@@ -32,7 +32,7 @@ func (r *router) addRoute(method string, path string, handler HandleFunc) {
 		panic("web: 路由必须以 / 开头")
 	}
 
-	if path != "/" && path[len(path)-1] == '/' {
+	if path != "/" && path[len(path) - 1] == '/' {
 		panic("web: 路由不能以 / 结尾")
 	}
 
@@ -48,6 +48,7 @@ func (r *router) addRoute(method string, path string, handler HandleFunc) {
 			panic("web: 路由冲突[/]")
 		}
 		root.handler = handler
+		root.mdls = ms
 		return
 	}
 
@@ -64,6 +65,7 @@ func (r *router) addRoute(method string, path string, handler HandleFunc) {
 	}
 	root.handler = handler
 	root.route = path
+	root.mdls = ms
 }
 
 // findRoute 查找对应的节点
@@ -75,14 +77,15 @@ func (r *router) findRoute(method string, path string) (*matchInfo, bool) {
 	}
 
 	if path == "/" {
-		return &matchInfo{n: root}, true
+		return &matchInfo{n: root, mdls: root.mdls}, true
 	}
 
 	segs := strings.Split(strings.Trim(path, "/"), "/")
 	mi := &matchInfo{}
+	cur := root
 	for _, s := range segs {
 		var matchParam bool
-		root, matchParam, ok = root.childOf(s)
+		cur, matchParam, ok = cur.childOf(s)
 		if !ok {
 			return nil, false
 		}
@@ -90,8 +93,32 @@ func (r *router) findRoute(method string, path string) (*matchInfo, bool) {
 			mi.addValue(root.path[1:], s)
 		}
 	}
-	mi.n = root
+	mi.n = cur
+	mi.mdls = r.findMdls(root, segs)
 	return mi, true
+}
+
+func (r *router) findMdls(root *node, segs []string) []Middleware {
+	queue := []*node{root}
+	res := make([]Middleware, 0, 16)
+	for i := 0 ; i < len(segs); i ++ {
+		seg := segs[i]
+		var children []*node
+		for _, cur := range queue {
+			if len(cur.mdls) >0 {
+				res = append(res, cur.mdls...)
+			}
+			children = append(children, cur.childrenOf(seg)...)
+		}
+		queue = children
+	}
+
+	for _, cur := range queue {
+		if len(cur.mdls) >0 {
+			res = append(res, cur.mdls...)
+		}
+	}
+	return res
 }
 
 // node 代表路由树的节点
@@ -107,6 +134,9 @@ type node struct {
 	children map[string]*node
 	// handler 命中路由之后执行的逻辑
 	handler HandleFunc
+	// 注册在该节点上的 middleware
+	mdls []Middleware
+
 	// route 到达该节点的完整的路由路径
 	route string
 
@@ -114,6 +144,26 @@ type node struct {
 	starChild *node
 
 	paramChild *node
+
+	matchedMdls []Middleware
+}
+
+func (n *node) childrenOf(path string) []*node {
+	res := make([]*node, 0, 4)
+	var static *node
+	if n.children != nil {
+		static = n.children[path]
+	}
+	if n.starChild != nil {
+		res = append(res, n.starChild)
+	}
+	if n.paramChild != nil {
+		res = append(res, n.paramChild)
+	}
+	if static != nil {
+		res = append(res, static)
+	}
+	return res
 }
 
 // child 返回子节点
@@ -180,14 +230,15 @@ func (n *node) childOrCreate(path string) *node {
 }
 
 type matchInfo struct {
-	n          *node
+	n *node
 	pathParams map[string]string
+	mdls []Middleware
 }
 
 func (m *matchInfo) addValue(key string, value string) {
 	if m.pathParams == nil {
 		// 大多数情况，参数路径只会有一段
-		m.pathParams = map[string]string{key: value}
+		m.pathParams = map[string]string{key:value}
 	}
 	m.pathParams[key] = value
 }

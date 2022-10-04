@@ -4,7 +4,7 @@ package querylog
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm"
+	"gitee.com/geektime-geekbang/geektime-go/orm/v14"
 	"log"
 )
 
@@ -28,7 +28,7 @@ func NewBuilder() *MiddlewareBuilder {
 func (m *MiddlewareBuilder) Build() orm.Middleware {
 	return func(next orm.HandleFunc) orm.HandleFunc {
 		return func(ctx context.Context, qc *orm.QueryContext) *orm.QueryResult {
-			q, err := qc.Builder.Build()
+			q, err := qc.builder.Build()
 			if err != nil {
 				return &orm.QueryResult{
 					Err: err,
