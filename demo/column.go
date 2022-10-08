@@ -7,6 +7,7 @@ type Column struct {
 
 func (c Column) selectable() {}
 
+func (c Column) assign() {}
 
 func (c Column) expr() {}
 

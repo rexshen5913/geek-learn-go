@@ -3,17 +3,13 @@ package orm
 import (
 	"context"
 	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
-	model2 "gitee.com/geektime-geekbang/geektime-go/demo/model"
-	"strings"
 )
 
 // Selector 用于构造 SELECT 语句
 type Selector[T any] struct {
-	sb strings.Builder
-	args []any
+	builder
 	table string
 	where []Predicate
-	model *model2.Model
 	db *DB
 
 	columns []Selectable

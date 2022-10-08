@@ -134,7 +134,7 @@ func TestSQLite(t *testing.T) {
 
 type TestModel struct {
 	Id        int64
-	FirstName string
+	FirstName string `orm:"type=varchar(128)"`
 	Age       int8
 	LastName  *sql.NullString
 }

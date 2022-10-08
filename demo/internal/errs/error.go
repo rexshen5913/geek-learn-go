@@ -13,6 +13,9 @@ var (
 	// errUnsupportedExpressionType = errors.New("orm: 不支持的表达式")
 	ErrEmptyTableName = errors.New("orm: 表名为空")
 	ErrNoRows = errors.New("orm: 未找到数据")
+
+	// ErrInsertZeroRow 代表插入 0 行
+	ErrInsertZeroRow = errors.New("orm: 插入 0 行")
 )
 
 type MyErr struct {

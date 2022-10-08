@@ -41,8 +41,9 @@ func (r *registry) Register(val any, opts...Option) (*Model, error) {
 	}
 	typ = typ.Elem()
 	numField := typ.NumField()
-	fieldMap := make(map[string]*field, numField)
-	colMap := make(map[string]*field, numField)
+	fieldMap := make(map[string]*Field, numField)
+	colMap := make(map[string]*Field, numField)
+	columns := make([]*Field, numField)
 	for i := 0; i < numField; i++ {
 		fd := typ.Field(i)
 		ormTagKVs := r.parseTag(fd.Tag)
@@ -50,14 +51,16 @@ func (r *registry) Register(val any, opts...Option) (*Model, error) {
 		if !ok || colName == "" {
 			colName = underscoreName(fd.Name)
 		}
-		fdMeta := &field{
+		fdMeta := &Field{
 			ColName: colName,
 			Type:    fd.Type,
 			GoName:  fd.Name,
 			Offset:  fd.Offset,
+			Index: fd.Index,
 		}
 		fieldMap[fd.Name] = fdMeta
 		colMap[colName] = fdMeta
+		columns[i]=fdMeta
 	}
 
 	var tableName string
@@ -72,6 +75,7 @@ func (r *registry) Register(val any, opts...Option) (*Model, error) {
 		TableName: tableName,
 		FieldMap:  fieldMap,
 		ColumnMap: colMap,
+		Fields:    columns,
 	}
 	for _, opt := range opts {
 		if err := opt(res); err != nil {

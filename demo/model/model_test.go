@@ -21,7 +21,7 @@ func Test_parseModel(t *testing.T) {
 			input: &orm.TestModel{},
 			want: &Model{
 				TableName: "test_model",
-				FieldMap: map[string]*field{
+				FieldMap: map[string]*Field{
 					"Id": {
 						ColName: "id",
 					},
@@ -57,7 +57,7 @@ func Test_parseModel(t *testing.T) {
 			input: (*orm.TestModel)(nil),
 			want: &Model{
 				TableName: "test_model",
-				FieldMap: map[string]*field{
+				FieldMap: map[string]*Field{
 					"Id": {
 						ColName: "id",
 					},
@@ -86,7 +86,7 @@ func Test_parseModel(t *testing.T) {
 			}(),
 			want: &Model{
 				TableName: "column_tag",
-				FieldMap: map[string]*field{
+				FieldMap: map[string]*Field{
 					// 默认是 i_d
 					"ID": {
 						ColName: "id",
@@ -97,7 +97,7 @@ func Test_parseModel(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := &orm.registry{}
+			r := &registry{}
 			m, err := r.Register(tt.input)
 			assert.Equal(t, tt.wantErr, err)
 			if err != nil {

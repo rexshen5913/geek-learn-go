@@ -61,7 +61,7 @@ func (i *Inserter[T]) OnDuplicateKey() *OnDuplicateKeyBuilder[T] {
 // 	return i
 // }
 
-// Columns 指定要插入的列
+// Fields 指定要插入的列
 // TODO 目前我们只支持指定具体的列，但是不支持复杂的表达式
 // 例如不支持 VALUES(..., now(), now()) 这种在 MySQL 里面常用的
 func (i *Inserter[T]) Columns(cols ...string) *Inserter[T] {

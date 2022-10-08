@@ -11,11 +11,12 @@ type Option func(m *Model) error
 type Model struct {
 	// 结果体对应的表名
 	TableName string
+	Fields    []*Field
 	// 字段名到字段的元数据
-	FieldMap map[string]*field
+	FieldMap map[string]*Field
 
 	// 列名到字段的映射
-	ColumnMap map[string]*field
+	ColumnMap map[string]*Field
 }
 
 func WithTableName(name string) Option {
@@ -39,21 +40,21 @@ func ModelWithColumnName(field string, colName string) Option {
 	}
 }
 
-func ModelWithColumn(field string, col *field) Option {
+func ModelWithColumn(field string, col *Field) Option {
 	return func(m *Model) error {
 		m.FieldMap[field] = col
 		return nil
 	}
 }
 
-func ModelWithColumnAutoIncrement(field string) Option {
-	return func(m *Model) error {
-		m.FieldMap[field].autoIncrement = true
-		return nil
-	}
-}
+// func ModelWithColumnAutoIncrement(field string) Option {
+// 	return func(m *Model) error {
+// 		m.FieldMap[field].autoIncrement = true
+// 		return nil
+// 	}
+// }
 
-type field struct {
+type Field struct {
 	// 字段名
 	GoName string
 	// 字段对应的列名
@@ -65,7 +66,7 @@ type field struct {
 	// 字段偏移量
 	Offset uintptr
 
-	autoIncrement bool
+	Index []int
 }
 
 type TableName interface {
