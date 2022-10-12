@@ -1,22 +1,51 @@
 package orm
 
 import (
+	"context"
 	"database/sql"
 	"gitee.com/geektime-geekbang/geektime-go/demo/internal/valuer"
 	"gitee.com/geektime-geekbang/geektime-go/demo/model"
+	"go.uber.org/multierr"
 )
 
 type DBOption func(*DB)
 
 // DB 是sql.DB 的装饰器
 type DB struct {
+	core
 	db *sql.DB
-	r  model.Registry
 	dialect Dialect
-
-	valCreator valuer.Creator
 }
 
+func (db *DB) Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, error) {
+	tx, err := db.db.BeginTx(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+	return &Tx{
+		tx: tx,
+	}, nil
+}
+func (db *DB) DoTx(ctx context.Context, opts *sql.TxOptions,
+	task func(ctx context.Context, tx *Tx) error ) (err error) {
+	tx, err := db.Begin(ctx, opts)
+	if err != nil {
+		return err
+	}
+	panicked := true
+	defer func() {
+		if panicked || err != nil {
+			er := tx.Rollback()
+			err = multierr.Combine(err, er)
+		} else {
+			err = multierr.Combine(err, tx.Commit())
+		}
+	}()
+
+	err =  task(ctx, tx)
+	panicked = false
+	return
+}
 // 如果用户指定了 registry，就用用户指定的，否则用默认的
 
 // db := Open()
@@ -39,10 +68,12 @@ func Open(driver string, dsn string, opts...DBOption) (*DB, error) {
 // sqlmock.Open 的 DB
 func OpenDB(db *sql.DB, opts...DBOption) (*DB, error) {
 	res := &DB{
-		r:          model.NewRegistry(),
+		core: core{
+			r:          model.NewRegistry(),
+			valCreator: valuer.NewUnsafeValue,
+			dialect: &mysqlDialect{},
+		},
 		db:         db,
-		valCreator: valuer.NewUnsafeValue,
-		dialect: &mysqlDialect{},
 	}
 	for _, opt := range opts {
 		opt(res)
@@ -77,9 +108,14 @@ func DBWithRegistry(r model.Registry) DBOption {
 	}
 }
 
-//
-// func (db *DB) NewSelector[T any]() *Selector[T] {
-// 	return &Selector[T]{
-// 		db: db,
-// 	}
-// }
+func (db *DB) getCore() core {
+	return db.core
+}
+
+func  (db *DB) queryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
+	return db.db.QueryContext(ctx, query, args...)
+}
+
+func  (db *DB) execContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
+	return db.db.ExecContext(ctx, query, args...)
+}

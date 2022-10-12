@@ -2,37 +2,21 @@ package valuer
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
-	orm "gitee.com/geektime-geekbang/geektime-go/demo/model"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/errs"
+	orm "gitee.com/geektime-geekbang/geektime-go/orm/demo2/model"
 	"reflect"
 )
 
 type reflectValue struct {
-	val reflect.Value
+	t any
 	model *orm.Model
 }
 
 func NewReflectValue(t any, model *orm.Model) Value {
 	return reflectValue{
-		val: reflect.ValueOf(t).Elem(),
+		t: t,
 		model: model,
 	}
-}
-
-func (u reflectValue) Field(name string) (any, error) {
-	val := u.val
-	typ := val.Type()
-	_, ok := typ.FieldByName(name)
-	if !ok {
-		return nil, errs.NewErrUnknownField(name)
-	}
-
-	// val = val.FieldByName(name)
-	// if val == (reflect.Value{}) {
-	// 	return nil, errs.NewErrUnknownField(name)
-	// }
-
-	return val.FieldByName(name), nil
 }
 
 func (u reflectValue) SetColumns(rows *sql.Rows) error {
@@ -72,7 +56,8 @@ func (u reflectValue) SetColumns(rows *sql.Rows) error {
 
 	// 反射放回去 t 里面
 
-	tVal := u.val
+	t := u.t
+	tVal := reflect.ValueOf(t).Elem()
 	for i, col := range cols {
 		fd := u.model.ColumnMap[col]
 		tVal.FieldByName(fd.GoName).Set(colElemVals[i])

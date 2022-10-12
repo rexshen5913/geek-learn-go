@@ -2,7 +2,7 @@ package orm
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -81,7 +81,7 @@ func TestInserter_Build(t *testing.T) {
 				FirstName: "Tom",
 				Age: 18,
 				LastName: &sql.NullString{Valid: true, String: "Jerry"},
-			}).Update().Update(Assign("Age", 19)),
+			}).OnDuplicateKey().Update(Assign("Age", 19)),
 			wantQuery: &Query{
 				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?)" +
 					" ON DUPLICATE KEY UPDATE `age`=?;",
@@ -96,7 +96,7 @@ func TestInserter_Build(t *testing.T) {
 				FirstName: "Tom",
 				Age: 18,
 				LastName: &sql.NullString{Valid: true, String: "Jerry"},
-			}).Update().Update(Assign("Age", 19), C("FirstName")),
+			}).OnDuplicateKey().Update(Assign("Age", 19), C("FirstName")),
 			wantQuery: &Query{
 				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?)" +
 					" ON DUPLICATE KEY UPDATE `age`=?,`first_name`=VALUES(`first_name`);",
@@ -111,7 +111,7 @@ func TestInserter_Build(t *testing.T) {
 				FirstName: "Tom",
 				Age: 18,
 				LastName: &sql.NullString{Valid: true, String: "Jerry"},
-			}).Update().Update(C("Age")),
+			}).OnDuplicateKey().Update(C("Age")),
 			wantQuery: &Query{
 				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?)" +
 					" ON DUPLICATE KEY UPDATE `age`=VALUES(`age`);",

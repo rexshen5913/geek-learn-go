@@ -1,25 +1,57 @@
 package orm
 
 import (
+	"context"
 	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
 	"gitee.com/geektime-geekbang/geektime-go/demo/model"
-	"reflect"
 )
 
 type Inserter[T any] struct {
 	builder
-	db *DB
+	core
+	sess Session
 	values []*T
 	columns []string
-	onDuplicate *OnDuplicateKey
+	onDuplicate *Upsert
 }
+
+func (i *Inserter[T]) Exec(ctx context.Context) Result {
+	q, err := i.Build()
+	if err != nil {
+		return Result{
+			err: err,
+		}
+	}
+	res, err := i.sess.execContext(ctx, q.SQL, q.Args...)
+	return Result{
+		res: res,
+		err: err,
+	}
+}
+
+// type MySQLInserter[T any] struct {
+// 	Inserter[T]
+// }
+//
+// func (m *MySQLInserter[T]) OnDuplicateKey() *MySQLInserter[T] {
+//
+// }
+//
+// type PostgreSQL[T any] struct {
+// 	Inserter[T]
+// }
+//
+// func (m *PostgreSQL[T]) OnConflict(cols...string) *PostgreSQL[T] {
+//
+// }
+
 
 func (i *Inserter[T]) Build() (*Query, error) {
 	if len(i.values) == 0 {
 		return nil, errs.ErrInsertZeroRow
 	}
 	i.sb.WriteString("INSERT INTO ")
-	m, err := i.db.r.Get(i.values[0])
+	m, err := i.r.Get(i.values[0])
 	if err != nil {
 		return nil, err
 	}
@@ -54,19 +86,23 @@ func (i *Inserter[T]) Build() (*Query, error) {
 			i.sb.WriteByte(',')
 		}
 		i.sb.WriteByte('(')
-		refVal := reflect.ValueOf(val).Elem()
+		refVal := i.valCreator(val, i.model)
 		for j, c := range fields {
 			if j > 0 {
 				i.sb.WriteByte(',')
 			}
 			i.sb.WriteByte('?')
-			i.args = append(i.args, refVal.FieldByIndex(c.Index).Interface())
+			fdVal, err := refVal.Field(c.GoName)
+			if err != nil {
+				return nil, err
+			}
+			i.args = append(i.args, fdVal)
 		}
 		i.sb.WriteByte(')')
 	}
 
 	if i.onDuplicate != nil {
-		err = i.dialect.buildDuplicateKey(&i.builder, i.onDuplicate)
+		err = i.core.dialect.buildDuplicateKey(&i.builder, i.onDuplicate)
 		if err != nil {
 			return nil, err
 		}
@@ -80,8 +116,8 @@ func (i *Inserter[T]) Build() (*Query, error) {
 	}, nil
 }
 
-func (i *Inserter[T]) OnDuplicateKey() *OnDuplicateKeyBuilder[T] {
-	return &OnDuplicateKeyBuilder[T]{
+func (i *Inserter[T]) Update() *UpsertBuilder[T] {
+	return &UpsertBuilder[T]{
 		i: i,
 	}
 }
@@ -97,28 +133,52 @@ func (i *Inserter[T]) Values(vals...*T) *Inserter[T]{
 	return i
 }
 
-func NewInserter[T any](db *DB) *Inserter[T]{
+func NewInserter[T any](sess Session) *Inserter[T]{
+	c := sess.getCore()
 	return &Inserter[T]{
 		builder: builder{
-			dialect: db.dialect,
+			dialect: c.dialect,
 		},
-		db: db,
+		core: c,
+		sess: sess,
 	}
 }
 
-type OnDuplicateKeyBuilder[T any] struct {
+type UpsertBuilder[T any] struct {
 	i *Inserter[T]
+	// where []Predicate
+	conflictColumns []string
 }
 
-func (o *OnDuplicateKeyBuilder[T]) Update(assigns...Assignable) *Inserter[T] {
-	o.i.onDuplicate = &OnDuplicateKey{
+func (o *UpsertBuilder[T]) ConflictColumns(cols ...string) *UpsertBuilder[T] {
+	o.conflictColumns = cols
+	return o
+}
+
+// func (o *UpsertBuilder[T]) Where(ps...Predicate) *UpsertBuilder[T] {
+// 	o.where = ps
+// 	return o
+// }
+
+func (o *UpsertBuilder[T]) Update(assigns...Assignable) *Inserter[T] {
+	o.i.onDuplicate = &Upsert{
+		conflictColumns: o.conflictColumns,
 		assigns: assigns,
 	}
 	return o.i
 }
 
-type OnDuplicateKey struct {
+// func (o *UpsertBuilder[T]) DoNothing(assigns...Assignable) *Inserter[T] {
+// 	o.i.onDuplicate = &Update{
+// 		doNothing: true,
+// 	}
+// 	return o.i
+// }
+
+type Upsert struct {
 	assigns []Assignable
+	conflictColumns []string
+	// doNothing bool
 }
 
 

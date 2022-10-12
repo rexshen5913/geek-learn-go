@@ -22,6 +22,7 @@ func NewUnsafeValue(val interface{}, meta *model.Model) Value {
 	}
 }
 
+
 func (u unsafeValue) SetColumns(rows *sql.Rows) error {
 	cs, err := rows.Columns()
 	if err != nil {
@@ -39,7 +40,7 @@ func (u unsafeValue) SetColumns(rows *sql.Rows) error {
 		}
 		ptr := unsafe.Pointer(uintptr(u.addr) + cm.Offset)
 		val := reflect.NewAt(cm.Type, ptr)
-		colValues[i] = val.Interface()
+		colValues[i]=val.Interface()
 	}
 	return rows.Scan(colValues...)
 }

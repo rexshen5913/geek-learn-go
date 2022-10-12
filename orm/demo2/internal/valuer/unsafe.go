@@ -2,9 +2,8 @@ package valuer
 
 import (
 	"database/sql"
-	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/demo/model"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/errs"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/model"
 	"reflect"
 	"unsafe"
 )
@@ -22,19 +21,6 @@ func NewUnsafeValue(t any, model *model.Model) Value {
 		model: model,
 		addr: addr,
 	}
-}
-
-func (u unsafeValue) Field(name string) (any, error) {
-	fdMeta, ok := u.model.FieldMap[name]
-	if !ok {
-		return 0, fmt.Errorf("invalid field %s", name)
-	}
-	ptr := unsafe.Pointer(uintptr(u.addr) + fdMeta.Offset)
-	if ptr == nil {
-		return 0, fmt.Errorf("invalid address of the field: %s", name)
-	}
-	val := reflect.NewAt(fdMeta.Type, ptr)
-	return val, nil
 }
 
 func (u unsafeValue) SetColumns(rows *sql.Rows) error {

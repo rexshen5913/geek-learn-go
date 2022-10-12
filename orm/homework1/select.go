@@ -10,21 +10,22 @@ import (
 
 // Selector 用于构造 SELECT 语句
 type Selector[T any] struct {
-	sb      strings.Builder
-	args    []any
-	table   string
-	where   []Predicate
-	having  []Predicate
-	model   *model.Model
-	db      *DB
+	sb strings.Builder
+	alias []string
+	args []any
+	table string
+	where []Predicate
+	having []Predicate
+	model *model.Model
+	db *DB
 	columns []Selectable
 	groupBy []Column
 	orderBy []OrderBy
-	offset  int
-	limit   int
+	offset int
+	limit int
 }
 
-func (s *Selector[T]) Select(cols ...Selectable) *Selector[T] {
+func (s *Selector[T]) Select(cols...Selectable) *Selector[T] {
 	s.columns = cols
 	return s
 }
@@ -37,7 +38,7 @@ func (s *Selector[T]) From(tbl string) *Selector[T] {
 
 func (s *Selector[T]) Build() (*Query, error) {
 	var (
-		t   T
+		t T
 		err error
 	)
 	s.model, err = s.db.r.Get(&t)
@@ -67,14 +68,49 @@ func (s *Selector[T]) Build() (*Query, error) {
 		}
 	}
 
-	panic("implement me")
+	if len(s.groupBy) > 0 {
+		s.sb.WriteString(" GROUP BY ")
+		for i, c := range s.groupBy {
+			if i > 0 {
+				s.sb.WriteByte(',')
+			}
+			if err = s.buildColumn(c.name, ""); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	if len(s.having) > 0 {
+		s.sb.WriteString(" HAVING ")
+		if err = s.buildPredicates(s.having); err != nil {
+			return nil, err
+		}
+	}
+
+	if len(s.orderBy) > 0 {
+		s.sb.WriteString(" ORDER BY ")
+		if err = s.buildOrderBy(); err != nil {
+			return nil, err
+		}
+	}
+
+	if s.limit > 0 {
+		s.sb.WriteString(" LIMIT ?")
+		s.addArgs(s.limit)
+	}
+
+	if s.offset > 0 {
+		s.sb.WriteString(" OFFSET ?")
+		s.addArgs(s.offset)
+	}
 
 	s.sb.WriteString(";")
 	return &Query{
-		SQL:  s.sb.String(),
+		SQL: s.sb.String(),
 		Args: s.args,
 	}, nil
 }
+
 
 func (s *Selector[T]) buildOrderBy() error {
 	for idx, ob := range s.orderBy {
@@ -159,7 +195,58 @@ func (s *Selector[T]) buildColumn(c string, alias string) error {
 }
 
 func (s *Selector[T]) buildExpression(e Expression) error {
-	panic("implement me")
+	if e == nil {
+		return nil
+	}
+	switch exp := e.(type) {
+	case Column:
+		// 永远不用别名
+		return s.buildColumn(exp.name, "")
+	case Aggregate:
+		return s.buildAggregate(exp, false)
+	case value:
+		s.sb.WriteByte('?')
+		s.addArgs(exp.val)
+	case RawExpr:
+		s.sb.WriteString(exp.raw)
+		if len(exp.args) != 0 {
+			s.addArgs(exp.args...)
+		}
+	case Predicate:
+		_, lp := exp.left.(Predicate)
+		if lp {
+			s.sb.WriteByte('(')
+		}
+		if err := s.buildExpression(exp.left); err != nil {
+			return err
+		}
+		if lp {
+			s.sb.WriteByte(')')
+		}
+
+		// 可能只有左边
+		if exp.op == "" {
+			return nil
+		}
+
+		s.sb.WriteByte(' ')
+		s.sb.WriteString(exp.op.String())
+		s.sb.WriteByte(' ')
+
+		_, rp := exp.right.(Predicate)
+		if rp {
+			s.sb.WriteByte('(')
+		}
+		if err := s.buildExpression(exp.right); err != nil {
+			return err
+		}
+		if rp {
+			s.sb.WriteByte(')')
+		}
+	default:
+		return errs.NewErrUnsupportedExpressionType(exp)
+	}
+	return nil
 }
 
 // Where 用于构造 WHERE 查询条件。如果 ps 长度为 0，那么不会构造 WHERE 部分
@@ -169,7 +256,7 @@ func (s *Selector[T]) Where(ps ...Predicate) *Selector[T] {
 }
 
 // GroupBy 设置 group by 子句
-func (s *Selector[T]) GroupBy(cols ...Column) *Selector[T] {
+func (s *Selector[T]) GroupBy(cols...Column) *Selector[T] {
 	s.groupBy = cols
 	return s
 }
@@ -189,7 +276,7 @@ func (s *Selector[T]) Limit(limit int) *Selector[T] {
 	return s
 }
 
-func (s *Selector[T]) OrderBy(orderBys ...OrderBy) *Selector[T] {
+func (s *Selector[T]) OrderBy(orderBys...OrderBy) *Selector[T] {
 	s.orderBy = orderBys
 	return s
 }
@@ -221,7 +308,7 @@ func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
 	return tp, err
 }
 
-func (s *Selector[T]) addArgs(args ...any) {
+func (s *Selector[T]) addArgs(args...any){
 	if s.args == nil {
 		s.args = make([]any, 0, 8)
 	}
@@ -266,14 +353,20 @@ type Selectable interface {
 }
 
 type OrderBy struct {
-	col   string
+	col string
 	order string
 }
 
 func Asc(col string) OrderBy {
-	panic("implement me")
+	return OrderBy{
+		col: col,
+		order: "ASC",
+	}
 }
 
 func Desc(col string) OrderBy {
-	panic("implement me")
+	return OrderBy{
+		col: col,
+		order: "DESC",
+	}
 }

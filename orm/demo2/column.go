@@ -1,24 +1,11 @@
 package orm
 
-// SELECT xxx
-// WHERE xxx
-// GROUP BY
-// ORDER BY
 type Column struct {
 	name string
 }
 
+
 func (c Column) selectable() {}
-// 这种就是 GORM 的路
-// func (c Column) selectable(s *builder) error {
-// 	fd, ok := s.model.FieldMap[c.name]
-// 	if !ok {
-// 		return errs.NewErrUnknownField(c.name)
-// 	}
-// 	s.sb.WriteByte('`')
-// 	s.sb.WriteString(fd.ColName)
-// 	s.sb.WriteByte('`')
-// }
 
 func (c Column) assign() {}
 

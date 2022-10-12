@@ -1,6 +1,5 @@
 package orm
 
-
 type Aggregate struct {
 	fn    string
 	arg   string

@@ -9,7 +9,7 @@ import (
 
 // reflectValue 基于反射的 Value
 type reflectValue struct {
-	val  reflect.Value
+	val reflect.Value
 	meta *model.Model
 }
 
@@ -19,7 +19,7 @@ var _ Creator = NewReflectValue
 // 输入 val 必须是一个指向结构体实例的指针，而不能是任何其它类型
 func NewReflectValue(val interface{}, meta *model.Model) Value {
 	return reflectValue{
-		val:  reflect.ValueOf(val).Elem(),
+		val: reflect.ValueOf(val).Elem(),
 		meta: meta,
 	}
 }

@@ -9,8 +9,8 @@ import (
 type DBOption func(*DB)
 
 type DB struct {
-	r          model.Registry
-	db         *sql.DB
+	r  model.Registry
+	db *sql.DB
 	valCreator valuer.Creator
 }
 
@@ -22,10 +22,10 @@ func Open(driver string, dsn string, opts ...DBOption) (*DB, error) {
 	return OpenDB(db, opts...)
 }
 
-func OpenDB(db *sql.DB, opts ...DBOption) (*DB, error) {
+func OpenDB(db *sql.DB, opts...DBOption) (*DB, error) {
 	res := &DB{
-		r:          model.NewRegistry(),
-		db:         db,
+		r:  model.NewRegistry(),
+		db: db,
 		valCreator: valuer.NewUnsafeValue,
 	}
 	for _, opt := range opts {
@@ -55,3 +55,4 @@ func MustNewDB(driver string, dsn string, opts ...DBOption) *DB {
 	}
 	return db
 }
+

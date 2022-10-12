@@ -35,8 +35,8 @@ func TestSelector_OrderBy(t *testing.T) {
 			},
 		},
 		{
-			name:    "invalid column",
-			q:       NewSelector[TestModel](db).OrderBy(Asc("Invalid")),
+			name: "invalid column",
+			q:    NewSelector[TestModel](db).OrderBy(Asc("Invalid")),
 			wantErr: errs.NewErrUnknownField("Invalid"),
 		},
 	}
@@ -65,7 +65,7 @@ func TestSelector_OffsetLimit(t *testing.T) {
 			name: "offset only",
 			q:    NewSelector[TestModel](db).Offset(10),
 			wantQuery: &Query{
-				SQL:  "SELECT * FROM `test_model` OFFSET ?;",
+				SQL: "SELECT * FROM `test_model` OFFSET ?;",
 				Args: []any{10},
 			},
 		},
@@ -73,7 +73,7 @@ func TestSelector_OffsetLimit(t *testing.T) {
 			name: "limit only",
 			q:    NewSelector[TestModel](db).Limit(10),
 			wantQuery: &Query{
-				SQL:  "SELECT * FROM `test_model` LIMIT ?;",
+				SQL: "SELECT * FROM `test_model` LIMIT ?;",
 				Args: []any{10},
 			},
 		},
@@ -81,7 +81,7 @@ func TestSelector_OffsetLimit(t *testing.T) {
 			name: "limit offset",
 			q:    NewSelector[TestModel](db).Limit(20).Offset(10),
 			wantQuery: &Query{
-				SQL:  "SELECT * FROM `test_model` LIMIT ? OFFSET ?;",
+				SQL: "SELECT * FROM `test_model` LIMIT ? OFFSET ?;",
 				Args: []any{20, 10},
 			},
 		},
@@ -118,30 +118,30 @@ func TestSelector_Having(t *testing.T) {
 		{
 			// 单个条件
 			name: "single",
-			q: NewSelector[TestModel](db).GroupBy(C("Age")).
+			q:    NewSelector[TestModel](db).GroupBy(C("Age")).
 				Having(C("FirstName").EQ("Deng")),
 			wantQuery: &Query{
-				SQL:  "SELECT * FROM `test_model` GROUP BY `age` HAVING `first_name` = ?;",
+				SQL: "SELECT * FROM `test_model` GROUP BY `age` HAVING `first_name` = ?;",
 				Args: []any{"Deng"},
 			},
 		},
 		{
 			// 多个条件
 			name: "multiple",
-			q: NewSelector[TestModel](db).GroupBy(C("Age")).
+			q:    NewSelector[TestModel](db).GroupBy(C("Age")).
 				Having(C("FirstName").EQ("Deng"), C("LastName").EQ("Ming")),
 			wantQuery: &Query{
-				SQL:  "SELECT * FROM `test_model` GROUP BY `age` HAVING (`first_name` = ?) AND (`last_name` = ?);",
+				SQL: "SELECT * FROM `test_model` GROUP BY `age` HAVING (`first_name` = ?) AND (`last_name` = ?);",
 				Args: []any{"Deng", "Ming"},
 			},
 		},
 		{
 			// 聚合函数
 			name: "avg",
-			q: NewSelector[TestModel](db).GroupBy(C("Age")).
+			q:    NewSelector[TestModel](db).GroupBy(C("Age")).
 				Having(Avg("Age").EQ(18)),
 			wantQuery: &Query{
-				SQL:  "SELECT * FROM `test_model` GROUP BY `age` HAVING AVG(`age`) = ?;",
+				SQL: "SELECT * FROM `test_model` GROUP BY `age` HAVING AVG(`age`) = ?;",
 				Args: []any{18},
 			},
 		},
@@ -192,8 +192,8 @@ func TestSelector_GroupBy(t *testing.T) {
 		},
 		{
 			// 不存在
-			name:    "invalid column",
-			q:       NewSelector[TestModel](db).GroupBy(C("Invalid")),
+			name: "invalid column",
+			q:    NewSelector[TestModel](db).GroupBy(C("Invalid")),
 			wantErr: errs.NewErrUnknownField("Invalid"),
 		},
 	}
@@ -226,8 +226,8 @@ func TestSelector_Select(t *testing.T) {
 			},
 		},
 		{
-			name:    "invalid column",
-			q:       NewSelector[TestModel](db).Select(Avg("Invalid")),
+			name: "invalid column",
+			q:    NewSelector[TestModel](db).Select(Avg("Invalid")),
 			wantErr: errs.NewErrUnknownField("Invalid"),
 		},
 		{
@@ -254,7 +254,7 @@ func TestSelector_Select(t *testing.T) {
 		// 别名
 		{
 			name: "alias",
-			q: NewSelector[TestModel](db).
+			q:    NewSelector[TestModel](db).
 				Select(C("Id").As("my_id"),
 					Avg("Age").As("avg_age")),
 			wantQuery: &Query{
@@ -264,10 +264,10 @@ func TestSelector_Select(t *testing.T) {
 		// WHERE 忽略别名
 		{
 			name: "where ignore alias",
-			q: NewSelector[TestModel](db).
+			q:    NewSelector[TestModel](db).
 				Where(C("Id").As("my_id").LT(100)),
 			wantQuery: &Query{
-				SQL:  "SELECT * FROM `test_model` WHERE `id` < ?;",
+				SQL: "SELECT * FROM `test_model` WHERE `id` < ?;",
 				Args: []any{100},
 			},
 		},
@@ -327,7 +327,7 @@ func TestSelector_Build(t *testing.T) {
 		{
 			// 单一简单条件
 			name: "single and simple predicate",
-			q: NewSelector[TestModel](db).From("`test_model_t`").
+			q:    NewSelector[TestModel](db).From("`test_model_t`").
 				Where(C("Id").EQ(1)),
 			wantQuery: &Query{
 				SQL:  "SELECT * FROM `test_model_t` WHERE `id` = ?;",
@@ -357,7 +357,7 @@ func TestSelector_Build(t *testing.T) {
 		{
 			// 使用 OR
 			name: "or",
-			q: NewSelector[TestModel](db).
+			q:    NewSelector[TestModel](db).
 				Where(C("Age").GT(18).Or(C("Age").LT(35))),
 			wantQuery: &Query{
 				SQL:  "SELECT * FROM `test_model` WHERE (`age` > ?) OR (`age` < ?);",
@@ -376,14 +376,14 @@ func TestSelector_Build(t *testing.T) {
 		},
 		{
 			// 非法列
-			name:    "invalid column",
-			q:       NewSelector[TestModel](db).Where(Not(C("Invalid").GT(18))),
+			name: "invalid column",
+			q:    NewSelector[TestModel](db).Where(Not(C("Invalid").GT(18))),
 			wantErr: errs.NewErrUnknownField("Invalid"),
 		},
 		{
 			// 使用 RawExpr
 			name: "raw expression",
-			q: NewSelector[TestModel](db).
+			q:    NewSelector[TestModel](db).
 				Where(Raw("`age` < ?", 18).AsPredicate()),
 			wantQuery: &Query{
 				SQL:  "SELECT * FROM `test_model` WHERE `age` < ?;",
@@ -505,7 +505,7 @@ func BenchmarkQuerier_Get(b *testing.B) {
 		b.Fatal(err)
 	}
 
-	res, err := db.db.Exec("INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`)"+
+	res, err := db.db.Exec("INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`)" +
 		"VALUES (?,?,?,?)", 12, "Deng", 18, "Ming")
 
 	if err != nil {
@@ -539,3 +539,4 @@ func BenchmarkQuerier_Get(b *testing.B) {
 		}
 	})
 }
+

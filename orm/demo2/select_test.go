@@ -3,7 +3,7 @@ package orm
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/errs"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -262,67 +262,4 @@ func TestSelector_Select(t *testing.T) {
 			assert.Equal(t, tc.wantQuery, query)
 		})
 	}
-}
-
-// func TestABC(t *testing.T) {
-// 	db := memoryDB(t)
-// 	tx, err := db.Begin(context.Background(), &sql.TxOptions{})
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	NewSelector[TestModel](db)
-
-	// dao := &UserDAO{
-	// 	sess: db.db,
-	// }
-	//
-	// txDao := &UserDAO{
-	// 	sess: tx.tx,
-	// }
-	//
-	// dao.Config.Name = "abc"
-// }
-
-type UserDAO struct {
-	sess interface{
-		QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
-		ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
-	}
-//
-// 	Config struct{
-// 		Name string
-// 	}
-}
-//
-//  dao.GetByID(context.WithValue("sess", db))
-//  dao.GetByID(context.WithValue("sess", tx))
-// func (dao *UserDAO) GetByID(ctx context.Context, id uint64) (*User, error){
-	// sess := ctx.Value("sess")
-	// if sess == nil {
-	// 	// 开事务
-	// 	// 报错
-	// } else {
-	// 	// 执行语句
-	// }
-	// // 处理结果集
-// }
-
-// func TestA(t *testing.T) {
-// 	ch := Chan{
-// 		// bizChan: ///
-// 		testChan:
-// 	}
-//
-// 	data <- ch.testChan
-// 	// 验证 data
-// }
-
-type Chan struct {
-	bizChan chan struct{}
-	testChan chan struct{}
-}
-
-func (c Chan) Put(data struct{}) {
-	c.bizChan <- data
-	c.testChan <- data
 }

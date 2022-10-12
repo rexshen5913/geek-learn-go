@@ -2,22 +2,20 @@ package orm
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/errs"
 )
 
 // Selector 用于构造 SELECT 语句
 type Selector[T any] struct {
 	builder
-	core
 	table string
 	where []Predicate
-	// db *DB
-	sess Session
+	db *DB
+
 	columns []Selectable
 }
 
 type Selectable interface {
-	// selectable(b *builder) error
 	selectable()
 }
 
@@ -34,13 +32,13 @@ func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
 		return nil, err
 	}
 
-	rows, err := s.sess.queryContext(ctx, q.SQL, q.Args...)
+	rows, err := s.db.db.QueryContext(ctx, q.SQL, q.Args...)
 	if err != nil {
 		return nil, err
 	}
 
 	t := new(T)
-	val := s.valCreator(t, s.model)
+	val := s.db.valCreator(t, s.model)
 	// 在这里灵活切换反射或者 unsafe
 
 	return t, val.SetColumns(rows)
@@ -69,7 +67,7 @@ func (s *Selector[T]) From(tbl string) *Selector[T] {
 func (s *Selector[T]) Build() (*Query, error) {
 	t := new(T)
 	var err error
-	s.model, err = s.r.Get(t)
+	s.model, err = s.db.r.Get(t)
 	if err != nil {
 		return nil, err
 	}
@@ -203,14 +201,8 @@ func (s *Selector[T]) Where(ps ...Predicate) *Selector[T] {
 // 	s.args = append(s.args, args...)
 // }
 
-// 可以同时用在 DB 和 Tx 上，我就需要为它们提供一个统一的抽象
-func NewSelector[T any](sess Session) *Selector[T] {
+func NewSelector[T any](db *DB) *Selector[T] {
 	return &Selector[T]{
-		sess: sess,
-		core: sess.getCore(),
+		db: db,
 	}
 }
-
-// func NewSelector[T any](tx *sql.Tx) *Selector[T] {
-//
-// }
