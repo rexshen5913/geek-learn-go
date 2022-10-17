@@ -2,7 +2,7 @@ package orm
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/errs"
 )
 
 // Selector 用于构造 SELECT 语句
@@ -21,75 +21,30 @@ type Selectable interface {
 	selectable()
 }
 
+
 // s.Select("id", "age")
 func (s *Selector[T]) Select(cols...Selectable) *Selector[T] {
 	s.columns = cols
 	return s
 }
 
-func (s *Selector[T]) Use(ms...Middleware) *Selector[T] {
-	s.ms = ms
-	return s
-}
-
 // 万一我的 T 是基础类型
 func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
-	var root Handler = func(ctx context.Context, qc *QueryContext) *QueryResult {
-		q, err := qc.Builder.Build()
-		if err != nil {
-			return &QueryResult{
-				Err: err,
-			}
-		}
-
-		rows, err := s.sess.queryContext(ctx, q.SQL, q.Args...)
-		if err != nil {
-			return &QueryResult{
-				Err: err,
-			}
-		}
-
-		t := new(T)
-		val := s.valCreator(t, s.model)
-		// 在这里灵活切换反射或者 unsafe
-		err = val.SetColumns(rows)
-		return &QueryResult{
-			Result: t,
-			Err: err,
-		}
-	}
-	for i := len(s.ms) - 1; i >= 0 ; i-- {
-		root = s.ms[i](root)
+	q, err := s.Build()
+	if err != nil {
+		return nil, err
 	}
 
-	m := s.model
-	if m == nil {
-		var err error
-		m, err = s.r.Get(new(T))
-		if err != nil {
-			return nil, err
-		}
+	rows, err := s.sess.queryContext(ctx, q.SQL, q.Args...)
+	if err != nil {
+		return nil, err
 	}
-	res := root(ctx, &QueryContext{
-		Type: "SELECT",
-		Model: m,
-		Builder: s,
-		TableName: s.table,
-		DBName: s.dbName,
-	})
 
-	if res.Result != nil {
-		return res.Result.(*T), res.Err
-	}
-	return nil, res.Err
-	// if res.Err != nil {
-	// 	return nil, res.Err
-	// }
-	// t, ok := res.Result.(*T)
-	// if ok {
-	// 	return t, nil
-	// }
-	// return nil, errors.New("orm: 非正确类型")
+	t := new(T)
+	val := s.valCreator(t, s.model)
+	// 在这里灵活切换反射或者 unsafe
+
+	return t, val.SetColumns(rows)
 }
 
 func (s *Selector[T]) GetMulti(ctx context.Context) ([]*T, error) {

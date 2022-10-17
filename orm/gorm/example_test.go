@@ -66,12 +66,15 @@ func TestCRUD(t *testing.T) {
 	if err != nil {
 		panic("failed to connect database")
 	}
+	// 打印 SQL，但不执行
+	db.DryRun = true
 
 	// Migrate the schema
 	db.AutoMigrate(&Product{})
 
 	// Create
 	db.Create(&Product{Code: "D42", Price: 100})
+
 
 	// Read
 	var product Product

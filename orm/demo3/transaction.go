@@ -3,8 +3,8 @@ package orm
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/valuer"
-	"gitee.com/geektime-geekbang/geektime-go/demo/model"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/valuer"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/model"
 )
 
 // tx := db.Begin(ctx, ...)
@@ -49,9 +49,7 @@ type Session interface {
 }
 
 type core struct {
-	dbName string
 	r model.Registry
 	valCreator valuer.Creator
 	dialect Dialect
-	ms []Middleware
 }

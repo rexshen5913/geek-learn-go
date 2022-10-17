@@ -1,10 +1,10 @@
 package model
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo3"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -18,7 +18,7 @@ func Test_parseModel(t *testing.T) {
 	}{
 		{
 			name: "ptr",
-			input: &TestModel{},
+			input: &orm.TestModel{},
 			want: &Model{
 				TableName: "test_model",
 				FieldMap: map[string]*Field{
@@ -39,7 +39,7 @@ func Test_parseModel(t *testing.T) {
 		},
 		{
 			name:    "struct",
-			input:   TestModel{},
+			input:   orm.TestModel{},
 			wantErr: errs.ErrPointerOnly,
 		},
 		{
@@ -54,7 +54,7 @@ func Test_parseModel(t *testing.T) {
 		},
 		{
 			name: "nil with type",
-			input: (*TestModel)(nil),
+			input: (*orm.TestModel)(nil),
 			want: &Model{
 				TableName: "test_model",
 				FieldMap: map[string]*Field{
@@ -110,24 +110,17 @@ func Test_parseModel(t *testing.T) {
 
 func TestSwitch(t *testing.T) {
 	Switch(nil)
-	Switch((*TestModel)(nil))
+	Switch((*orm.TestModel)(nil))
 }
 
 func Switch(val any) {
 	switch v := val.(type) {
 	case nil:
 		fmt.Println("hello, nil")
-	case *TestModel:
+	case *orm.TestModel:
 		fmt.Printf("hello, test Model %v \n", v)
 		if v == nil {
 			fmt.Printf("hello, test Model nil %v \n", v)
 		}
 	}
-}
-
-type TestModel struct {
-	Id        int64
-	FirstName string
-	Age       int8
-	LastName  *sql.NullString
 }

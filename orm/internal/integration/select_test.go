@@ -16,6 +16,7 @@ type SelectTestSuite struct {
 	Suite
 }
 
+
 func (s *SelectTestSuite) SetupSuite() {
 	s.Suite.SetupSuite()
 	res := orm.NewInserter[test.SimpleStruct](s.db).

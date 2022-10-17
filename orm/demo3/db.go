@@ -3,8 +3,8 @@ package orm
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/valuer"
-	"gitee.com/geektime-geekbang/geektime-go/demo/model"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/valuer"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/model"
 	"go.uber.org/multierr"
 )
 
@@ -81,18 +81,6 @@ func OpenDB(db *sql.DB, opts...DBOption) (*DB, error) {
 	return res, nil
 }
 
-func DBName(name string) DBOption {
-	return func(db *DB) {
-		db.dbName = name
-	}
-}
-
-func DBWithMiddlewares(ms...Middleware) DBOption {
-	return func(db *DB) {
-		db.ms = ms
-	}
-}
-
 func DBUseReflectValuer() DBOption {
 	return func(db *DB) {
 		db.valCreator = valuer.NewReflectValue
@@ -130,11 +118,4 @@ func  (db *DB) queryContext(ctx context.Context, query string, args ...any) (*sq
 
 func  (db *DB) execContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	return db.db.ExecContext(ctx, query, args...)
-}
-
-// Wait 用于测试等待容器启动成功
-func (db *DB) Wait() {
-	for db.db.PingContext(context.Background()) != nil {
-
-	}
 }

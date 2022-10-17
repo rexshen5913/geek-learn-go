@@ -2,8 +2,8 @@ package valuer
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
-	orm "gitee.com/geektime-geekbang/geektime-go/demo/model"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/errs"
+	orm "gitee.com/geektime-geekbang/geektime-go/orm/demo3/model"
 	"reflect"
 )
 
@@ -32,7 +32,7 @@ func (u reflectValue) Field(name string) (any, error) {
 	// 	return nil, errs.NewErrUnknownField(name)
 	// }
 
-	return val.FieldByName(name).Interface(), nil
+	return val.FieldByName(name), nil
 }
 
 func (u reflectValue) SetColumns(rows *sql.Rows) error {

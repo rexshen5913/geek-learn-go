@@ -3,8 +3,8 @@ package valuer
 import (
 	"database/sql"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/demo/model"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/errs"
+	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/model"
 	"reflect"
 	"unsafe"
 )
@@ -34,7 +34,7 @@ func (u unsafeValue) Field(name string) (any, error) {
 		return 0, fmt.Errorf("invalid address of the field: %s", name)
 	}
 	val := reflect.NewAt(fdMeta.Type, ptr)
-	return val.Elem().Interface(), nil
+	return val, nil
 }
 
 func (u unsafeValue) SetColumns(rows *sql.Rows) error {
