@@ -55,3 +55,7 @@ type core struct {
 	dialect Dialect
 	ms []Middleware
 }
+
+func (c core) get(t any) *QueryResult {
+	panic("implement me")
+}

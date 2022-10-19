@@ -57,14 +57,15 @@ func (u *Updater[T]) Build() (*Query, error) {
 		}
 		switch assign := a.(type) {
 		case Column:
-			if err = u.buildColumn(assign.name); err != nil {
-				return nil, err
-			}
-			u.sb.WriteString("=?")
 			arg, err := val.Field(assign.name)
 			if err != nil {
 				return nil, err
 			}
+			if err = u.buildColumn(assign.name); err != nil {
+				return nil, err
+			}
+			u.sb.WriteString("=?")
+
 			u.addArgs(arg)
 		case Assignment:
 			if err = u.buildAssignment(assign); err != nil {

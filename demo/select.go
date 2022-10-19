@@ -2,6 +2,7 @@ package orm
 
 import (
 	"context"
+	"errors"
 	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
 )
 
@@ -9,7 +10,7 @@ import (
 type Selector[T any] struct {
 	builder
 	core
-	table string
+	table TableReference
 	where []Predicate
 	// db *DB
 	sess Session
@@ -34,50 +35,18 @@ func (s *Selector[T]) Use(ms...Middleware) *Selector[T] {
 
 // 万一我的 T 是基础类型
 func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
-	var root Handler = func(ctx context.Context, qc *QueryContext) *QueryResult {
-		q, err := qc.Builder.Build()
-		if err != nil {
-			return &QueryResult{
-				Err: err,
-			}
-		}
 
-		rows, err := s.sess.queryContext(ctx, q.SQL, q.Args...)
-		if err != nil {
-			return &QueryResult{
-				Err: err,
-			}
-		}
-
-		t := new(T)
-		val := s.valCreator(t, s.model)
-		// 在这里灵活切换反射或者 unsafe
-		err = val.SetColumns(rows)
-		return &QueryResult{
-			Result: t,
-			Err: err,
-		}
+	model, err := s.r.Get(new(T))
+	if err != nil {
+		return nil, err
 	}
-	for i := len(s.ms) - 1; i >= 0 ; i-- {
-		root = s.ms[i](root)
-	}
-
-	m := s.model
-	if m == nil {
-		var err error
-		m, err = s.r.Get(new(T))
-		if err != nil {
-			return nil, err
-		}
-	}
-	res := root(ctx, &QueryContext{
+	res := get[T](ctx, s.core, s.sess, &QueryContext{
 		Type: "SELECT",
-		Model: m,
+		Model: model,
 		Builder: s,
-		TableName: s.table,
+		// TableName: s.table,
 		DBName: s.dbName,
 	})
-
 	if res.Result != nil {
 		return res.Result.(*T), res.Err
 	}
@@ -107,7 +76,7 @@ func (s *Selector[T]) GetMulti(ctx context.Context) ([]*T, error) {
 }
 
 // From 指定表名，如果是空字符串，那么将会使用默认表名
-func (s *Selector[T]) From(tbl string) *Selector[T] {
+func (s *Selector[T]) From(tbl TableReference) *Selector[T] {
 	s.table = tbl
 	return s
 }
@@ -129,13 +98,11 @@ func (s *Selector[T]) Build() (*Query, error) {
 			}
 			switch col := c.(type) {
 			case Column:
-				fd, ok := s.model.FieldMap[col.name]
-				if !ok {
-					return nil, errs.NewErrUnknownField(col.name)
+				// 要考虑子查询和 JOIN 查询
+				err := s.buildColumn(Column{}, false)
+				if err != nil {
+					return nil, err
 				}
-				s.sb.WriteByte('`')
-				s.sb.WriteString(fd.ColName)
-				s.sb.WriteByte('`')
 			case Aggregate:
 				s.sb.WriteString(col.fn)
 				s.sb.WriteByte('(')
@@ -156,13 +123,7 @@ func (s *Selector[T]) Build() (*Query, error) {
 		}
 	}
 	s.sb.WriteString(" FROM ")
-	if s.table == "" {
-		s.sb.WriteByte('`')
-		s.sb.WriteString(s.model.TableName)
-		s.sb.WriteByte('`')
-	} else {
-		s.sb.WriteString(s.table)
-	}
+
 
 	// 构造 WHERE
 	if len(s.where) > 0 {
@@ -178,10 +139,111 @@ func (s *Selector[T]) Build() (*Query, error) {
 	}
 	s.sb.WriteString(";")
 	return &Query{
-		SQL: s.sb.String(),
+		SQL:  s.sb.String(),
 		Args: s.args,
 	}, nil
 }
+
+func (s *Selector[T]) buildTable(t TableReference) error {
+	switch tbl := t.(type) {
+	case nil:
+		s.sb.WriteByte('`')
+		s.sb.WriteString(s.model.TableName)
+		s.sb.WriteByte('`')
+	case Table:
+		m, err := s.r.Get(tbl.entity)
+		if err != nil {
+			return err
+		}
+		s.sb.WriteByte('`')
+		s.sb.WriteString(m.TableName)
+		s.sb.WriteByte('`')
+	case Join:
+		s.sb.WriteByte('(')
+		// 左边一张表，右边一张表
+		err := s.buildTable(tbl.left)
+		if err != nil {
+			return err
+		}
+		s.sb.WriteByte(' ')
+		s.sb.WriteString(tbl.typ)
+		s.sb.WriteByte(' ')
+		err = s.buildTable(tbl.right)
+		if err != nil {
+			return err
+		}
+
+		if len(tbl.on) >0 {
+			s.sb.WriteString(" ON ")
+			p := tbl.on[0]
+			for i := 1; i < len(tbl.on); i++ {
+				p = p.And(tbl.on[i])
+			}
+			if err := s.buildExpression(p); err != nil {
+				return err
+			}
+		}
+		if len(tbl.using) >0 {
+			s.sb.WriteString(" USING (")
+			for i, col := range tbl.using {
+				if i > 0 {
+					s.sb.WriteByte(',')
+				}
+				err := s.buildColumn(Column{name: col}, false)
+				if err != nil {
+					return err
+				}
+			}
+			s.sb.WriteString(")")
+		}
+		s.sb.WriteByte(')')
+	}
+	return nil
+}
+
+func (s *Selector[T]) buildColumn(c Column, useAlias bool) error {
+	colName, err := s.colName(s.table, c.name)
+	if err != nil {
+		return err
+	}
+	s.quote(colName)
+	if useAlias {
+		s.sb.WriteString(" AS ")
+		s.quote(c.alias)
+	}
+	return nil
+}
+
+func (s *Selector[T]) colName(t TableReference, fd string) (string, error) {
+	switch tbl := t.(type) {
+	case nil:
+		// 用户没有调用 FROM 方法
+		meta ,ok := s.model.FieldMap[fd]
+		if !ok {
+			return "", errs.NewErrUnknownField(fd)
+		}
+		return meta.ColName, nil
+	case Table:
+		m, err := s.r.Get(tbl.entity)
+		if err != nil {
+			return "", err
+		}
+		meta ,ok := m.FieldMap[fd]
+		if !ok {
+			return "", errs.NewErrUnknownField(fd)
+		}
+		return meta.ColName, nil
+	case Join:
+		colName, err := s.colName(tbl.left, fd)
+		if err == nil {
+			return colName, nil
+		}
+		return s.colName(tbl.right, fd)
+	default:
+		return "", errors.New("错误的表")
+	}
+}
+
 
 func (s *Selector[T]) buildExpression(e Expression) error {
 	if e == nil {

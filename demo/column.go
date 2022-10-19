@@ -6,6 +6,7 @@ package orm
 // ORDER BY
 type Column struct {
 	name string
+	alias string
 }
 
 func (c Column) selectable() {}

@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 package orm
 
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/valuer"
-	"gitee.com/geektime-geekbang/geektime-go/orm/model"
+	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/internal/valuer"
+	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/model"
 )
 
 type core struct {
@@ -26,14 +27,13 @@ type core struct {
 	dialect  Dialect
 	valCreator valuer.Creator
 	ms []Middleware
-	model *model.Model
 }
 
 func getHandler[T any] (ctx context.Context,
-	sess Session,
+	sess session,
 	c core,
 	qc *QueryContext) *QueryResult {
-	q, err := qc.Query()
+	q, err := qc.Builder.Build()
 	if err != nil {
 		return &QueryResult{
 			Err: err,
@@ -67,7 +67,7 @@ func getHandler[T any] (ctx context.Context,
 	}
 }
 
-func get[T any](ctx context.Context, c core, sess Session, qc *QueryContext) *QueryResult {
+func get[T any](ctx context.Context, c core, sess session, qc *QueryContext) *QueryResult {
 	var handler HandleFunc = func(ctx context.Context, qc *QueryContext) *QueryResult {
 		return getHandler[T](ctx, sess, c, qc)
 	}
@@ -77,19 +77,15 @@ func get[T any](ctx context.Context, c core, sess Session, qc *QueryContext) *Qu
 	}
 	return handler(ctx, qc)
 }
-// func getMulti[T any](ctx context.Context, c core, sess Session, qc *QueryContext) *QueryResult {
-//
-// }
 
-func exec(ctx context.Context, sess Session, c core, qc *QueryContext) Result {
+func exec(ctx context.Context, sess session, c core, qc *QueryContext) Result {
 	var handler HandleFunc = func(ctx context.Context, qc *QueryContext) *QueryResult {
-		q, err := qc.Query()
+		q, err := qc.Builder.Build()
 		if err != nil {
 			return &QueryResult{
 				Err: err,
 			}
 		}
-
 		res, err := sess.execContext(ctx, q.SQL, q.Args...)
 		return &QueryResult{Err: err, Result: res}
 	}
