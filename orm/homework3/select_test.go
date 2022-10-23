@@ -20,7 +20,7 @@ func TestSelector_Join(t *testing.T) {
 		Id int
 		UsingCol1 string
 		UsingCol2 string
-	}
+	} 
 
 	type OrderDetail struct {
 		OrderId int

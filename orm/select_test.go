@@ -97,7 +97,8 @@ func TestSelector_Join(t *testing.T) {
 				t3 := TableOf(&Item{}).As("t3")
 				return NewSelector[Order](db).
 					From(t1.RightJoin(t2).
-						On(t1.C("Id").EQ(t2.C("OrderId"))).
+					On(t1.C("Id").EQ(t2.C("OrderId"))).
+						// On(t1.C("Id").EQ(t2.C("OrderId"))).
 					RightJoin(t3).On(t2.C("ItemId").EQ(t3.C("Id"))))
 			}(),
 			wantQuery: &Query{
