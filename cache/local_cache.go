@@ -75,6 +75,7 @@ func (b *BuildinMapCache) Get(ctx context.Context, key string) (any, error) {
 		}
 		if val.deadlineBefore(now) {
 			b.delete(key)
+			// 要注意，这里可以返回 errKeyNotFound
 			return nil, errKeyExpired
 		}
 	}
@@ -170,7 +171,7 @@ func (b *BuildinMapCache) LoadAndDelete(ctx context.Context, key string) (any, e
 	if !ok {
 		return nil, errKeyNotFound
 	}
-	delete(b.data, key)
+	b.delete(key)
 	return itm.val, nil
 }
 

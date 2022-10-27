@@ -26,6 +26,8 @@ type Cache interface {
 	// Set(ctx context.Context, key string, val any) AnyValue
 	Delete(ctx context.Context, key string) error
 
+	// OnEvicted(func(key string, val any))
+
 	// Incr(ctx context.Context, key string, delta int64) error
 	// IncrFloat(ctx context.Context, key string, delta float64) error
 }

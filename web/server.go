@@ -81,6 +81,12 @@ func (s *HTTPServer) ServeHTTP(writer http.ResponseWriter, request *http.Request
 		Resp:      writer,
 		tplEngine: s.tplEngine,
 	}
+
+	// ctx pool.Get()
+	// defer func(){
+	//     ctx.Reset()
+	//     pool.Put(ctx)
+	// }
 	s.serve(ctx)
 }
 

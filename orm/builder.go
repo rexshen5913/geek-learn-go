@@ -8,6 +8,7 @@ import (
 type builder struct {
 	core
 	sb strings.Builder
+	// sb bytebufferpool.ByteBuffer
 	args []any
 	dialect Dialect
 	quoter byte
