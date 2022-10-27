@@ -13,4 +13,12 @@ type Cache interface {
 	Delete(ctx context.Context, key string) error
 
 	LoadAndDelete(ctx context.Context, key string) (any, error)
+
+	// 作业在这里
+	// OnEvicted(ctx context.Context) <- chan KV
 }
+
+// type KV struct {
+// 	Key string
+// 	Val any
+// }
