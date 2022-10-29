@@ -14,7 +14,7 @@ func ExampleCacheV2() {
 }
 
 type User struct {
-
+	Name string
 }
 
 type Order struct {

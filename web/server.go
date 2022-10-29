@@ -1,7 +1,6 @@
 package web
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -30,6 +29,7 @@ type ServerOption func(server *HTTPServer)
 type HTTPServer struct {
 	router
 	tplEngine TemplateEngine
+	log Logger
 }
 
 func NewHTTPServer(opts ...ServerOption) *HTTPServer {
@@ -141,6 +141,16 @@ func (s *HTTPServer) flashResp(ctx *Context) {
 	ctx.Resp.Header().Set("Content-Length", strconv.Itoa(len(ctx.RespData)))
 	_, err := ctx.Resp.Write(ctx.RespData)
 	if err != nil {
-		log.Fatalln("回写响应失败", err)
+		// s.log.Fatalln("回写响应失败", err)
+		defaultLogger.Fatalln("回写响应失败", err)
 	}
+}
+
+var defaultLogger Logger
+
+func SetDefaultLogger(log Logger) {
+	defaultLogger=log
+}
+type Logger interface {
+	Fatalln(msg string, args...any)
 }

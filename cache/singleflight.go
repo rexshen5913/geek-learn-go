@@ -48,6 +48,11 @@ func NewSingleflightCacheV1(cache Cache,
 		ReadThroughCache: ReadThroughCache{
 			Cache: cache,
 			LoadFunc: func(ctx context.Context, key string) (any, error) {
+				defer func() {
+					g.Forget(key)
+				}()
+				// 多个 goroutine 进来这里
+				// 只有一个 goroutine 会真的去执行
 				val, err, _ := g.Do(key, func() (interface{}, error) {
 					return loadFunc(ctx, key)
 				})
@@ -79,6 +84,9 @@ func NewSingleflightCacheV2(cache Cache,
 func (s *SingleflightCacheV2) Get(ctx context.Context, key string) (any, error) {
 	val, err := s.Cache.Get(ctx, key)
 	if err == KeyNotFound {
+		defer func() {
+			s.group.Forget(key)
+		}()
 		val, err, _ = s.group.Do(key, func() (interface{}, error) {
 			v, er := s.LoadFunc(ctx, key)
 			if er == nil {
@@ -100,6 +108,7 @@ type BloomFilterCache struct {
 	ReadThroughCache
 	bf BloomFilter
 }
+
 func NewBloomFilterCache(cache Cache,
 	bf BloomFilter,
 	loadFunc func(ctx context.Context, key string)(any, error)) Cache {

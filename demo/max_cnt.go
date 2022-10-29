@@ -3,11 +3,13 @@ package demo
 import (
 	"context"
 	"errors"
+	"sync"
 	"sync/atomic"
 	"time"
 )
 
 type MaxCntCacheDecorator struct {
+	mutex sync.Mutex
 	MaxCnt int32
 	Cnt int32
 	Cache *LocalCache
@@ -23,12 +25,21 @@ func NewMaxCntCache(maxCnt int32) *MaxCntCacheDecorator {
 }
 
 func (c *MaxCntCacheDecorator)Set(ctx context.Context, key string, val any, expiration time.Duration) error{
-	// 判断有没有超过最大值
-	cnt := atomic.AddInt32(&c.Cnt, 1)
-	// 满了
-	if cnt > c.MaxCnt {
-		atomic.AddInt32(&c.Cnt, -1)
-		return errors.New("cache: 已经满了")
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	_, err := c.Cache.Get(ctx, key)
+	if err != nil && err != errKeyNotFound {
+		// 这个错误比较棘手
+		return err
+	}
+	if err == errKeyNotFound {
+		// 判断有没有超过最大值
+		cnt := atomic.AddInt32(&c.Cnt, 1)
+		// 满了
+		if cnt > c.MaxCnt {
+			atomic.AddInt32(&c.Cnt, -1)
+			return errors.New("cache: 已经满了")
+		}
 	}
 	return c.Cache.Set(ctx, key, val, expiration)
 }
