@@ -9,12 +9,13 @@ import (
 	"gitee.com/geektime-geekbang/geektime-go/orm/internal/valuer"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
+	"sync"
 	"testing"
 )
 
 func TestSelector_Join(t *testing.T) {
 	db := memoryDB(t)
-
+	sync.Cond{}
 	type Order struct {
 		Id int
 		UsingCol1 string
