@@ -27,6 +27,139 @@ func NewUserHandler(us service.UserService, sessMgr session.Manager) *UserHandle
 		sessMgr: sessMgr,
 	}
 }
+// vo => view object
+
+var (
+	service service.UserService
+	sessMgr session.Manager
+)
+
+func SetService(s service.UserService) {
+	service = s
+}
+
+// 强烈不建议
+// func init() {
+// 	service = service.NewUserService()
+// }
+
+func LoginV2(service service.UserService, sessMrg session.Manager, ctx *web.Context){
+
+}
+
+func LoginV1(service service.UserService, sessMrg session.Manager) web.HandleFunc {
+	return func(ctx *web.Context) {
+		req := loginReq{}
+		err := ctx.BindJSON(&req)
+		if err != nil {
+			zap.L().Error("handler: 解析 JSON 数据格式失败", zap.Error(err))
+			_ = ctx.RespJSON(http.StatusBadRequest, Resp{
+				Msg: "解析请求失败",
+			})
+			return
+		}
+		usr, err := service.Login(ctx.Req.Context(), entity.User{
+			Email: req.Email,
+			Password: req.Password,
+		})
+
+		if errors.Is(err, service.ErrInvalidUserOrPassword) {
+			zap.L().Error("登录失败", zap.Error(err))
+			_ = ctx.RespJSON(http.StatusBadRequest, Resp{
+				Msg: "账号或用户名输入错误",
+			})
+			return
+		}
+
+		if err != nil {
+			zap.L().Error("登录失败，系统异常", zap.Error(err))
+			_ = ctx.RespJSON(http.StatusInternalServerError, Resp{
+				Msg: "系统异常",
+			})
+			return
+		}
+		// 准备 session 了
+		// session id 我们使用 uuid 就好了
+		// 实际中你可以考虑将一些前端信息编码
+		sess, err := h.sessMgr.InitSession(ctx, uuid.New().String())
+		if err != nil {
+			zap.L().Error("登录失败，初始化 session 失败", zap.Error(err))
+			_ = ctx.RespJSON(http.StatusInternalServerError, Resp{
+				Msg: "系统异常",
+			})
+			return
+		}
+
+		err = sess.Set(ctx.Req.Context(), userIdKey, strconv.FormatUint(usr.Id, 10))
+		if err != nil {
+			zap.L().Error("登录失败，设置 session 失败", zap.Error(err))
+			_ = ctx.RespJSON(http.StatusInternalServerError, Resp{
+				Msg: "系统异常",
+			})
+			return
+		}
+
+		err = ctx.RespJSON(http.StatusOK, Resp{
+			Msg: "登录成功",
+		})
+	}
+}
+
+func Login(ctx *web.Context) {
+	req := loginReq{}
+	err := ctx.BindJSON(&req)
+	if err != nil {
+		zap.L().Error("handler: 解析 JSON 数据格式失败", zap.Error(err))
+		_ = ctx.RespJSON(http.StatusBadRequest, Resp{
+			Msg: "解析请求失败",
+		})
+		return
+	}
+	usr, err := service.Login(ctx.Req.Context(), entity.User{
+		Email: req.Email,
+		Password: req.Password,
+	})
+
+	if errors.Is(err, service.ErrInvalidUserOrPassword) {
+		zap.L().Error("登录失败", zap.Error(err))
+		_ = ctx.RespJSON(http.StatusBadRequest, Resp{
+			Msg: "账号或用户名输入错误",
+		})
+		return
+	}
+
+	if err != nil {
+		zap.L().Error("登录失败，系统异常", zap.Error(err))
+		_ = ctx.RespJSON(http.StatusInternalServerError, Resp{
+			Msg: "系统异常",
+		})
+		return
+	}
+	// 准备 session 了
+	// session id 我们使用 uuid 就好了
+	// 实际中你可以考虑将一些前端信息编码
+	sess, err := h.sessMgr.InitSession(ctx, uuid.New().String())
+	if err != nil {
+		zap.L().Error("登录失败，初始化 session 失败", zap.Error(err))
+		_ = ctx.RespJSON(http.StatusInternalServerError, Resp{
+			Msg: "系统异常",
+		})
+		return
+	}
+
+	err = sess.Set(ctx.Req.Context(), userIdKey, strconv.FormatUint(usr.Id, 10))
+	if err != nil {
+		zap.L().Error("登录失败，设置 session 失败", zap.Error(err))
+		_ = ctx.RespJSON(http.StatusInternalServerError, Resp{
+			Msg: "系统异常",
+		})
+		return
+	}
+
+	err = ctx.RespJSON(http.StatusOK, Resp{
+		Msg: "登录成功",
+	})
+}
 
 func (h *UserHandler) Login(ctx *web.Context) {
 	req := loginReq{}

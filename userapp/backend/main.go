@@ -51,10 +51,17 @@ func main() {
 	// 路由注册和 middleware 注册，可以抽取出来作为一个单独的方法，也可以将路由注册部分下沉到 handler 包
 	// 例如为 Handler 定义一个新的方法，该方法会注册所有的路由
 	// 我一般喜欢在一个集中的地方注册
+	// handler => controller MVC 模式
 	userHdl := handler.NewUserHandler(userSvr, sessMgr)
 	server := initSever()
 	server.Post("/signup", userHdl.SignUp)
 	server.Post("/login", userHdl.Login)
+
+	// handler.SetService(userSvr)
+	// server.Post("/login", handler.Login)
+
+	server.Post("/login", userHdl.LoginV1(userSvr, sessMgr))
+	// server.Post("/login", userHdl.LoginV2(userSvr, sessMgr))
 	server.Get("/profile", userHdl.Profile)
 	server.Post("/update", userHdl.Update)
 

@@ -90,7 +90,8 @@ func (s *HTTPServer) ServeHTTP(writer http.ResponseWriter, request *http.Request
 	s.serve(ctx)
 }
 
-// Start 启动服务器
+// Start 启动服务器，编程接口
+// 要求用户自己去配置文件读端口
 func (s *HTTPServer) Start(addr string) error {
 	return http.ListenAndServe(addr, s)
 }
@@ -153,4 +154,17 @@ func SetDefaultLogger(log Logger) {
 }
 type Logger interface {
 	Fatalln(msg string, args...any)
+}
+
+
+type HTTPServerV1 struct {
+	router
+	tplEngine TemplateEngine
+	log Logger
+}
+
+func NewHTTPServerV1(cfgFile string) *HTTPServerV1 {
+	// 这里去读取配置文件
+	// 初始化实例
+	panic("implement me")
 }

@@ -33,6 +33,7 @@ func (p *Product) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (p *Product) AfterCreate(tx *gorm.DB) (err error) {
 	println("after create")
+	// 刷新缓存
 	return
 }
 
@@ -43,6 +44,7 @@ func (p *Product) BeforeUpdate(tx *gorm.DB) (err error) {
 
 func (p *Product) AfterUpdate(tx *gorm.DB) (err error) {
 	println("after update")
+	// 刷新缓存
 	return
 }
 

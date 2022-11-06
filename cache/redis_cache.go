@@ -11,6 +11,16 @@ type RedisCache struct {
 	client redis.Cmdable
 }
 
+// 更差的设计
+// func NewRedisCache(cfgFile string) *RedisCache {
+//
+// }
+
+// 这是很差的设计
+// func NewRedisCache(addr string) *RedisCache {
+//
+// }
+
 func NewRedisCache(client redis.Cmdable) *RedisCache {
 	return &RedisCache{
 		client: client,

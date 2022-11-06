@@ -17,6 +17,7 @@ func (m MiddlewareBuilder) Build() web.Middleware {
 				allowOrigin = ctx.Req.Header.Get("Origin")
 			}
 			ctx.Resp.Header().Set("Access-Control-Allow-Origin", allowOrigin)
+			// ctx.Resp.Header().Set("Access-Control-Allow-Origin", "*")
 			ctx.Resp.Header().Set("Access-Control-Allow-Credentials", "true")
 			if ctx.Resp.Header().Get("Access-Control-Allow-Headers") == ""{
 				ctx.Resp.Header().Add("Access-Control-Allow-Headers", "Content-Type")

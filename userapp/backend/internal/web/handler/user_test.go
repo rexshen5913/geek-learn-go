@@ -22,6 +22,7 @@ import (
 
 // 测试的核心是利用 mock 对象来构建 Handler
 
+// 确保 Handler 自身逻辑是对的
 func TestUserHandler_Login(t *testing.T) {
 	// ctrl 这个是可以复用的
 	ctrl := gomock.NewController(t)

@@ -9,13 +9,11 @@ import (
 	"gitee.com/geektime-geekbang/geektime-go/orm/internal/valuer"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
-	"sync"
 	"testing"
 )
 
 func TestSelector_Join(t *testing.T) {
 	db := memoryDB(t)
-	sync.Cond{}
 	type Order struct {
 		Id int
 		UsingCol1 string
@@ -131,6 +129,13 @@ func TestSelector_Join(t *testing.T) {
 		})
 	}
 }
+
+// func Business() {
+// 	t1 := TableOf(&Order{}).As("t1")
+// 	t2 := TableOf(&OrderDetail{})
+// 	res, err := NewSelector[Order](db).
+// 		From(t1.Join(t2).On(t1.C("Id").EQ(t2.C("OrderId"))))
+// }
 
 func TestSelector_Subquery(t *testing.T) {
 	db := memoryDB(t)

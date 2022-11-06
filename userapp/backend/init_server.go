@@ -15,8 +15,22 @@ func initSever() *web.HTTPServer {
 	server := web.NewHTTPServer()
 	// 我把这些 builder 的接收器都改成了结构体，懒得写一个括号
 
+
 	// 这三个其实不太好确定谁先谁后，你们可以自己琢磨一下自己
 	server.UseAny("/*",
+		// func(next web.HandleFunc) web.HandleFunc {
+		// 	return func(ctx *web.Context) {
+		// 		做熔断限流降级
+		// 	}
+		// },
+		// func(next web.HandleFunc) web.HandleFunc {
+		// 	// 返回 mock 响应，在开始研发阶段
+		// 	return func(ctx *web.Context) {
+		// 		// 连上你的 Mock 中心，根据 URL 来找到 mock 数据
+		// 		ctx.RespData = []byte("mock 数据")
+		// 		ctx.RespStatusCode = 200
+		// 	}
+		// },
 		opentelemetry.MiddlewareBuilder{}.Build(),
 		accesslog.NewBuilder().LogFunc(func(accessLog string) {
 			zap.L().Info(accessLog)

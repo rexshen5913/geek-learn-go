@@ -33,6 +33,7 @@ type BuildinMapCache struct {
 	lock      sync.RWMutex
 	data      map[string]*item
 	close     chan struct{}
+	closed bool
 	onEvicted func(key string, val any)
 	cycleInterval time.Duration
 }
@@ -59,16 +60,24 @@ func NewBuildinMapCache(opts...BuildinMapCacheOption) *BuildinMapCache {
 
 func (b *BuildinMapCache) Get(ctx context.Context, key string) (any, error) {
 	b.lock.RLock()
+	// if b.closed {
+	// 	return nil, errors.New("缓存已经被关闭")
+	// }
 	val, ok := b.data[key]
 	b.lock.RUnlock()
 	if !ok {
 		return nil, errKeyNotFound
 	}
-
+	// 别的 goroutine 设置值了
 	now := time.Now()
 	if val.deadlineBefore(now) {
 		b.lock.Lock()
 		defer b.lock.Unlock()
+		//
+		// if b.closed {
+		// 	return nil, errors.New("缓存已经被关闭")
+		// }
+
 		val, ok = b.data[key]
 		if !ok {
 			return nil, errKeyNotFound
@@ -85,6 +94,9 @@ func (b *BuildinMapCache) Get(ctx context.Context, key string) (any, error) {
 func (b *BuildinMapCache) Set(ctx context.Context, key string, val any, expiration time.Duration) error {
 	b.lock.Lock()
 	defer b.lock.Unlock()
+	if b.closed {
+		return errors.New("缓存已经被关闭")
+	}
 	var dl time.Time
 	if expiration > 0 {
 		dl = time.Now().Add(expiration)
@@ -112,6 +124,9 @@ func (b *BuildinMapCache) Set(ctx context.Context, key string, val any, expirati
 func (b *BuildinMapCache) Delete(ctx context.Context, key string) error {
 	b.lock.Lock()
 	defer b.lock.Unlock()
+	if b.closed {
+		return errors.New("缓存已经被关闭")
+	}
 	b.delete(key)
 	return nil
 }
