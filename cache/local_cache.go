@@ -23,18 +23,18 @@ import (
 )
 
 var (
-	errKeyNotFound = errors.New("cache: key 不存在")
-	errKeyExpired  = errors.New("cache: key 已经过期")
-	errOverCapacity  = errors.New("cache: 超过缓存最大容量")
+	errKeyNotFound      = errors.New("cache: key 不存在")
+	errKeyExpired       = errors.New("cache: key 已经过期")
+	errOverCapacity     = errors.New("cache: 超过缓存最大容量")
 	errFailedToSetCache = errors.New("cache: 设置键值对失败")
 )
 
 type BuildinMapCache struct {
-	lock      sync.RWMutex
-	data      map[string]*item
-	close     chan struct{}
-	closed bool
-	onEvicted func(key string, val any)
+	lock          sync.RWMutex
+	data          map[string]*item
+	close         chan struct{}
+	closed        bool
+	onEvicted     func(key string, val any)
 	cycleInterval time.Duration
 }
 
@@ -46,9 +46,9 @@ func BuildinMapWithCycleInterval(interval time.Duration) BuildinMapCacheOption {
 	}
 }
 
-func NewBuildinMapCache(opts...BuildinMapCacheOption) *BuildinMapCache {
+func NewBuildinMapCache(opts ...BuildinMapCacheOption) *BuildinMapCache {
 	res := &BuildinMapCache{
-		data: make(map[string]*item),
+		data:          make(map[string]*item),
 		cycleInterval: time.Second * 10,
 	}
 	for _, opt := range opts {
@@ -178,7 +178,6 @@ func (b *BuildinMapCache) Close() error {
 	return nil
 }
 
-
 func (b *BuildinMapCache) LoadAndDelete(ctx context.Context, key string) (any, error) {
 	b.lock.Lock()
 	defer b.lock.Unlock()
@@ -189,7 +188,6 @@ func (b *BuildinMapCache) LoadAndDelete(ctx context.Context, key string) (any, e
 	b.delete(key)
 	return itm.val, nil
 }
-
 
 type item struct {
 	val      any
@@ -202,14 +200,14 @@ func (i *item) deadlineBefore(t time.Time) bool {
 
 type MaxCntCache struct {
 	*BuildinMapCache
-	cnt int32
+	cnt    int32
 	maxCnt int32
 }
 
 func NewMaxCntCache(c *BuildinMapCache, maxCnt int32) *MaxCntCache {
 	res := &MaxCntCache{
 		BuildinMapCache: c,
-		maxCnt: maxCnt,
+		maxCnt:          maxCnt,
 	}
 	origin := c.onEvicted
 	c.onEvicted = func(key string, val any) {
@@ -230,4 +228,3 @@ func (c *MaxCntCache) Set(ctx context.Context,
 	}
 	return c.BuildinMapCache.Set(ctx, key, val, expiration)
 }
-
