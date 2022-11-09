@@ -1,3 +1,5 @@
+//go:build !answer
+
 package cache
 
 import (
@@ -7,7 +9,7 @@ import (
 
 type MaxMemoryCache struct {
 	Cache
-	max int64
+	max  int64
 	used int64
 }
 
