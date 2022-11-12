@@ -19,7 +19,15 @@ type MaxMemoryCache struct {
 	// 这个地方因为 linked list 删除必须要遍历，所以性能很差
 	// 按照正常的设计，这边需要的是一个接近  Java 的 LinkedHashMap 的结构
 	keys *list.LinkedList[string]
+
+	// 理论上优秀设计
+	// s Strategy
 }
+
+// 淘汰策略接口
+// type Strategy interface {
+//
+// }
 
 func NewMaxMemoryCache(max int64, cache Cache) *MaxMemoryCache {
 	res := &MaxMemoryCache{

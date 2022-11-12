@@ -2,7 +2,7 @@ package demo
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/internal/errs"
+	"gitee.com/geektime-geekbang/geektime-go/cache/demo/internal/errs"
 	"sync"
 	"time"
 )

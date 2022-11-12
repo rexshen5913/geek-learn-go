@@ -2,7 +2,7 @@ package demo
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/mocks"
+	"gitee.com/geektime-geekbang/geektime-go/cache/demo/mocks"
 	"github.com/go-redis/redis/v9"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"

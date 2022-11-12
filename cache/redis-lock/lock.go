@@ -81,6 +81,21 @@ func (c *Client) SingleflightLock(ctx context.Context, key string, expiration ti
 	}
 }
 
+// 转交的做法
+// func (c *Client) LockV1(ctx context.Context, key string, expiration time.Duration) (*Lock, error) {
+// 	keysWaitingChan := make(map[string]*Lock, 1)
+// 	l, ok := keysWaitingChan[key]
+// 	if !ok {
+// 		// 尝试自己去拿
+// 	}
+// 	select {
+// 		case <- l.waiting:
+// 			case <- ctx.Done():
+//
+// 	}
+//
+// }
+
 // Lock 是尽可能重试减少加锁失败的可能
 // Lock 会在超时或者锁正被人持有的时候进行重试
 // 最后返回的 error 使用 errors.Is 判断，可能是：
@@ -155,6 +170,8 @@ type Lock struct {
 	expiration       time.Duration
 	unlock           chan struct{}
 	signalUnlockOnce sync.Once
+
+	waiting chan struct{}
 }
 
 func newLock(client redis.Cmdable, key string, value string, expiration time.Duration) *Lock {
@@ -227,6 +244,16 @@ func (l *Lock) Refresh(ctx context.Context) error {
 	}
 	return nil
 }
+
+// 本地转交的思路
+// func (l *Lock) UnlockV1(ctx context.Context) error {
+// 	select {
+// 	case l.waiting <- struct{}{}:
+// 	default:
+// 		// 真正的释放锁
+// 	}
+//
+// }
 
 // Unlock 解锁
 func (l *Lock) Unlock(ctx context.Context) error {
