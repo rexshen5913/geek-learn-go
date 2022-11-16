@@ -32,20 +32,20 @@ func NewStore(client redis.Cmdable, opts...StoreOption) *Store {
 	return res
 }
 
-func (m *Store) Generate(ctx context.Context, id string) (session.Session, error) {
+func (s *Store) Generate(ctx context.Context, id string) (session.Session, error) {
 	const lua = `
 redis.call("hset", KEYS[1], ARGV[1], ARGV[2])
 return redis.call("pexpire", KEYS[1], ARGV[3])
 `
-	key := m.key(id)
-	_, err := m.client.Eval(ctx, lua, []string{key}, "_sess_id", id, m.expiration.Milliseconds()).Result()
+	key := s.key(id)
+	_, err := s.client.Eval(ctx, lua, []string{key}, "_sess_id", id, s.expiration.Milliseconds()).Result()
 	if err != nil {
 		return nil, err
 	}
-	return &memorySession{
-		key: key,
-		id: id,
-		client: m.client,
+	return &Session{
+		key:    key,
+		id:     id,
+		client: s.client,
 	}, nil
 }
 
@@ -54,9 +54,9 @@ func (s *Store) key(id string) string {
 }
 
 
-func (m *Store) Refresh(ctx context.Context, id string) error {
-	key := m.key(id)
-	affected, err := m.client.Expire(ctx, key, m.expiration).Result()
+func (s *Store) Refresh(ctx context.Context, id string) error {
+	key := s.key(id)
+	affected, err := s.client.Expire(ctx, key, s.expiration).Result()
 	if err != nil {
 		return err
 	}
@@ -66,35 +66,35 @@ func (m *Store) Refresh(ctx context.Context, id string) error {
 	return nil
 }
 
-func (m *Store) Remove(ctx context.Context, id string) error {
-	_, err := m.client.Del(ctx, m.key(id)).Result()
+func (s *Store) Remove(ctx context.Context, id string) error {
+	_, err := s.client.Del(ctx, s.key(id)).Result()
 	return err
 }
 
-func (m *Store) Get(ctx context.Context, id string) (session.Session, error) {
-	key := m.key(id)
+func (s *Store) Get(ctx context.Context, id string) (session.Session, error) {
+	key := s.key(id)
 	// 这里不需要考虑并发的问题，因为在你检测的当下，没有就是没有
-	i, err := m.client.Exists(ctx, key).Result()
+	i, err := s.client.Exists(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
 	if i < 0 {
 		return nil, errors.New("redis-session: session 不存在")
 	}
-	return &memorySession{
-		id: id,
-		key: key,
-		client: m.client,
+	return &Session{
+		id:     id,
+		key:    key,
+		client: s.client,
 	}, nil
 }
 
-type memorySession struct {
+type Session struct {
 	key string
 	id string
 	client redis.Cmdable
 }
 
-func (m *memorySession) Set(ctx context.Context, key string, val string) error {
+func (m *Session) Set(ctx context.Context, key string, val string) error {
 	const lua = `
 if redis.call("exists", KEYS[1])
 then
@@ -113,11 +113,11 @@ end
 	return nil
 }
 
-func (m *memorySession) Get(ctx context.Context, key string) (string, error) {
+func (m *Session) Get(ctx context.Context, key string) (string, error) {
 	return m.client.HGet(ctx, m.key, key).Result()
 }
 
-func (m *memorySession) ID() string {
+func (m *Session) ID() string {
 	return m.id
 }
 

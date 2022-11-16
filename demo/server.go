@@ -3,7 +3,7 @@ package demo
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	"gitee.com/geektime-geekbang/geektime-go/demo/message"
 	"net"
 	"reflect"
 )
@@ -50,33 +50,49 @@ func (s *Server) Start(addr string) error {
 
 func (s *Server) handleConn(conn net.Conn) error {
 	for {
-		// 读请求
-		// 执行
-		// 写回响应
-
 		reqMsg, err:= ReadMsg(conn)
 		if err != nil {
 			return err
 		}
-		req := &Request{}
-		err = json.Unmarshal(reqMsg, req)
-		if err != nil {
-			return err
+		req := message.DecodeReq(reqMsg)
+
+		resp := &message.Response{
+			Version: req.Version,
+			Compresser: req.Compresser,
+			Serializer: req.Serializer,
+			MessageId: req.MessageId,
 		}
+
 		// 可以考虑找到本地的服务，然后发起调用
 		service, ok := s.services[req.ServiceName]
 		if !ok {
 			// 返回客户端一个错误信息
-			return errors.New("找不到服务")
+			resp.Error = []byte("找不到服务")
+			resp.SetHeadLength()
+			_, err = conn.Write(message.EncodeResp(resp))
+			if err != nil {
+				return err
+			}
+			continue
 		}
 		// 把参数传进去
 		// context 建起来
 		ctx := context.Background()
-		data, err := service.invoke(ctx, req.MethodName, reqMsg)
+		data, err := service.invoke(ctx, req.MethodName, req.Data)
 		if err != nil {
-			return err
+			// 返回客户端一个错误信息
+			resp.Error = []byte(err.Error())
+			resp.SetHeadLength()
+			_, err = conn.Write(message.EncodeResp(resp))
+			if err != nil {
+				return err
+			}
+			continue
 		}
-		data = EncodeMsg(data)
+		resp.SetHeadLength()
+		resp.BodyLength = uint32(len(data))
+		resp.Data = data
+		data = message.EncodeResp(resp)
 		_, err = conn.Write(data)
 		if err != nil {
 			return err

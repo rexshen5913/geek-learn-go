@@ -12,6 +12,7 @@ import (
 // 用二进制去表达你的请求和响应，最多需要多少个字节
 const lenBytes = 8
 
+// 拿到完整的数据
 func ReadMsg(conn net.Conn) (bs []byte, err error) {
 	msgLenBytes := make([]byte, lenBytes)
 	length, err := conn.Read(msgLenBytes)
@@ -28,9 +29,12 @@ func ReadMsg(conn net.Conn) (bs []byte, err error) {
 		return nil, errors.New("could not read the length data")
 	}
 
-	dataLen := binary.BigEndian.Uint64(msgLenBytes)
-	bs = make([]byte, dataLen)
-	_, err = io.ReadFull(conn, bs)
+	headLength :=binary.BigEndian.Uint32(msgLenBytes[:4])
+	bodyLength := binary.BigEndian.Uint32(msgLenBytes[4:8])
+	// 整个请求读出来了
+	bs = make([]byte, headLength + bodyLength)
+	_, err = io.ReadFull(conn, bs[lenBytes:])
+	copy(bs, msgLenBytes)
 	return bs, err
 }
 

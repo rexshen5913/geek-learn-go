@@ -69,7 +69,6 @@ type memorySession struct {
 	mutex      sync.RWMutex
 	id         string
 	data       map[string]string
-	expiration time.Duration
 }
 
 func (m *memorySession) Get(ctx context.Context, key string) (string, error) {

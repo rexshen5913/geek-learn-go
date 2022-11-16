@@ -3,6 +3,7 @@ package demo
 import (
 	"context"
 	"errors"
+	"gitee.com/geektime-geekbang/geektime-go/demo/message"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -14,7 +15,7 @@ func TestInitClientProxy(t *testing.T) {
 		service *UserServiceClient
 		p *mockProxy
 
-		wantReq *Request
+		wantReq *message.Request
 		wantInitErr error
 		wantErr error
 		wantResp *GetByIdResp
@@ -25,7 +26,7 @@ func TestInitClientProxy(t *testing.T) {
 				result: []byte(`{"name": "Tom"}`),
 			},
 			service: &UserServiceClient{},
-			wantReq:  &Request{
+			wantReq:  &message.Request{
 				ServiceName: "user-service",
 				MethodName: "GetById",
 				Data: []byte(`{"id": 13}`),
@@ -67,14 +68,14 @@ func TestInitClientProxy(t *testing.T) {
 
 // 可以考虑使用 gomock
 type mockProxy struct {
-	req *Request
+	req *message.Request
 	err error
 	result []byte
 }
 
-func (m *mockProxy) Invoke(ctx context.Context, req *Request) (*Response, error) {
+func (m *mockProxy) Invoke(ctx context.Context, req *message.Request) (*message.Response, error) {
 	m.req = req
-	return &Response{
+	return &message.Response{
 		Data: m.result,
 	}, m.err
 }

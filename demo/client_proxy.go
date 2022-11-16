@@ -2,8 +2,8 @@ package demo
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
+	"gitee.com/geektime-geekbang/geektime-go/demo/message"
 	"github.com/silenceper/pool"
 	"net"
 	"time"
@@ -34,12 +34,7 @@ func NewClient(addr string) (*Client, error){
 	}, nil
 }
 
-func (c *Client) Invoke(ctx context.Context, req *Request) (*Response, error) {
-	// 发送请求过去
-	data, err:= json.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
+func (c *Client) Invoke(ctx context.Context, req *message.Request) (*message.Response, error) {
 
 	// 拿一个连接
 	obj, err := c.connPool.Get()
@@ -50,9 +45,8 @@ func (c *Client) Invoke(ctx context.Context, req *Request) (*Response, error) {
 	conn := obj.(net.Conn)
 	// 发请求
 
-	// 0001 0002 -- 这一坨是描述你数据有多长
-	// 0000  --- 这一坨是数据
-	data = EncodeMsg(data)
+	// 发送请求过去
+	data := message.EncodeReq(req)
 	i, err := conn.Write(data)
 	if err != nil {
 		return  nil, err
@@ -70,9 +64,7 @@ func (c *Client) Invoke(ctx context.Context, req *Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Response{
-		Data: respMsg,
-	}, nil
+	return message.DecodeResp(respMsg), nil
 }
 
 // 客户端

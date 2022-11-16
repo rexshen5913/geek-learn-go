@@ -3,12 +3,16 @@ package demo
 import (
 	"context"
 	"encoding/json"
+	"gitee.com/geektime-geekbang/geektime-go/demo/message"
 	"reflect"
+	"sync/atomic"
 )
 
 // func InitClientProxyV1[T Service](service T) error {
 //
 // }
+
+var messageId uint32 = 0
 
 func InitClientProxy(service Service, p Proxy) error {
 	// 你可以做校验，确保它必须是一个指向结构体的指针
@@ -47,9 +51,18 @@ func InitClientProxy(service Service, p Proxy) error {
 					results = append(results, reflect.ValueOf(err))
 					return
 				}
+				msgId := atomic.AddUint32(&messageId, 1)
 				// 你要在这里把调用信息拼凑起来
 				// 服务名，方法名，参数值，参数类型不需要
-				req := &Request{
+				req := &message.Request{
+					// 要计算头部长度和响应体长度
+
+					BodyLength: uint32(len(bs)),
+					// 这里要构建完整
+					Version: 0,
+					Compresser: 0,
+					Serializer: 0,
+					MessageId: msgId,
 					ServiceName: service.Name(),
 					// 客户端和服务端可能叫不一样的名字
 					// ServiceName: typ.PkgPath() + typ.Name(),
@@ -58,10 +71,7 @@ func InitClientProxy(service Service, p Proxy) error {
 					MethodName: fieldType.Name,
 					Data: bs,
 				}
-				// 要发送请求了啊
-				// 要有一个接口
-
-				// 不希望把 TCP 操作直接丢这里
+				req.CalHeadLength()
 				resp, err :=p.Invoke(ctx, req)
 
 				if err != nil {
@@ -72,9 +82,6 @@ func InitClientProxy(service Service, p Proxy) error {
 				}
 				// 第一个返回值，真的返回值，指向 GetIdResp
 				first := reflect.New(outType).Interface()
-				// 你要数据填进去 first
-				// 这里就涉及到了序列化协议的问题
-				// resp.Data => first 的转化
 
 				// 我们现在先假定，这是用 JSON 来序列化的
 				err = json.Unmarshal(resp.Data, first)
@@ -88,17 +95,6 @@ func InitClientProxy(service Service, p Proxy) error {
 					results = append(results,  reflect.Zero(reflect.TypeOf(new(error)).Elem()))
 				}
 
-
-
-				// results = append(results,
-				// 	reflect.New(fieldType.Type.Out(0)).Elem())
-				// bs, err := json.Marshal(req)
-				// if err != nil {
-				// 	results = append(results, reflect.ValueOf(err))
-				// 	return
-				// }
-				// // 你只是借助一下 error 来搞测试
-				// results = append(results, reflect.ValueOf(errors.New(string(bs))))
 				return
 		})
 		fieldValue.Set(fn)
