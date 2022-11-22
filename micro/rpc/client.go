@@ -127,6 +127,8 @@ func setFuncField(s serialize.Serializer, val Service, proxy Proxy) error {
 					return []reflect.Value{out, reflect.ValueOf(err)}
 				}
 
+				// 没有办法遍历所有的 key，然后作为 meta 传递给服务端
+				// 并且，key 都有可能不是 string 类型
 				ctx := args[0].Interface().(context.Context)
 				// 暂时先写死，后面我们考虑通用的链路元数据传递再重构
 				meta := make(map[string]string, 2)

@@ -34,6 +34,11 @@ func ReadMsg(conn net.Conn) (bs []byte, err error) {
 	// 整个请求读出来了
 	bs = make([]byte, headLength + bodyLength)
 	_, err = io.ReadFull(conn, bs[lenBytes:])
+	// 你没读够，你根本不知道接下来怎么处理这个连接里面的数据
+	// if n != headLength + bodyLength - lenBytes {
+	// 	返回错误并且关掉连接
+	// 	return nil, errors.New("")
+	// }
 	copy(bs, msgLenBytes)
 	return bs, err
 }
