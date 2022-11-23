@@ -2,7 +2,7 @@ package demo
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/message"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo/message"
 )
 
 // type Middleware func(next Proxy) Proxy

@@ -1,4 +1,4 @@
-package micro
+package rpc
 
 import (
 	"gitee.com/geektime-geekbang/geektime-go/micro/v6/registry"

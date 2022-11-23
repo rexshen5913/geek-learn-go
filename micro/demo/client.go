@@ -3,9 +3,9 @@ package demo
 import (
 	"context"
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/demo/message"
-	"gitee.com/geektime-geekbang/geektime-go/demo/serialize"
-	"gitee.com/geektime-geekbang/geektime-go/demo/serialize/json"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo/message"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo/serialize"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo/serialize/json"
 	"github.com/silenceper/pool"
 	"net"
 	"reflect"
@@ -17,7 +17,7 @@ import (
 var messageId uint32 = 0
 
 type Client struct {
-	connPool pool.Pool
+	connPool  pool.Pool
 	serialzer serialize.Serializer
 }
 
@@ -39,7 +39,7 @@ func NewClient(addr string) (*Client, error){
 	}
 	return &Client{
 		serialzer: json.Serializer{},
-		connPool: p,
+		connPool:  p,
 	}, nil
 }
 

@@ -3,8 +3,8 @@ package demo
 import (
 	"context"
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/demo/message"
-	"gitee.com/geektime-geekbang/geektime-go/demo/serialize"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo/message"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo/serialize"
 	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/serialize/json"
 	"net"
 	"reflect"

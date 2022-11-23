@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	rpc "gitee.com/geektime-geekbang/geektime-go/demo"
-	"gitee.com/geektime-geekbang/geektime-go/demo/example/rpc/proto/gen"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo/example/rpc/proto/gen"
 )
 
 func main() {
-	c, err := rpc.NewClient("0.0.0.0:8081")
+	c, err := demo.NewClient("0.0.0.0:8081")
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,7 @@ func main() {
 		panic(err)
 	}
 
-	_, _  = us.GetById(rpc.CtxWithOneway(context.Background()), &FindByUserIdReq{
+	_, _  = us.GetById(demo.CtxWithOneway(context.Background()), &FindByUserIdReq{
 		Id: 12,
 	})
 

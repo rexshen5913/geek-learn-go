@@ -44,7 +44,7 @@ func ReadMsg(conn net.Conn) (bs []byte, err error) {
 }
 
 func EncodeMsg(data []byte) []byte {
-	resp := make([]byte, len(data) + lenBytes)
+	resp := make([]byte, len(data) +lenBytes)
 	l := len(data)
 	// 大顶端编码，把长度编码成二进制，然后放到了 resp 的前八个字节
 	binary.BigEndian.PutUint64(resp, uint64(l))
