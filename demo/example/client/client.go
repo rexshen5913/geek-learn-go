@@ -4,12 +4,15 @@ import (
 	"context"
 	"gitee.com/geektime-geekbang/geektime-go/demo"
 	"gitee.com/geektime-geekbang/geektime-go/demo/example/proto/gen"
+	"gitee.com/geektime-geekbang/geektime-go/demo/registry"
 	"google.golang.org/grpc"
 	"log"
+	"time"
 )
 
 func main() {
-	rsBuilder := demo.NewResolverBuilder()
+	var r registry.Registry
+	rsBuilder := demo.NewResolverBuilder(r, time.Second)
 	cc, err := grpc.Dial("registry:///user-service",
 		grpc.WithInsecure(),
 		grpc.WithResolvers(rsBuilder))

@@ -4,6 +4,7 @@ import (
 	"context"
 )
 
+//go:generate mockgen -package=mocks -destination=mocks/registry.mock.go -source=types.go Registry
 type Registry interface {
 	Register(ctx context.Context, ins ServiceInstance) error
 	// Unregister(ctx context.Context, serviceName string) error
@@ -19,6 +20,7 @@ type Registry interface {
 
 // ServiceInstance 代表的是一个实例
 type ServiceInstance struct {
+	ServiceName string
 	Address string
 }
 
@@ -34,10 +36,12 @@ const (
 	EventTypeAdd
 	EventTypeDelete
 	EventTypeUpdate
+	// EventTypeErr
 )
 
 type Event struct {
 	Type EventType
+	Instance ServiceInstance
 }
 
 
