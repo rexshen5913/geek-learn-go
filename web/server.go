@@ -106,8 +106,8 @@ func (s *HTTPServer) Get(path string, handler HandleFunc) {
 
 func (s *HTTPServer) serve(ctx *Context) {
 	mi, ok := s.findRoute(ctx.Req.Method, ctx.Req.URL.Path)
-	ctx.PathParams = mi.pathParams
 	if mi.n != nil {
+		ctx.PathParams = mi.pathParams
 		ctx.MatchedRoute = mi.n.route
 	}
 	// 最后一个应该是执行用户代码
