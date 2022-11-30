@@ -87,7 +87,7 @@ func (r *router) findRoute(method string, path string) (*matchInfo, bool) {
 		var matchParam bool
 		cur, matchParam, ok = cur.childOf(s)
 		if !ok {
-			return nil, false
+			return &matchInfo{}, false
 		}
 		if matchParam {
 			mi.addValue(root.path[1:], s)

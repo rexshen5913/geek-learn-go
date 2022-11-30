@@ -38,6 +38,10 @@ type Context struct {
 	UserValues map[string]any
 }
 
+func (c *Context) Redirect(url string) {
+	http.Redirect(c.Resp, c.Req, url, http.StatusFound)
+}
+
 // RespString 返回字符串作为响应
 func (c *Context) RespString(code int, msg string) error {
 	c.RespData = []byte(msg)
