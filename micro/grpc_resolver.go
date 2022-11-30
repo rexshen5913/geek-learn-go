@@ -13,7 +13,7 @@ type grpcResolverBuilder struct {
 	timeout time.Duration
 }
 
-func newResolverBuilder(r registry.Registry, timeout time.Duration) *grpcResolverBuilder {
+func NewResolverBuilder(r registry.Registry, timeout time.Duration) resolver.Builder {
 	return &grpcResolverBuilder{
 		r:       r,
 		timeout: timeout,

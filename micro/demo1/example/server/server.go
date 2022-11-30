@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/micro"
-	"gitee.com/geektime-geekbang/geektime-go/micro/example/proto/gen"
-	"gitee.com/geektime-geekbang/geektime-go/micro/registry/etcd"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo1"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/example/proto/gen"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry/etcd"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"golang.org/x/sync/errgroup"
 	"strconv"
-	"time"
 )
 
 func main() {
@@ -27,9 +26,7 @@ func main() {
 	for i := 0; i < 3; i++ {
 		idx := i
 		eg.Go(func() error {
-			server := micro.NewServer("user-service", micro.ServerWithRegistry(r), micro.ServerWithTimeout(time.Second*3))
-			defer server.Close()
-
+			server := demo1.NewServer("user-service", demo1.ServerWithRegistry(r))
 			us := &UserService{
 				name: fmt.Sprintf("server-%d", idx),
 			}
@@ -41,5 +38,4 @@ func main() {
 	}
 	// 正常或者异常退出都会返回
 	err = eg.Wait()
-	fmt.Println(err)
 }

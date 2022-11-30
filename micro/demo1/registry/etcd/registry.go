@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/concurrency"
@@ -119,7 +119,7 @@ func (r *Registry) Subscribe(serviceName string) (<-chan registry.Event, error) 
 					}
 					select {
 					case res <- registry.Event{
-						Type: typesMap[event.Type],
+						Type:     typesMap[event.Type],
 						Instance: ins,
 					}:
 					// case <- r.close:

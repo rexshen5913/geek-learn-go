@@ -1,8 +1,8 @@
-package demo
+package demo1
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry"
 	"google.golang.org/grpc"
 	"net"
 	"time"
@@ -13,7 +13,7 @@ type ServerOption func(server *Server)
 type Server struct {
 	name string
 	*grpc.Server
-	r registry.Registry
+	r        registry.Registry
 	listener net.Listener
 }
 

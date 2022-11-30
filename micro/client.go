@@ -43,7 +43,7 @@ func (c *Client) Dial(ctx context.Context, service string) (*grpc.ClientConn, er
 
 func ClientWithRegistry(r registry.Registry, timeout time.Duration) ClientOption {
 	return func(client *Client) {
-		client.rb = newResolverBuilder(r, timeout)
+		client.rb = NewResolverBuilder(r, timeout)
 	}
 }
 

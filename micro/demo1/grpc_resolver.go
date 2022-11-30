@@ -1,15 +1,15 @@
-package demo
+package demo1
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry"
 	"google.golang.org/grpc/resolver"
 	"log"
 	"time"
 )
 
 type grpcResolverBuilder struct {
-	r registry.Registry
+	r       registry.Registry
 	timeout time.Duration
 }
 
@@ -40,8 +40,8 @@ func (g *grpcResolverBuilder) Scheme() string {
 
 type grpcResolver struct {
 	target resolver.Target
-	cc resolver.ClientConn
-	r registry.Registry
+	cc    resolver.ClientConn
+	r     registry.Registry
 	close chan struct{}
 
 	timeout time.Duration

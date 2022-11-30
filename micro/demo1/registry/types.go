@@ -40,7 +40,7 @@ const (
 )
 
 type Event struct {
-	Type EventType
+	Type     EventType
 	Instance ServiceInstance
 }
 

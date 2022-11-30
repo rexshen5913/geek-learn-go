@@ -1,8 +1,8 @@
-package demo
+package demo1
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry/mocks"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry"
+	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/resolver"

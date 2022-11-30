@@ -15,6 +15,14 @@ func initSever() *web.HTTPServer {
 	server := web.NewHTTPServer()
 	// 我把这些 builder 的接收器都改成了结构体，懒得写一个括号
 
+	// 对 VIP 鉴权
+	// server.UseAny("/vip", func(next web.HandleFunc) web.HandleFunc {
+	//
+	// })
+	//
+	// server.UseAny("/login", func(next web.HandleFunc) web.HandleFunc {
+	// 	// 针对登录的限流
+	// })
 
 	// 这三个其实不太好确定谁先谁后，你们可以自己琢磨一下自己
 	server.UseAny("/*",

@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/demo/example/proto/gen"
+	"gitee.com/geektime-geekbang/geektime-go/micro/example/proto/gen"
 )
 
 type UserService struct {
