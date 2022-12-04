@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/micro"
-	"gitee.com/geektime-geekbang/geektime-go/micro/example/proto/gen"
-	"gitee.com/geektime-geekbang/geektime-go/micro/registry/etcd"
+	"gitee.com/geektime-geekbang/geektime-go/demo"
+	"gitee.com/geektime-geekbang/geektime-go/demo/example/loadbalance/proto/gen"
+	"gitee.com/geektime-geekbang/geektime-go/demo/registry/etcd"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"golang.org/x/sync/errgroup"
 	"strconv"
-	"time"
 )
 
 func main() {
@@ -27,7 +26,13 @@ func main() {
 	for i := 0; i < 3; i++ {
 		idx := i
 		eg.Go(func() error {
-			server := micro.NewServer("user-service", micro.ServerWithRegistry(r), micro.ServerWithTimeout(time.Second*3))
+			group := "a"
+			if idx %2 == 0 {
+				group= "b"
+			}
+			server := demo.NewServer("user-service",
+				demo.ServerWithGroup(group),
+				demo.ServerWithRegistry(r), demo.ServerWithWeight(uint32(1 + i)))
 			defer server.Close()
 
 			us := &UserService{

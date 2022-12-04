@@ -1,8 +1,10 @@
 package roundrobin
 
 import (
+	"gitee.com/geektime-geekbang/geektime-go/micro/loadbalance"
 	"google.golang.org/grpc/balancer"
 	"google.golang.org/grpc/balancer/base"
+	"google.golang.org/grpc/resolver"
 	"math"
 	"sync"
 	"sync/atomic"
@@ -11,8 +13,9 @@ import (
 const WeightRoundRobin = "WEIGHT_ROUND_ROBIN"
 
 type WeightBalancer struct {
-	mutex sync.Mutex
-	conns []*weightConn
+	mutex  sync.Mutex
+	conns  []*weightConn
+	filter loadbalance.Filter
 }
 
 func (b *WeightBalancer) Pick(info balancer.PickInfo) (balancer.PickResult, error) {
@@ -24,6 +27,9 @@ func (b *WeightBalancer) Pick(info balancer.PickInfo) (balancer.PickResult, erro
 
 	b.mutex.Lock()
 	for _, node := range b.conns {
+		if !b.filter(info, node.address) {
+			continue
+		}
 		totalWeight += node.efficientWeight
 		node.currentWeight += node.efficientWeight
 		if res == nil || res.currentWeight < node.currentWeight {
@@ -33,7 +39,7 @@ func (b *WeightBalancer) Pick(info balancer.PickInfo) (balancer.PickResult, erro
 	res.currentWeight -= totalWeight
 	b.mutex.Unlock()
 	return balancer.PickResult{
-		SubConn: res,
+		SubConn: res.SubConn,
 		Done: func(info balancer.DoneInfo) {
 			for {
 				// 这里就是一个棘手的地方了
@@ -85,6 +91,7 @@ func (b *WeightBalancerBuilder) Build(info base.PickerBuildInfo) balancer.Picker
 			weight:          uint32(weight),
 			efficientWeight: uint32(weight),
 			currentWeight:   uint32(weight),
+			address:         conInfo.Address,
 		})
 	}
 	return &WeightBalancer{
@@ -100,4 +107,5 @@ type weightConn struct {
 	// 有效权重，在整个过程中我们是会动态调整权重的
 	efficientWeight uint32
 	balancer.SubConn
+	address resolver.Address
 }
