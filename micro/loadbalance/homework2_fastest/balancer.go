@@ -1,4 +1,4 @@
-package fastest
+package homework2_fastest
 
 import (
 	"fmt"
