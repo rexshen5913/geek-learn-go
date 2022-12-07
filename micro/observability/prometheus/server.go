@@ -14,7 +14,7 @@ type ServerInterceptorBuilder struct {
 	Name      string
 	Help      string
 
-	// 这个其实是为了我们 fastest 负载均衡设计的，因为正常情况下，我们不太可能
+	// 这个其实是为了我们 homework2_fastest 负载均衡设计的，因为正常情况下，我们不太可能
 	// 一个进程启动多个端口
 	Port string
 }
