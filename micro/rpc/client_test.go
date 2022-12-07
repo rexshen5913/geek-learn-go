@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/compress"
 	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/message"
 	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/serialize/json"
 	"github.com/stretchr/testify/assert"
@@ -53,7 +54,7 @@ func Test_setFuncField(t *testing.T) {
 	s := json.Serializer{}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := setFuncField(s, tc.s.s, tc.proxy)
+			err := setFuncField(s, compress.DoNothingCompressor{}, tc.s.s, tc.proxy)
 			require.NoError(t, err)
 			resp, err := tc.s.do()
 			assert.Equal(t, tc.wantErr, err)

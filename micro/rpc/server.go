@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"fmt"
+	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/compress"
 	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/message"
 	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/serialize"
 	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/serialize/json"
@@ -15,6 +16,7 @@ import (
 type Server struct {
 	services    map[string]*reflectionStub
 	serializers []serialize.Serializer
+	compressors []compress.Compressor
 
 	listener net.Listener
 }
@@ -95,6 +97,10 @@ func (s *Server) RegisterSerializer(serializer serialize.Serializer) {
 	s.serializers[serializer.Code()] = serializer
 }
 
+func (s *Server) RegisterCompressor(c compress.Compressor) {
+	s.compressors[c.Code()] = c
+}
+
 func (s *Server) RegisterService(service Service) {
 	val := reflect.ValueOf(service)
 	typ := reflect.TypeOf(service)
@@ -107,6 +113,7 @@ func (s *Server) RegisterService(service Service) {
 		s:           service,
 		methods:     methods,
 		serializers: s.serializers,
+		compressors: s.compressors,
 	}
 }
 
@@ -115,15 +122,18 @@ func NewServer() *Server {
 		services: make(map[string]*reflectionStub, 4),
 		// 一个字节，最多有 256 个实现，直接做成一个简单的 bit array 的东西
 		serializers: make([]serialize.Serializer, 256),
+		compressors: make([]compress.Compressor, 256),
 	}
 	// 注册最基本的序列化协议
 	res.RegisterSerializer(json.Serializer{})
+	res.RegisterCompressor(compress.DoNothingCompressor{})
 	return res
 }
 
 type reflectionStub struct {
 	s           Service
 	serializers []serialize.Serializer
+	compressors []compress.Compressor
 	methods     map[string]reflect.Value
 }
 
@@ -135,8 +145,13 @@ func (r *reflectionStub) invoke(ctx context.Context, req *message.Request) (*mes
 	inType := method.Type().In(1)
 	in := reflect.New(inType.Elem())
 
+	c := r.compressors[req.Compresser]
+	data, err := c.Uncompress(req.Data)
+	if err != nil {
+		return nil, err
+	}
 	s := r.serializers[req.Serializer]
-	err := s.Decode(req.Data, in.Interface())
+	err = s.Decode(data, in.Interface())
 	if err != nil {
 		return nil, err
 	}
@@ -145,6 +160,10 @@ func (r *reflectionStub) invoke(ctx context.Context, req *message.Request) (*mes
 	respData, err := s.Encode(res[0].Interface())
 	if err != nil {
 		// 服务器本身的错误
+		return nil, err
+	}
+	respData, err = c.Compress(respData)
+	if err != nil {
 		return nil, err
 	}
 	resp := message.GetResponse()

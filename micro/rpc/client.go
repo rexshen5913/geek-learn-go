@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/compress"
 	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/message"
 	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/serialize"
 	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/serialize/json"
@@ -21,11 +22,18 @@ var messageId uint32 = 0
 type Client struct {
 	connPool   pool.Pool
 	serializer serialize.Serializer
+	compressor compress.Compressor
 }
 
 func ClientWithSerializer(s serialize.Serializer) option.Option[Client] {
 	return func(client *Client) {
 		client.serializer = s
+	}
+}
+
+func ClientWithCompressor(c compress.Compressor) option.Option[Client] {
+	return func(client *Client) {
+		client.compressor = c
 	}
 }
 
@@ -46,6 +54,8 @@ func NewClient(address string, opts ...option.Option[Client]) (*Client, error) {
 	res := &Client{
 		connPool:   connPool,
 		serializer: json.Serializer{},
+		// 避免 nil 检测
+		compressor: compress.DoNothingCompressor{},
 	}
 	for _, opt := range opts {
 		opt(res)
@@ -106,11 +116,11 @@ func (c *Client) doInvoke(ctx context.Context, bs []byte) (*message.Response, er
 }
 
 func (c *Client) InitService(val Service) error {
-	return setFuncField(c.serializer, val, c)
+	return setFuncField(c.serializer, c.compressor, val, c)
 }
 
 // 这个单独的拆出来，就是为了测试，我们可以考虑传入一个 mock proxy
-func setFuncField(s serialize.Serializer, val Service, proxy Proxy) error {
+func setFuncField(s serialize.Serializer, c compress.Compressor, val Service, proxy Proxy) error {
 	v := reflect.ValueOf(val)
 	ele := v.Elem()
 	t := ele.Type()
@@ -121,14 +131,16 @@ func setFuncField(s serialize.Serializer, val Service, proxy Proxy) error {
 		if fieldValue.CanSet() {
 			fn := func(args []reflect.Value) (results []reflect.Value) {
 				in := args[1].Interface()
-				inData, err := s.Encode(in)
 				out := reflect.Zero(field.Type.Out(0))
+				inData, err := s.Encode(in)
 				if err != nil {
 					return []reflect.Value{out, reflect.ValueOf(err)}
 				}
 
-				// 没有办法遍历所有的 key，然后作为 meta 传递给服务端
-				// 并且，key 都有可能不是 string 类型
+				inData, err = c.Compress(inData)
+				if err != nil {
+					return []reflect.Value{out, reflect.ValueOf(err)}
+				}
 				ctx := args[0].Interface().(context.Context)
 				// 暂时先写死，后面我们考虑通用的链路元数据传递再重构
 				meta := make(map[string]string, 2)
@@ -146,7 +158,7 @@ func setFuncField(s serialize.Serializer, val Service, proxy Proxy) error {
 				req.BodyLength = uint32(len(inData))
 				req.MessageId = atomic.AddUint32(&messageId, 1)
 				// 目前还没有支持压缩，需要你们作业支持
-				// Compresser:
+				req.Compresser = c.Code()
 				req.Serializer = s.Code()
 				req.ServiceName = val.ServiceName()
 				req.Method = field.Name
@@ -164,7 +176,12 @@ func setFuncField(s serialize.Serializer, val Service, proxy Proxy) error {
 				}
 				if len(resp.Data) > 0 {
 					out = reflect.New(field.Type.Out(0).Elem())
-					err = s.Decode(resp.Data, out.Interface())
+					var data []byte
+					data, err = c.Uncompress(resp.Data)
+					if err != nil {
+						return []reflect.Value{out, reflect.ValueOf(err)}
+					}
+					err = s.Decode(data, out.Interface())
 					if err != nil {
 						return []reflect.Value{out, reflect.ValueOf(err)}
 					}
