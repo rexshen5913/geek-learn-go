@@ -21,6 +21,6 @@ var defaultRejection rejectStrategy = func(ctx context.Context, info *grpc.Unary
 
 var markLimitedRejection rejectStrategy = func(ctx context.Context, info *grpc.UnaryServerInfo,
 	req interface{}, handler grpc.UnaryHandler) (interface{}, error) {
-	ctx = context.WithValue(ctx, "limiter", true)
+	ctx = context.WithValue(ctx, "limited", true)
 	return handler(ctx, req)
 }

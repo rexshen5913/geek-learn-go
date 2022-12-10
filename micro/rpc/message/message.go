@@ -36,6 +36,7 @@ type Request struct {
 	Method      string
 
 	// 扩展字段，用于传递自定义元数据
+	// tracing 的时候，这里要带上 trace 的 id
 	Meta map[string]string
 
 	// 协议体

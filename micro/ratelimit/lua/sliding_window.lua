@@ -1,9 +1,10 @@
 -- KEY 只有一个
 -- 参数（按照顺序）：阈值，窗口大小（毫秒），当前时间戳（毫秒）。
 -- 你们也可以考虑使用秒或者纳秒作为单位，差异不大
-local now = tonumber(ARGV[3])
-local window = tonumber(ARGV[2])
 local threshold = tonumber(ARGV[1])
+local window = tonumber(ARGV[2])
+local now = tonumber(ARGV[3])
+
 local min = now - window
 local key = KEYS[1]
 

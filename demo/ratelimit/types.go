@@ -1,10 +1,23 @@
 package ratelimit
 
-import "context"
+import (
+	"context"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
 
 type Limiter interface {
 	Acquire(ctx context.Context, req interface{}) (interface{}, error)
 	Release(resp interface{}, err error)
+}
+
+type rejectStrategy func(ctx context.Context,
+	info *grpc.UnaryServerInfo, req interface{}, handler grpc.UnaryHandler) (interface{}, error)
+
+var defaultRejection rejectStrategy = func(ctx context.Context, info *grpc.UnaryServerInfo,
+	req interface{}, handler grpc.UnaryHandler) (interface{}, error) {
+	return nil, status.Errorf(codes.ResourceExhausted, "触发限流 %s", info.FullMethod)
 }
 
 type Guardian interface {

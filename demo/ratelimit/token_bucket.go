@@ -66,7 +66,7 @@ func (t TokenBucketLimiter) BuildUnary() grpc.UnaryServerInterceptor {
 				return handler(ctx, req)
 			}
 		default:
-
+			// 拿不到令牌就直接拒绝
 		}
 
 		// 熔断限流降级之间区别在这里了
