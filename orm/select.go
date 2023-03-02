@@ -31,6 +31,9 @@ func (s *Selector[T]) From(tbl TableReference) *Selector[T] {
 }
 
 func (s *Selector[T]) Build() (*Query, error) {
+	defer func() {
+		s.sb.Reset()
+	}()
 	var err error
 	if s.model == nil {
 		s.model, err = s.r.Get(new(T))
