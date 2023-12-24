@@ -10,7 +10,7 @@ import (
 type Option func(p *SimplePool)
 
 type SimplePool struct {
-	idleChan    chan conn
+	idleChan chan conn
 	waitChan chan *conReq
 
 	factory     func() (net.Conn, error)
@@ -23,12 +23,12 @@ type SimplePool struct {
 	l sync.Mutex
 }
 
-func NewSimplePool(factory func()(net.Conn, error), opts...Option) *SimplePool {
-	res := &SimplePool {
+func NewSimplePool(factory func() (net.Conn, error), opts ...Option) *SimplePool {
+	res := &SimplePool{
 		idleChan: make(chan conn, 16),
 		waitChan: make(chan *conReq, 128),
-		factory: factory,
-		maxCnt: 128,
+		factory:  factory,
+		maxCnt:   128,
 	}
 	for _, opt := range opts {
 		opt(res)
@@ -61,7 +61,7 @@ func (p *SimplePool) Get() (net.Conn, error) {
 			// 所以实际上 waitChan 根本不需要设计很大的容量
 			// 另外，这里需不需要加锁？
 			p.waitChan <- req
-			c := <- req.con
+			c := <-req.con
 			return c.c, nil
 		}
 	}
@@ -71,7 +71,7 @@ func (p *SimplePool) Put(c net.Conn) {
 	// 为什么我只在这个部分加锁，其余部分都不加？
 	p.l.Lock()
 	if len(p.waitChan) > 0 {
-		req := <- p.waitChan
+		req := <-p.waitChan
 		p.l.Unlock()
 		req.con <- conn{c: c, lastActive: time.Now()}
 		return
@@ -83,7 +83,7 @@ func (p *SimplePool) Put(c net.Conn) {
 	case p.idleChan <- conn{c: c, lastActive: time.Now()}:
 	default:
 		defer func() {
-			atomic.AddInt32(&p.maxCnt, -1)
+			atomic.AddInt32(&p.cnt, -1)
 		}()
 		_ = c.Close()
 	}
