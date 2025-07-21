@@ -1,4 +1,4 @@
-module gitee.com/geektime-geekbang/geektime-go
+module github.com/rexshen5913/geek-learn-go/geektime-go 
 
 go 1.18
 

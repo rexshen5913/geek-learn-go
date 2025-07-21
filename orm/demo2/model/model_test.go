@@ -3,8 +3,8 @@ package model
 import (
 	"errors"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo2"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo2"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo2/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
