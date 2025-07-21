@@ -2,12 +2,11 @@ package mock
 
 import (
 	"context"
-	orm "gitee.com/geektime-geekbang/geektime-go/orm/demo4"
+	orm "github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4"
 	"time"
 )
 
 type MiddlewareBuilder struct {
-
 }
 
 func (m MiddlewareBuilder) Build() orm.Middleware {
@@ -29,8 +28,8 @@ func (m MiddlewareBuilder) Build() orm.Middleware {
 }
 
 type Mock struct {
-	Sleep time.Duration
+	Sleep  time.Duration
 	Result *orm.QueryResult
 }
 
-type mockKey struct {}
+type mockKey struct{}

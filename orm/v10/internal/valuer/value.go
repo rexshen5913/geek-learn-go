@@ -18,7 +18,7 @@ package valuer
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/model"
 )
 
 // Value 是对结构体实例的内部抽象

@@ -3,8 +3,8 @@ package orm
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/valuer"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo3/internal/valuer"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo3/model"
 )
 
 // tx := db.Begin(ctx, ...)
@@ -34,11 +34,11 @@ func (tx *Tx) getCore() core {
 	return tx.core
 }
 
-func  (tx *Tx) queryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
+func (tx *Tx) queryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
 	return tx.tx.QueryContext(ctx, query, args...)
 }
 
-func  (tx *Tx) execContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
+func (tx *Tx) execContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	return tx.tx.ExecContext(ctx, query, args...)
 }
 
@@ -49,7 +49,7 @@ type Session interface {
 }
 
 type core struct {
-	r model.Registry
+	r          model.Registry
 	valCreator valuer.Creator
-	dialect Dialect
+	dialect    Dialect
 }

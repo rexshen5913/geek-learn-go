@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/valuer"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/valuer"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -15,14 +15,14 @@ import (
 func TestSelector_Join(t *testing.T) {
 	db := memoryDB(t)
 	type Order struct {
-		Id int
+		Id        int
 		UsingCol1 string
 		UsingCol2 string
 	}
 
 	type OrderDetail struct {
 		OrderId int
-		ItemId int
+		ItemId  int
 
 		UsingCol1 string
 		UsingCol2 string
@@ -41,7 +41,7 @@ func TestSelector_Join(t *testing.T) {
 		{
 			// 虽然泛型是 Order，但是我们传入 OrderDetail
 			name: "specify table",
-			q: NewSelector[Order](db).From(TableOf(&OrderDetail{})),
+			q:    NewSelector[Order](db).From(TableOf(&OrderDetail{})),
 			wantQuery: &Query{
 				SQL: "SELECT * FROM `order_detail`;",
 			},
@@ -96,9 +96,9 @@ func TestSelector_Join(t *testing.T) {
 				t3 := TableOf(&Item{}).As("t3")
 				return NewSelector[Order](db).
 					From(t1.RightJoin(t2).
-					On(t1.C("Id").EQ(t2.C("OrderId"))).
+						On(t1.C("Id").EQ(t2.C("OrderId"))).
 						// On(t1.C("Id").EQ(t2.C("OrderId"))).
-					RightJoin(t3).On(t2.C("ItemId").EQ(t3.C("Id"))))
+						RightJoin(t3).On(t2.C("ItemId").EQ(t3.C("Id"))))
 			}(),
 			wantQuery: &Query{
 				SQL: "SELECT * FROM ((`order` AS `t1` RIGHT JOIN `order_detail` AS `t2` ON `t1`.`id` = `t2`.`order_id`) RIGHT JOIN `item` AS `t3` ON `t2`.`item_id` = `t3`.`id`);",
@@ -140,14 +140,14 @@ func TestSelector_Join(t *testing.T) {
 func TestSelector_Subquery(t *testing.T) {
 	db := memoryDB(t)
 	type Order struct {
-		Id int
+		Id        int
 		UsingCol1 string
 		UsingCol2 string
 	}
 
 	type OrderDetail struct {
 		OrderId int
-		ItemId int
+		ItemId  int
 	}
 
 	testCases := []struct {
@@ -228,19 +228,20 @@ func TestSelector_Subquery(t *testing.T) {
 		})
 	}
 }
+
 // Join 和 Subquery 混合使用
 func TestSelector_SubqueryAndJoin(t *testing.T) {
 	db := memoryDB(t)
 
 	type Order struct {
-		Id int
+		Id        int
 		UsingCol1 string
 		UsingCol2 string
 	}
 
 	type OrderDetail struct {
 		OrderId int
-		ItemId int
+		ItemId  int
 
 		UsingCol1 string
 		UsingCol2 string
@@ -363,7 +364,7 @@ func TestSelector_OffsetLimit(t *testing.T) {
 			name: "offset only",
 			q:    NewSelector[TestModel](db).Offset(10),
 			wantQuery: &Query{
-				SQL: "SELECT * FROM `test_model` OFFSET ?;",
+				SQL:  "SELECT * FROM `test_model` OFFSET ?;",
 				Args: []any{10},
 			},
 		},
@@ -371,7 +372,7 @@ func TestSelector_OffsetLimit(t *testing.T) {
 			name: "limit only",
 			q:    NewSelector[TestModel](db).Limit(10),
 			wantQuery: &Query{
-				SQL: "SELECT * FROM `test_model` LIMIT ?;",
+				SQL:  "SELECT * FROM `test_model` LIMIT ?;",
 				Args: []any{10},
 			},
 		},
@@ -379,7 +380,7 @@ func TestSelector_OffsetLimit(t *testing.T) {
 			name: "limit offset",
 			q:    NewSelector[TestModel](db).Limit(20).Offset(10),
 			wantQuery: &Query{
-				SQL: "SELECT * FROM `test_model` LIMIT ? OFFSET ?;",
+				SQL:  "SELECT * FROM `test_model` LIMIT ? OFFSET ?;",
 				Args: []any{20, 10},
 			},
 		},
@@ -416,30 +417,30 @@ func TestSelector_Having(t *testing.T) {
 		{
 			// 单个条件
 			name: "single",
-			q:    NewSelector[TestModel](db).GroupBy(C("Age")).
+			q: NewSelector[TestModel](db).GroupBy(C("Age")).
 				Having(C("FirstName").EQ("Deng")),
 			wantQuery: &Query{
-				SQL: "SELECT * FROM `test_model` GROUP BY `age` HAVING `first_name` = ?;",
+				SQL:  "SELECT * FROM `test_model` GROUP BY `age` HAVING `first_name` = ?;",
 				Args: []any{"Deng"},
 			},
 		},
 		{
 			// 多个条件
 			name: "multiple",
-			q:    NewSelector[TestModel](db).GroupBy(C("Age")).
+			q: NewSelector[TestModel](db).GroupBy(C("Age")).
 				Having(C("FirstName").EQ("Deng"), C("LastName").EQ("Ming")),
 			wantQuery: &Query{
-				SQL: "SELECT * FROM `test_model` GROUP BY `age` HAVING (`first_name` = ?) AND (`last_name` = ?);",
+				SQL:  "SELECT * FROM `test_model` GROUP BY `age` HAVING (`first_name` = ?) AND (`last_name` = ?);",
 				Args: []any{"Deng", "Ming"},
 			},
 		},
 		{
 			// 聚合函数
 			name: "avg",
-			q:    NewSelector[TestModel](db).GroupBy(C("Age")).
+			q: NewSelector[TestModel](db).GroupBy(C("Age")).
 				Having(Avg("Age").EQ(18)),
 			wantQuery: &Query{
-				SQL: "SELECT * FROM `test_model` GROUP BY `age` HAVING AVG(`age`) = ?;",
+				SQL:  "SELECT * FROM `test_model` GROUP BY `age` HAVING AVG(`age`) = ?;",
 				Args: []any{18},
 			},
 		},
@@ -490,8 +491,8 @@ func TestSelector_GroupBy(t *testing.T) {
 		},
 		{
 			// 不存在
-			name: "invalid column",
-			q:    NewSelector[TestModel](db).GroupBy(C("Invalid")),
+			name:    "invalid column",
+			q:       NewSelector[TestModel](db).GroupBy(C("Invalid")),
 			wantErr: errs.NewErrUnknownField("Invalid"),
 		},
 	}
@@ -524,8 +525,8 @@ func TestSelector_Select(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid column",
-			q:    NewSelector[TestModel](db).Select(Avg("Invalid")),
+			name:    "invalid column",
+			q:       NewSelector[TestModel](db).Select(Avg("Invalid")),
 			wantErr: errs.NewErrUnknownField("Invalid"),
 		},
 		{
@@ -552,7 +553,7 @@ func TestSelector_Select(t *testing.T) {
 		// 别名
 		{
 			name: "alias",
-			q:    NewSelector[TestModel](db).
+			q: NewSelector[TestModel](db).
 				Select(C("Id").As("my_id"),
 					Avg("Age").As("avg_age")),
 			wantQuery: &Query{
@@ -562,10 +563,10 @@ func TestSelector_Select(t *testing.T) {
 		// WHERE 忽略别名
 		{
 			name: "where ignore alias",
-			q:    NewSelector[TestModel](db).
+			q: NewSelector[TestModel](db).
 				Where(C("Id").As("my_id").LT(100)),
 			wantQuery: &Query{
-				SQL: "SELECT * FROM `test_model` WHERE `id` < ?;",
+				SQL:  "SELECT * FROM `test_model` WHERE `id` < ?;",
 				Args: []any{100},
 			},
 		},
@@ -630,7 +631,7 @@ func TestSelector_Build(t *testing.T) {
 		{
 			// 使用 OR
 			name: "or",
-			q:    NewSelector[TestModel](db).
+			q: NewSelector[TestModel](db).
 				Where(C("Age").GT(18).Or(C("Age").LT(35))),
 			wantQuery: &Query{
 				SQL:  "SELECT * FROM `test_model` WHERE (`age` > ?) OR (`age` < ?);",
@@ -649,14 +650,14 @@ func TestSelector_Build(t *testing.T) {
 		},
 		{
 			// 非法列
-			name: "invalid column",
-			q:    NewSelector[TestModel](db).Where(Not(C("Invalid").GT(18))),
+			name:    "invalid column",
+			q:       NewSelector[TestModel](db).Where(Not(C("Invalid").GT(18))),
 			wantErr: errs.NewErrUnknownField("Invalid"),
 		},
 		{
 			// 使用 RawExpr
 			name: "raw expression",
-			q:    NewSelector[TestModel](db).
+			q: NewSelector[TestModel](db).
 				Where(Raw("`age` < ?", 18).AsPredicate()),
 			wantQuery: &Query{
 				SQL:  "SELECT * FROM `test_model` WHERE `age` < ?;",
@@ -762,12 +763,12 @@ func TestSelector_Get(t *testing.T) {
 // 我的输出结果
 // goos: linux
 // goarch: amd64
-// pkg: gitee.com/geektime-geekbang/geektime-go/orm
+// pkg: github.com/rexshen5913/geek-learn-go/geektime-go /orm
 // cpu: Intel(R) Core(TM) i5-10400F CPU @ 2.90GHz
 // BenchmarkQuerier_Get/unsafe-12             10000            453677 ns/op            3246 B/op        108 allocs/op
 // BenchmarkQuerier_Get/reflect-12            10000           1173199 ns/op            3427 B/op        117 allocs/op
 // PASS
-// ok      gitee.com/geektime-geekbang/geektime-go/orm     16.324s
+// ok      github.com/rexshen5913/geek-learn-go/geektime-go /orm     16.324s
 func BenchmarkQuerier_Get(b *testing.B) {
 	db, err := Open("sqlite3", fmt.Sprintf("file:benchmark_get.db?cache=shared&mode=memory"))
 	if err != nil {
@@ -778,7 +779,7 @@ func BenchmarkQuerier_Get(b *testing.B) {
 		b.Fatal(err)
 	}
 
-	res, err := db.db.Exec("INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`)" +
+	res, err := db.db.Exec("INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`)"+
 		"VALUES (?,?,?,?)", 12, "Deng", 18, "Ming")
 
 	if err != nil {

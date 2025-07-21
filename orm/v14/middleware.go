@@ -4,7 +4,7 @@ package orm
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/v14/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/v14/model"
 )
 
 type QueryContext struct {

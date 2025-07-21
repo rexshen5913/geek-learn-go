@@ -1,7 +1,7 @@
 package recovery
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/web/homework2"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/homework2"
 )
 
 type MiddlewareBuilder struct {

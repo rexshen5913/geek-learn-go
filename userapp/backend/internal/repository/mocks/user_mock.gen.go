@@ -8,8 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	entity "gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/domainobject/entity"
 	gomock "github.com/golang/mock/gomock"
+	entity "github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/domainobject/entity"
 )
 
 // MockUserRepository is a mock of UserRepository interface.

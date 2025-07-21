@@ -1,9 +1,9 @@
 package main
 
 import (
-	rpc "gitee.com/geektime-geekbang/geektime-go/micro/demo"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo/serialize/json"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo/serialize/proto"
+	rpc "github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo/serialize/json"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo/serialize/proto"
 )
 
 func main() {

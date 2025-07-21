@@ -2,7 +2,7 @@
 
 package orm
 
-import "gitee.com/geektime-geekbang/geektime-go/orm/v9/internal/errs"
+import "github.com/rexshen5913/geek-learn-go/geektime-go /orm/v9/internal/errs"
 
 // 将内部的 sentinel error 暴露出去
 var (

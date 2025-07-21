@@ -3,7 +3,7 @@ package integration
 import (
 	"context"
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/micro/rpc"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/rpc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"

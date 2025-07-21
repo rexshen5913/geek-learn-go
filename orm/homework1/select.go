@@ -3,29 +3,29 @@ package orm
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework1/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework1/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework1/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework1/model"
 	"strings"
 )
 
 // Selector 用于构造 SELECT 语句
 type Selector[T any] struct {
-	sb strings.Builder
-	alias []string
-	args []any
-	table string
-	where []Predicate
-	having []Predicate
-	model *model.Model
-	db *DB
+	sb      strings.Builder
+	alias   []string
+	args    []any
+	table   string
+	where   []Predicate
+	having  []Predicate
+	model   *model.Model
+	db      *DB
 	columns []Selectable
 	groupBy []Column
 	orderBy []OrderBy
-	offset int
-	limit int
+	offset  int
+	limit   int
 }
 
-func (s *Selector[T]) Select(cols...Selectable) *Selector[T] {
+func (s *Selector[T]) Select(cols ...Selectable) *Selector[T] {
 	s.columns = cols
 	return s
 }
@@ -38,7 +38,7 @@ func (s *Selector[T]) From(tbl string) *Selector[T] {
 
 func (s *Selector[T]) Build() (*Query, error) {
 	var (
-		t T
+		t   T
 		err error
 	)
 	s.model, err = s.db.r.Get(&t)
@@ -106,11 +106,10 @@ func (s *Selector[T]) Build() (*Query, error) {
 
 	s.sb.WriteString(";")
 	return &Query{
-		SQL: s.sb.String(),
+		SQL:  s.sb.String(),
 		Args: s.args,
 	}, nil
 }
-
 
 func (s *Selector[T]) buildOrderBy() error {
 	for idx, ob := range s.orderBy {
@@ -256,7 +255,7 @@ func (s *Selector[T]) Where(ps ...Predicate) *Selector[T] {
 }
 
 // GroupBy 设置 group by 子句
-func (s *Selector[T]) GroupBy(cols...Column) *Selector[T] {
+func (s *Selector[T]) GroupBy(cols ...Column) *Selector[T] {
 	s.groupBy = cols
 	return s
 }
@@ -276,7 +275,7 @@ func (s *Selector[T]) Limit(limit int) *Selector[T] {
 	return s
 }
 
-func (s *Selector[T]) OrderBy(orderBys...OrderBy) *Selector[T] {
+func (s *Selector[T]) OrderBy(orderBys ...OrderBy) *Selector[T] {
 	s.orderBy = orderBys
 	return s
 }
@@ -308,7 +307,7 @@ func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
 	return tp, err
 }
 
-func (s *Selector[T]) addArgs(args...any){
+func (s *Selector[T]) addArgs(args ...any) {
 	if s.args == nil {
 		s.args = make([]any, 0, 8)
 	}
@@ -353,20 +352,20 @@ type Selectable interface {
 }
 
 type OrderBy struct {
-	col string
+	col   string
 	order string
 }
 
 func Asc(col string) OrderBy {
 	return OrderBy{
-		col: col,
+		col:   col,
 		order: "ASC",
 	}
 }
 
 func Desc(col string) OrderBy {
 	return OrderBy{
-		col: col,
+		col:   col,
 		order: "DESC",
 	}
 }

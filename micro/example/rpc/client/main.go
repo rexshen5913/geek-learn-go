@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/micro/example/rpc/proto/gen"
-	"gitee.com/geektime-geekbang/geektime-go/micro/rpc"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/example/rpc/proto/gen"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/rpc"
 )
 
 func main() {

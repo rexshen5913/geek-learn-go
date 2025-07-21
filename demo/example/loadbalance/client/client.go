@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/demo"
-	gen2 "gitee.com/geektime-geekbang/geektime-go/demo/example/loadbalance/proto/gen"
-	"gitee.com/geektime-geekbang/geektime-go/demo/loadbalance"
-	"gitee.com/geektime-geekbang/geektime-go/demo/loadbalance/roundrobin"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry/etcd"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo"
+	gen2 "github.com/rexshen5913/geek-learn-go/geektime-go /demo/example/loadbalance/proto/gen"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/loadbalance"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/loadbalance/roundrobin"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/registry/etcd"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/balancer"
@@ -37,7 +37,7 @@ func main() {
 
 	cc, err := grpc.Dial("registry:///user-service",
 		grpc.WithInsecure(),
-		grpc.WithResolvers(demo.NewResolverBuilder(r, time.Second * 3)),
+		grpc.WithResolvers(demo.NewResolverBuilder(r, time.Second*3)),
 		grpc.WithDefaultServiceConfig(fmt.Sprintf(`{"LoadBalancingPolicy": "%s"}`,
 			pickerBuilder.Name())))
 	if err != nil {

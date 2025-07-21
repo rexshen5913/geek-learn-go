@@ -1,7 +1,7 @@
 package micro
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/micro/v5/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/v5/registry"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/resolver"
 	"time"

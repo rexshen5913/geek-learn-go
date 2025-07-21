@@ -2,8 +2,8 @@ package valuer
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework1/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework1/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework1/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework1/model"
 	"reflect"
 	"unsafe"
 )
@@ -22,7 +22,6 @@ func NewUnsafeValue(val interface{}, meta *model.Model) Value {
 	}
 }
 
-
 func (u unsafeValue) SetColumns(rows *sql.Rows) error {
 	cs, err := rows.Columns()
 	if err != nil {
@@ -40,7 +39,7 @@ func (u unsafeValue) SetColumns(rows *sql.Rows) error {
 		}
 		ptr := unsafe.Pointer(uintptr(u.addr) + cm.Offset)
 		val := reflect.NewAt(cm.Type, ptr)
-		colValues[i]=val.Interface()
+		colValues[i] = val.Interface()
 	}
 	return rows.Scan(colValues...)
 }

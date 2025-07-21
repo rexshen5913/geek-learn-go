@@ -1,5 +1,5 @@
 package orm
 
-import "gitee.com/geektime-geekbang/geektime-go/orm/demo4/internal/errs"
+import "github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/internal/errs"
 
 var ErrNoRows = errs.ErrNoRows

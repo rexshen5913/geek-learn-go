@@ -2,10 +2,10 @@ package opentelemetry
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/observability"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/observability"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
-	"go.opentelemetry.io/otel/attribute"
 )
 
 type ClientInterceptorBuilder struct {

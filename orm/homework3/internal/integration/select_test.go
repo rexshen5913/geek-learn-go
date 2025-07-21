@@ -1,10 +1,11 @@
 //go:build e2e
+
 package integration
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/internal/test"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/internal/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -30,9 +31,9 @@ func (s *SelectTestSuite) TearDownSuite() {
 }
 
 func (s *SelectTestSuite) TestGet() {
-	testCases := []struct{
-		name string
-		s *orm.Selector[test.SimpleStruct]
+	testCases := []struct {
+		name    string
+		s       *orm.Selector[test.SimpleStruct]
 		wantErr error
 		wantRes *test.SimpleStruct
 	}{
@@ -66,7 +67,7 @@ func TestSelectMySQL8(t *testing.T) {
 	suite.Run(t, &SelectTestSuite{
 		Suite: Suite{
 			driver: "mysql",
-			dsn: "root:root@tcp(localhost:13306)/integration_test",
+			dsn:    "root:root@tcp(localhost:13306)/integration_test",
 		},
 	})
 }

@@ -2,16 +2,16 @@ package orm
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/valuer"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo2/internal/valuer"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo2/model"
 )
 
 type DBOption func(*DB)
 
 // DB 是sql.DB 的装饰器
 type DB struct {
-	db *sql.DB
-	r  model.Registry
+	db      *sql.DB
+	r       model.Registry
 	dialect Dialect
 
 	valCreator valuer.Creator
@@ -25,7 +25,7 @@ type DB struct {
 // db1 := Open(r1)
 // db2 := Open(r1)
 
-func Open(driver string, dsn string, opts...DBOption) (*DB, error) {
+func Open(driver string, dsn string, opts ...DBOption) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 
 	if err != nil {
@@ -37,12 +37,12 @@ func Open(driver string, dsn string, opts...DBOption) (*DB, error) {
 // OpenDB
 // 我可以利用 OpenDB 来传入一个 mock 的DB
 // sqlmock.Open 的 DB
-func OpenDB(db *sql.DB, opts...DBOption) (*DB, error) {
+func OpenDB(db *sql.DB, opts ...DBOption) (*DB, error) {
 	res := &DB{
 		r:          model.NewRegistry(),
 		db:         db,
 		valCreator: valuer.NewUnsafeValue,
-		dialect: &mysqlDialect{},
+		dialect:    &mysqlDialect{},
 	}
 	for _, opt := range opts {
 		opt(res)
@@ -61,7 +61,6 @@ func DBWithDialect(dialect Dialect) DBOption {
 		db.dialect = dialect
 	}
 }
-
 
 // func MustNewDB(opts...DBOption) *DB{
 // 	res, err := Open(opts...)

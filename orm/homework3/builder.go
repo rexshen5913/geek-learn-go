@@ -1,19 +1,18 @@
-
 package orm
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/model"
 	"strings"
 )
 
 type builder struct {
 	core
-	sb strings.Builder
-	args []any
+	sb      strings.Builder
+	args    []any
 	dialect Dialect
-	quoter byte
-	model *model.Model
+	quoter  byte
+	model   *model.Model
 }
 
 // buildColumn 构造列
@@ -64,7 +63,7 @@ func (b *builder) colName(table TableReference, fd string) (string, error) {
 	}
 }
 
-func (b *builder) quote(name string){
+func (b *builder) quote(name string) {
 	b.sb.WriteByte(b.quoter)
 	b.sb.WriteString(name)
 	b.sb.WriteByte(b.quoter)
@@ -77,7 +76,7 @@ func (b *builder) raw(r RawExpr) {
 	}
 }
 
-func (b *builder) addArgs(args...any){
+func (b *builder) addArgs(args ...any) {
 	if b.args == nil {
 		// 很少有查询能够超过八个参数
 		// INSERT 除外

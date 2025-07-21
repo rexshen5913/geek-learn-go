@@ -5,9 +5,9 @@ import (
 	"crypto/sha1"
 	"errors"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/domainobject/entity"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/repository"
 	"github.com/google/uuid"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/domainobject/entity"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/repository"
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -15,7 +15,7 @@ import (
 type UserService interface {
 	CreateUser(ctx context.Context, user entity.User) (entity.User, error)
 	Login(ctx context.Context, user entity.User) (entity.User, error)
-	FindById(ctx context.Context, id uint64)(entity.User, error)
+	FindById(ctx context.Context, id uint64) (entity.User, error)
 	EditProfile(ctx context.Context, user entity.User) error
 }
 
@@ -33,7 +33,7 @@ func (u *userService) EditProfile(ctx context.Context, user entity.User) error {
 	return u.repo.UpdateUser(ctx, user)
 }
 
-func (u *userService) FindById(ctx context.Context, id uint64)(entity.User, error) {
+func (u *userService) FindById(ctx context.Context, id uint64) (entity.User, error) {
 	return u.repo.GetUserById(ctx, id)
 }
 
@@ -54,7 +54,7 @@ func (u *userService) Login(ctx context.Context, input entity.User) (entity.User
 	return usr, nil
 }
 
-func(u *userService) CreateUser(ctx context.Context, user entity.User) (entity.User, error) {
+func (u *userService) CreateUser(ctx context.Context, user entity.User) (entity.User, error) {
 	if err := user.Check(); err != nil {
 		return entity.User{}, fmt.Errorf("%w, 原因 %v", ErrInvalidNewUser, err)
 	}
@@ -75,4 +75,3 @@ func (u *userService) encryptPwdByPbkdf2(raw string, salt string) string {
 func (u *userService) ServiceName() string {
 	return "user"
 }
-

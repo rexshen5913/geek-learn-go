@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo/example/rpc/proto/gen"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo/example/rpc/proto/gen"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 		panic(err)
 	}
 
-	_, _  = us.GetById(demo.CtxWithOneway(context.Background()), &FindByUserIdReq{
+	_, _ = us.GetById(demo.CtxWithOneway(context.Background()), &FindByUserIdReq{
 		Id: 12,
 	})
 
@@ -46,7 +46,7 @@ func main() {
 	// 	us.GetById(context.Background(), &FindByUserIdReq{
 	// 		Id: 12,
 	// 	})
-		// 处理一下 resp，就是回调
+	// 处理一下 resp，就是回调
 	// }()
 
 	// var eg errgroup.Group

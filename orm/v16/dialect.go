@@ -1,12 +1,13 @@
 //go:build v16
+
 package orm
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/errs"
 )
 
 var (
-	MySQL Dialect = &mysqlDialect{}
+	MySQL   Dialect = &mysqlDialect{}
 	SQLite3 Dialect = &sqlite3Dialect{}
 )
 
@@ -18,7 +19,6 @@ type Dialect interface {
 }
 
 type standardSQL struct {
-
 }
 
 func (s *standardSQL) quoter() byte {
@@ -35,7 +35,7 @@ type mysqlDialect struct {
 	standardSQL
 }
 
-func (m *mysqlDialect)  quoter() byte {
+func (m *mysqlDialect) quoter() byte {
 	return '`'
 }
 
@@ -74,8 +74,7 @@ type sqlite3Dialect struct {
 	standardSQL
 }
 
-
-func (s *sqlite3Dialect)  quoter() byte {
+func (s *sqlite3Dialect) quoter() byte {
 	return '`'
 }
 

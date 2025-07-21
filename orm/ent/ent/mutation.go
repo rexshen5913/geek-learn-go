@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"entgo.io/ent"
-	"gitee.com/geektime-geekbang/geektime-go/orm/ent/ent/predicate"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/ent/ent/predicate"
 )
 
 const (

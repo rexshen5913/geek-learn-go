@@ -2,7 +2,7 @@ package broadcastall
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/micro/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/registry"
 	"google.golang.org/grpc"
 	"reflect"
 	"sync"

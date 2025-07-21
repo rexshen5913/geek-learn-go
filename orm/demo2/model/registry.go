@@ -1,7 +1,7 @@
 package model
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo2/internal/errs"
 	"reflect"
 	"strings"
 	"sync"
@@ -10,7 +10,7 @@ import (
 
 type Registry interface {
 	Get(val any) (*Model, error)
-	Register(val any, opts...Option) (*Model, error)
+	Register(val any, opts ...Option) (*Model, error)
 }
 
 type registry struct {
@@ -31,13 +31,13 @@ func (r *registry) Get(val any) (*Model, error) {
 }
 
 // Register 输入不能为 nil
-func (r *registry) Register(val any, opts...Option) (*Model, error) {
+func (r *registry) Register(val any, opts ...Option) (*Model, error) {
 	if val == nil {
 		return nil, errs.ErrInputNil
 	}
 	typ := reflect.TypeOf(val)
 	if typ.Kind() != reflect.Ptr || typ.Elem().Kind() != reflect.Struct {
-		return nil,  errs.ErrPointerOnly
+		return nil, errs.ErrPointerOnly
 	}
 	typ = typ.Elem()
 	numField := typ.NumField()
@@ -56,11 +56,11 @@ func (r *registry) Register(val any, opts...Option) (*Model, error) {
 			Type:    fd.Type,
 			GoName:  fd.Name,
 			Offset:  fd.Offset,
-			Index: fd.Index,
+			Index:   fd.Index,
 		}
 		fieldMap[fd.Name] = fdMeta
 		colMap[colName] = fdMeta
-		columns[i]=fdMeta
+		columns[i] = fdMeta
 	}
 
 	var tableName string
@@ -88,7 +88,7 @@ func (r *registry) Register(val any, opts...Option) (*Model, error) {
 }
 
 // column => id
-func (r *registry)parseTag(tag reflect.StructTag) map[string]string {
+func (r *registry) parseTag(tag reflect.StructTag) map[string]string {
 	ormTag := tag.Get("orm")
 	kvs := strings.Split(ormTag, ",")
 	res := make(map[string]string, len(kvs))
@@ -99,7 +99,7 @@ func (r *registry)parseTag(tag reflect.StructTag) map[string]string {
 		if len(segs) > 1 {
 			v = segs[1]
 		}
-		res[key]= v
+		res[key] = v
 	}
 	return res
 }

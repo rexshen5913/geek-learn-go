@@ -1,9 +1,7 @@
-
-
 package orm
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework2/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework2/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -78,7 +76,7 @@ func TestUpdater_Build(t *testing.T) {
 		},
 		{
 			name: "non-zero",
-			u: NewUpdater[TestModel](db).Set(AssignNotZeroColumns(&TestModel{Id: 13})...),
+			u:    NewUpdater[TestModel](db).Set(AssignNotZeroColumns(&TestModel{Id: 13})...),
 			want: &Query{
 				SQL:  "UPDATE `test_model` SET `id`=?;",
 				Args: []any{int64(13)},

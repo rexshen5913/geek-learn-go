@@ -1,15 +1,16 @@
 //go:build v15
+
 package opentelemetry
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/v15"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/v15"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
 
-const defaultInstrumentationName = "gitee.com/geektime-geekbang/geektime-go/orm/middleware/opentelemetry"
+const defaultInstrumentationName = "github.com/rexshen5913/geek-learn-go/geektime-go /orm/middleware/opentelemetry"
 
 type MiddlewareBuilder struct {
 	Tracer trace.Tracer
@@ -22,7 +23,7 @@ func (b *MiddlewareBuilder) Build() orm.Middleware {
 	return func(next orm.HandleFunc) orm.HandleFunc {
 		return func(ctx context.Context, qc *orm.QueryContext) *orm.QueryResult {
 			tbl := qc.Model.TableName
-			reqCtx, span := b.Tracer.Start(ctx, qc.Type+ "-" + tbl, trace.WithAttributes())
+			reqCtx, span := b.Tracer.Start(ctx, qc.Type+"-"+tbl, trace.WithAttributes())
 			defer span.End()
 			span.SetAttributes(attribute.String("component", "orm"))
 			q, err := qc.builder.Build()

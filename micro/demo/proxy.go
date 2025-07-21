@@ -2,7 +2,7 @@ package demo
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo/message"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo/message"
 )
 
 // type Middleware func(next Proxy) Proxy
@@ -29,4 +29,3 @@ type Proxy interface {
 // 	}
 // 	res := f.Proxy.Invoke()
 // }
-

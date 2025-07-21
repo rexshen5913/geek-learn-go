@@ -3,7 +3,7 @@
 package integration
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )

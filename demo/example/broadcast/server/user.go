@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	gen2 "gitee.com/geektime-geekbang/geektime-go/demo/example/loadbalance/proto/gen"
+	gen2 "github.com/rexshen5913/geek-learn-go/geektime-go /demo/example/loadbalance/proto/gen"
 )
 
 type UserService struct {

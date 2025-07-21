@@ -5,8 +5,8 @@ package orm
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/model"
 	"strings"
 )
 

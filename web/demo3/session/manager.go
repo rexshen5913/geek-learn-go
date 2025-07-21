@@ -1,7 +1,7 @@
 package session
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/web/demo3"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/demo3"
 )
 
 type Manager struct {

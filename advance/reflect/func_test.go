@@ -1,7 +1,7 @@
 package reflect
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/advance/reflect/types"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /advance/reflect/types"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"

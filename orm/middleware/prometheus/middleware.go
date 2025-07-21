@@ -2,8 +2,8 @@ package prometheus
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm"
 	"time"
 )
 
@@ -30,7 +30,7 @@ func (m MiddlewareBuilder) Build() orm.Middleware {
 				typ := "unknown"
 				// 原生查询才会走到这里
 				tblName := "unknown"
-				if qc.Model != nil  {
+				if qc.Model != nil {
 					typ = qc.Model.TableName
 					tblName = qc.Model.TableName
 				}

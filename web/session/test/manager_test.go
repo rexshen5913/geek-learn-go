@@ -1,11 +1,11 @@
 package test
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/web"
-	"gitee.com/geektime-geekbang/geektime-go/web/session"
-	"gitee.com/geektime-geekbang/geektime-go/web/session/cookie"
-	"gitee.com/geektime-geekbang/geektime-go/web/session/memory"
 	"github.com/google/uuid"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session/cookie"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session/memory"
 	"net/http"
 	"testing"
 	"time"

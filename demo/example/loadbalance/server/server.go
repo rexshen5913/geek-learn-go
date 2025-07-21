@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/demo"
-	"gitee.com/geektime-geekbang/geektime-go/demo/example/loadbalance/proto/gen"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry/etcd"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/example/loadbalance/proto/gen"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/registry/etcd"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"golang.org/x/sync/errgroup"
 	"strconv"
@@ -27,12 +27,12 @@ func main() {
 		idx := i
 		eg.Go(func() error {
 			group := "a"
-			if idx %2 == 0 {
-				group= "b"
+			if idx%2 == 0 {
+				group = "b"
 			}
 			server := demo.NewServer("user-service",
 				demo.ServerWithGroup(group),
-				demo.ServerWithRegistry(r), demo.ServerWithWeight(uint32(1 + i)))
+				demo.ServerWithRegistry(r), demo.ServerWithWeight(uint32(1+i)))
 			defer server.Close()
 
 			us := &UserService{

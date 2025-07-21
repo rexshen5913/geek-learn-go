@@ -2,9 +2,9 @@ package rpc
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/compress"
-	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/message"
-	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/serialize/json"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/rpc/compress"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/rpc/message"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/rpc/serialize/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"

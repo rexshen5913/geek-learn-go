@@ -3,24 +3,24 @@ package valuer
 import (
 	"database/sql"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo3/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo3/model"
 	"reflect"
 	"unsafe"
 )
 
 type unsafeValue struct {
-	t any
+	t     any
 	model *model.Model
-	addr unsafe.Pointer
+	addr  unsafe.Pointer
 }
 
 func NewUnsafeValue(t any, model *model.Model) Value {
 	addr := unsafe.Pointer(reflect.ValueOf(t).Pointer())
 	return unsafeValue{
-		t: t,
+		t:     t,
 		model: model,
-		addr: addr,
+		addr:  addr,
 	}
 }
 
@@ -58,7 +58,7 @@ func (u unsafeValue) SetColumns(rows *sql.Rows) error {
 		}
 
 		// 要计算 字段 的真实地址：对象起始地址 + 字段偏移量
-		fdVal := reflect.NewAt(fd.Type, unsafe.Pointer(uintptr(u.addr) + fd.Offset))
+		fdVal := reflect.NewAt(fd.Type, unsafe.Pointer(uintptr(u.addr)+fd.Offset))
 		colValues = append(colValues, fdVal.Interface())
 	}
 

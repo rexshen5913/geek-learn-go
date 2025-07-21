@@ -1,15 +1,15 @@
 package main
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/cache"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/repository"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/repository/dao"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/service"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/web/handler"
-	"gitee.com/geektime-geekbang/geektime-go/web/session"
-	"gitee.com/geektime-geekbang/geektime-go/web/session/cookie"
-	rstore "gitee.com/geektime-geekbang/geektime-go/web/session/redis"
 	"github.com/go-redis/redis/v9"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /cache"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/repository"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/repository/dao"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/service"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/web/handler"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session/cookie"
+	rstore "github.com/rexshen5913/geek-learn-go/geektime-go /web/session/redis"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -34,14 +34,14 @@ func main() {
 
 	db := initDB()
 	rc := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr:     "localhost:6379",
 		Password: "abc",
 	})
 	c := cache.NewRedisCache(rc)
 	repo := repository.NewUserRepository(dao.NewUserDAO(db), c)
 	userSvr := service.NewUserService(repo)
 	sessMgr := session.Manager{
-		Store: rstore.NewStore(rc),
+		Store:      rstore.NewStore(rc),
 		Propagator: cookie.NewPropagator("sess_id"),
 		SessCtxKey: "_sess",
 	}

@@ -8,8 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	model "gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/repository/dao/model"
 	gomock "github.com/golang/mock/gomock"
+	model "github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/repository/dao/model"
 )
 
 // MockUserDAO is a mock of UserDAO interface.

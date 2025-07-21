@@ -3,8 +3,8 @@ package orm
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/errs"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo2/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -53,7 +53,7 @@ func TestSelector_Build(t *testing.T) {
 		{
 			// 单一简单条件
 			name: "single and simple predicate",
-			q:    NewSelector[TestModel](db).From("`test_model_t`").
+			q: NewSelector[TestModel](db).From("`test_model_t`").
 				Where(C("Id").EQ(1)),
 			wantQuery: &Query{
 				SQL:  "SELECT * FROM `test_model_t` WHERE `id` = ?;",
@@ -66,7 +66,7 @@ func TestSelector_Build(t *testing.T) {
 			q: NewSelector[TestModel](db).
 				Where(C("Age").GT(18), C("Age").LT(35)),
 			wantQuery: &Query{
-					// TestModel -> test_model
+				// TestModel -> test_model
 				SQL:  "SELECT * FROM `test_model` WHERE (`age` > ?) AND (`age` < ?);",
 				Args: []any{18, 35},
 			},
@@ -84,7 +84,7 @@ func TestSelector_Build(t *testing.T) {
 		{
 			// 使用 OR
 			name: "or",
-			q:    NewSelector[TestModel](db).
+			q: NewSelector[TestModel](db).
 				Where(C("Age").GT(18).Or(C("Age").LT(35))),
 			wantQuery: &Query{
 				SQL:  "SELECT * FROM `test_model` WHERE (`age` > ?) OR (`age` < ?);",
@@ -129,43 +129,43 @@ func TestSelector_Get(t *testing.T) {
 		wantVal  *TestModel
 	}{
 		{
-			name:"single row",
-			query: "SELECT .*",
+			name:    "single row",
+			query:   "SELECT .*",
 			mockErr: nil,
-			mockRows: func() *sqlmock.Rows{
+			mockRows: func() *sqlmock.Rows {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "age", "last_name"})
 				rows.AddRow([]byte("123"), []byte("Ming"), []byte("18"), []byte("Deng"))
 				return rows
 			}(),
 			wantVal: &TestModel{
-				Id: 123,
+				Id:        123,
 				FirstName: "Ming",
-				Age: 18,
-				LastName: &sql.NullString{Valid: true, String: "Deng"},
+				Age:       18,
+				LastName:  &sql.NullString{Valid: true, String: "Deng"},
 			},
 		},
 
 		{
 			// SELECT 出来的行数小于你结构体的行数
-			name:"less columns",
-			query: "SELECT .*",
+			name:    "less columns",
+			query:   "SELECT .*",
 			mockErr: nil,
-			mockRows: func() *sqlmock.Rows{
+			mockRows: func() *sqlmock.Rows {
 				rows := sqlmock.NewRows([]string{"id", "first_name"})
 				rows.AddRow([]byte("123"), []byte("Ming"))
 				return rows
 			}(),
 			wantVal: &TestModel{
-				Id: 123,
+				Id:        123,
 				FirstName: "Ming",
 			},
 		},
 
 		{
-			name:"invalid columns",
-			query: "SELECT .*",
+			name:    "invalid columns",
+			query:   "SELECT .*",
 			mockErr: nil,
-			mockRows: func() *sqlmock.Rows{
+			mockRows: func() *sqlmock.Rows {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "gender"})
 				rows.AddRow([]byte("123"), []byte("Ming"), []byte("male"))
 				return rows
@@ -174,11 +174,11 @@ func TestSelector_Get(t *testing.T) {
 		},
 
 		{
-			name:"more columns",
-			query: "SELECT .*",
+			name:    "more columns",
+			query:   "SELECT .*",
 			mockErr: nil,
-			mockRows: func() *sqlmock.Rows{
-				rows := sqlmock.NewRows([]string{"id", "first_name", "age", "last_name",  "first_name"})
+			mockRows: func() *sqlmock.Rows {
+				rows := sqlmock.NewRows([]string{"id", "first_name", "age", "last_name", "first_name"})
 				rows.AddRow([]byte("123"), []byte("Ming"), []byte("18"), []byte("Deng"), []byte("明明"))
 				return rows
 			}(),
@@ -193,7 +193,6 @@ func TestSelector_Get(t *testing.T) {
 			mock.ExpectQuery(tc.query).WillReturnRows(tc.mockRows)
 		}
 	}
-
 
 	db, err := OpenDB(mockDB)
 	require.NoError(t, err)
@@ -228,7 +227,7 @@ func TestSelector_Select(t *testing.T) {
 		{
 			// 指定列
 			name: "specify columns",
-			q: NewSelector[TestModel](db).Select(C("Id"), C("Age")),
+			q:    NewSelector[TestModel](db).Select(C("Id"), C("Age")),
 			wantQuery: &Query{
 				SQL: "SELECT `id`,`age` FROM `test_model`;",
 			},
@@ -237,7 +236,7 @@ func TestSelector_Select(t *testing.T) {
 			// 指定聚合函数
 			// AVG, COUNT, SUM, MIN, MAX(xxx)
 			name: "specify aggregate",
-			q: NewSelector[TestModel](db).Select(Min("Id"), Avg("Age")),
+			q:    NewSelector[TestModel](db).Select(Min("Id"), Avg("Age")),
 			wantQuery: &Query{
 				SQL: "SELECT MIN(`id`),AVG(`age`) FROM `test_model`;",
 			},
@@ -245,7 +244,7 @@ func TestSelector_Select(t *testing.T) {
 		{
 			// count distinct
 			name: "specify aggregate",
-			q: NewSelector[TestModel](db).Select(Raw("DISTINCT `first_name`")),
+			q:    NewSelector[TestModel](db).Select(Raw("DISTINCT `first_name`")),
 			wantQuery: &Query{
 				SQL: "SELECT DISTINCT `first_name` FROM `test_model`;",
 			},

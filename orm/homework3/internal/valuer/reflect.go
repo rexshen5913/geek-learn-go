@@ -1,16 +1,15 @@
-
 package valuer
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/model"
 	"reflect"
 )
 
 // reflectValue 基于反射的 Value
 type reflectValue struct {
-	val reflect.Value
+	val  reflect.Value
 	meta *model.Model
 }
 
@@ -20,7 +19,7 @@ var _ Creator = NewReflectValue
 // 输入 val 必须是一个指向结构体实例的指针，而不能是任何其它类型
 func NewReflectValue(val interface{}, meta *model.Model) Value {
 	return reflectValue{
-		val: reflect.ValueOf(val).Elem(),
+		val:  reflect.ValueOf(val).Elem(),
 		meta: meta,
 	}
 }

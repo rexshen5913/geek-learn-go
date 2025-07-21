@@ -1,8 +1,9 @@
 //go:build v15
+
 package orm
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -11,13 +12,13 @@ func TestUpdater_Build(t *testing.T) {
 	db := memoryDB(t)
 	testCases := []struct {
 		name    string
-		u QueryBuilder
+		u       QueryBuilder
 		want    *Query
 		wantErr error
 	}{
 		{
-			name: "no columns",
-			u: NewUpdater[TestModel](db),
+			name:    "no columns",
+			u:       NewUpdater[TestModel](db),
 			wantErr: errs.ErrNoUpdatedColumns,
 		},
 		{
@@ -26,52 +27,52 @@ func TestUpdater_Build(t *testing.T) {
 				Age: 18,
 			}).Set(C("Age")),
 			want: &Query{
-				SQL: "UPDATE `test_model` SET `age`=?;",
+				SQL:  "UPDATE `test_model` SET `age`=?;",
 				Args: []any{int8(18)},
 			},
 		},
 		{
 			name: "assignment",
 			u: NewUpdater[TestModel](db).Update(&TestModel{
-				Age: 18,
+				Age:       18,
 				FirstName: "Tom",
 			}).Set(C("Age"), Assign("FirstName", "DaMing")),
 			want: &Query{
-				SQL: "UPDATE `test_model` SET `age`=?,`first_name`=?;",
+				SQL:  "UPDATE `test_model` SET `age`=?,`first_name`=?;",
 				Args: []any{int8(18), "DaMing"},
 			},
 		},
 		{
 			name: "where",
 			u: NewUpdater[TestModel](db).Update(&TestModel{
-				Age: 18,
+				Age:       18,
 				FirstName: "Tom",
 			}).Set(C("Age"), Assign("FirstName", "DaMing")).
 				Where(C("Id").EQ(1)),
 			want: &Query{
-				SQL: "UPDATE `test_model` SET `age`=?,`first_name`=? WHERE `id` = ?;",
+				SQL:  "UPDATE `test_model` SET `age`=?,`first_name`=? WHERE `id` = ?;",
 				Args: []any{int8(18), "DaMing", 1},
 			},
 		},
 		{
 			name: "incremental",
 			u: NewUpdater[TestModel](db).Update(&TestModel{
-				Age: 18,
+				Age:       18,
 				FirstName: "Tom",
 			}).Set(Assign("Age", C("Age").Add(1))),
 			want: &Query{
-				SQL: "UPDATE `test_model` SET `age`=`age` + ?;",
+				SQL:  "UPDATE `test_model` SET `age`=`age` + ?;",
 				Args: []any{1},
 			},
 		},
 		{
 			name: "incremental-raw",
 			u: NewUpdater[TestModel](db).Update(&TestModel{
-				Age: 18,
+				Age:       18,
 				FirstName: "Tom",
 			}).Set(Assign("Age", Raw("`age`+?", 1))),
 			want: &Query{
-				SQL: "UPDATE `test_model` SET `age`=`age`+?;",
+				SQL:  "UPDATE `test_model` SET `age`=`age`+?;",
 				Args: []any{1},
 			},
 		},

@@ -3,8 +3,8 @@ package memory
 import (
 	"context"
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/web/session"
 	cache "github.com/patrickmn/go-cache"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session"
 	"sync"
 	"time"
 )
@@ -66,9 +66,9 @@ func (m *Store) Get(ctx context.Context, id string) (session.Session, error) {
 }
 
 type memorySession struct {
-	mutex      sync.RWMutex
-	id         string
-	data       map[string]string
+	mutex sync.RWMutex
+	id    string
+	data  map[string]string
 }
 
 func (m *memorySession) Get(ctx context.Context, key string) (string, error) {

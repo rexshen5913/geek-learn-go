@@ -2,7 +2,7 @@ package rpc
 
 import (
 	"encoding/binary"
-	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/message"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/rpc/message"
 	"io"
 	"net"
 )

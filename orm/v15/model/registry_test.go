@@ -1,23 +1,24 @@
 //go:build v15
+
 package model
 
 import (
 	"database/sql"
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
 
 func TestModelWithTableName(t *testing.T) {
-	testCases := []struct{
-		name string
+	testCases := []struct {
+		name          string
 		val           any
 		opt           Option
 		wantTableName string
-		wantErr error
-	} {
+		wantErr       error
+	}{
 		{
 			// 我们没有对空字符串进行校验
 			name:          "empty string",
@@ -47,14 +48,14 @@ func TestModelWithTableName(t *testing.T) {
 }
 
 func TestWithColumnName(t *testing.T) {
-	testCases := []struct{
-		name string
-		val   any
-		opt   Option
-		field string
+	testCases := []struct {
+		name        string
+		val         any
+		opt         Option
+		field       string
 		wantColName string
-		wantErr error
-	} {
+		wantErr     error
+	}{
 		{
 			name:        "new name",
 			val:         &TestModel{},
@@ -95,12 +96,12 @@ func TestWithColumnName(t *testing.T) {
 
 func TestRegistry_get(t *testing.T) {
 	var tm TestModel
-	testCases := []struct{
-		name string
-		val any
+	testCases := []struct {
+		name      string
+		val       any
 		wantModel *Model
-		wantErr error
-	} {
+		wantErr   error
+	}{
 		{
 			name:    "test Model",
 			val:     TestModel{},
@@ -109,21 +110,21 @@ func TestRegistry_get(t *testing.T) {
 		{
 			// 指针
 			name: "pointer",
-			val: &TestModel{},
+			val:  &TestModel{},
 			wantModel: &Model{
 				TableName: "test_model",
-				Fields: []*Field {tm.IdField(), tm.FirstNameField(), tm.AgeField(), tm.LastNameField()},
+				Fields:    []*Field{tm.IdField(), tm.FirstNameField(), tm.AgeField(), tm.LastNameField()},
 				FieldMap: map[string]*Field{
-					"Id": tm.IdField(),
-					"FirstName" : tm.FirstNameField(),
-					"Age": tm.AgeField(),
-					"LastName": tm.LastNameField(),
+					"Id":        tm.IdField(),
+					"FirstName": tm.FirstNameField(),
+					"Age":       tm.AgeField(),
+					"LastName":  tm.LastNameField(),
 				},
 				ColumnMap: map[string]*Field{
-					"id": tm.IdField(),
-					"first_name" :tm.FirstNameField(),
-					"age": tm.AgeField(),
-					"last_name": tm.LastNameField(),
+					"id":         tm.IdField(),
+					"first_name": tm.FirstNameField(),
+					"age":        tm.AgeField(),
+					"last_name":  tm.LastNameField(),
 				},
 			},
 		},
@@ -138,18 +139,18 @@ func TestRegistry_get(t *testing.T) {
 			wantErr: errors.New("orm: 只支持一级指针作为输入，例如 *User"),
 		},
 		{
-			name: "map",
-			val: map[string]string{},
+			name:    "map",
+			val:     map[string]string{},
 			wantErr: errors.New("orm: 只支持一级指针作为输入，例如 *User"),
 		},
 		{
-			name: "slice",
-			val: []int{},
+			name:    "slice",
+			val:     []int{},
 			wantErr: errors.New("orm: 只支持一级指针作为输入，例如 *User"),
 		},
 		{
-			name: "basic type",
-			val: 0,
+			name:    "basic type",
+			val:     0,
 			wantErr: errors.New("orm: 只支持一级指针作为输入，例如 *User"),
 		},
 
@@ -167,21 +168,21 @@ func TestRegistry_get(t *testing.T) {
 				TableName: "column_tag",
 				Fields: []*Field{{
 					ColName: "id",
-					Type: reflect.TypeOf(uint64(0)),
-					GoName: "ID",
+					Type:    reflect.TypeOf(uint64(0)),
+					GoName:  "ID",
 				}},
 				FieldMap: map[string]*Field{
 					"ID": {
 						ColName: "id",
-						Type: reflect.TypeOf(uint64(0)),
-						GoName: "ID",
+						Type:    reflect.TypeOf(uint64(0)),
+						GoName:  "ID",
 					},
 				},
 				ColumnMap: map[string]*Field{
 					"id": {
 						ColName: "id",
-						Type: reflect.TypeOf(uint64(0)),
-						GoName: "ID",
+						Type:    reflect.TypeOf(uint64(0)),
+						GoName:  "ID",
 					},
 				},
 			},
@@ -200,21 +201,21 @@ func TestRegistry_get(t *testing.T) {
 				TableName: "empty_column",
 				Fields: []*Field{{
 					ColName: "first_name",
-					Type: reflect.TypeOf(""),
-					GoName: "FirstName",
+					Type:    reflect.TypeOf(""),
+					GoName:  "FirstName",
 				}},
 				FieldMap: map[string]*Field{
 					"FirstName": {
 						ColName: "first_name",
-						Type: reflect.TypeOf(""),
-						GoName: "FirstName",
+						Type:    reflect.TypeOf(""),
+						GoName:  "FirstName",
 					},
 				},
 				ColumnMap: map[string]*Field{
 					"first_name": {
 						ColName: "first_name",
-						Type: reflect.TypeOf(""),
-						GoName: "FirstName",
+						Type:    reflect.TypeOf(""),
+						GoName:  "FirstName",
 					},
 				},
 			},
@@ -245,21 +246,21 @@ func TestRegistry_get(t *testing.T) {
 				TableName: "ignore_tag",
 				Fields: []*Field{{
 					ColName: "first_name",
-					Type: reflect.TypeOf(""),
-					GoName: "FirstName",
+					Type:    reflect.TypeOf(""),
+					GoName:  "FirstName",
 				}},
 				FieldMap: map[string]*Field{
 					"FirstName": {
 						ColName: "first_name",
-						Type: reflect.TypeOf(""),
-						GoName: "FirstName",
+						Type:    reflect.TypeOf(""),
+						GoName:  "FirstName",
 					},
 				},
 				ColumnMap: map[string]*Field{
 					"first_name": {
 						ColName: "first_name",
-						Type: reflect.TypeOf(""),
-						GoName: "FirstName",
+						Type:    reflect.TypeOf(""),
+						GoName:  "FirstName",
 					},
 				},
 			},
@@ -268,78 +269,78 @@ func TestRegistry_get(t *testing.T) {
 		// 利用接口自定义模型信息
 		{
 			name: "table name",
-			val: &CustomTableName{},
+			val:  &CustomTableName{},
 			wantModel: &Model{
 				TableName: "custom_table_name_t",
 				Fields: []*Field{{
 					ColName: "name",
-					GoName: "Name",
-					Type: reflect.TypeOf(""),
+					GoName:  "Name",
+					Type:    reflect.TypeOf(""),
 				}},
 				FieldMap: map[string]*Field{
 					"Name": {
 						ColName: "name",
-						GoName: "Name",
-						Type: reflect.TypeOf(""),
+						GoName:  "Name",
+						Type:    reflect.TypeOf(""),
 					},
 				},
 				ColumnMap: map[string]*Field{
 					"name": {
 						ColName: "name",
-						GoName: "Name",
-						Type: reflect.TypeOf(""),
+						GoName:  "Name",
+						Type:    reflect.TypeOf(""),
 					},
 				},
 			},
 		},
 		{
 			name: "table name ptr",
-			val: &CustomTableNamePtr{},
+			val:  &CustomTableNamePtr{},
 			wantModel: &Model{
 				TableName: "custom_table_name_ptr_t",
 				Fields: []*Field{{
 					ColName: "name",
-					GoName: "Name",
-					Type: reflect.TypeOf(""),
+					GoName:  "Name",
+					Type:    reflect.TypeOf(""),
 				}},
 				FieldMap: map[string]*Field{
 					"Name": {
 						ColName: "name",
-						GoName: "Name",
-						Type: reflect.TypeOf(""),
+						GoName:  "Name",
+						Type:    reflect.TypeOf(""),
 					},
 				},
 				ColumnMap: map[string]*Field{
 					"name": {
 						ColName: "name",
-						GoName: "Name",
-						Type: reflect.TypeOf(""),
+						GoName:  "Name",
+						Type:    reflect.TypeOf(""),
 					},
 				},
 			},
 		},
 		{
 			name: "empty table name",
-			val: &EmptyTableName{},
+			val:  &EmptyTableName{},
 			wantModel: &Model{
 				TableName: "empty_table_name",
 				Fields: []*Field{{
 					ColName: "name",
-					GoName: "Name",
-					Type: reflect.TypeOf(""),
+					GoName:  "Name",
+					Type:    reflect.TypeOf(""),
 				}},
 				FieldMap: map[string]*Field{
 					"Name": {
 						ColName: "name",
-						GoName: "Name",
-						Type: reflect.TypeOf(""),
+						GoName:  "Name",
+						Type:    reflect.TypeOf(""),
 					},
 				},
 				ColumnMap: map[string]*Field{
 					"name": {
 						ColName: "name",
-						GoName: "Name",
-						Type: reflect.TypeOf(""),
+						GoName:  "Name",
+						Type:    reflect.TypeOf(""),
 					},
 				},
 			},
@@ -347,7 +348,7 @@ func TestRegistry_get(t *testing.T) {
 	}
 
 	r := &registry{}
-	for _, tc :=range testCases {
+	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			m, err := r.Get(tc.val)
 			assert.Equal(t, tc.wantErr, err)
@@ -425,39 +426,39 @@ type TestModel struct {
 func (TestModel) IdField() *Field {
 	return &Field{
 		ColName: "id",
-		Type: reflect.TypeOf(int64(0)),
-		GoName: "Id",
-		Offset: 0,
-		Index: 0,
+		Type:    reflect.TypeOf(int64(0)),
+		GoName:  "Id",
+		Offset:  0,
+		Index:   0,
 	}
 }
 
 func (TestModel) FirstNameField() *Field {
 	return &Field{
 		ColName: "first_name",
-		Type: reflect.TypeOf(""),
-		GoName: "FirstName",
-		Offset: 8,
-		Index: 1,
+		Type:    reflect.TypeOf(""),
+		GoName:  "FirstName",
+		Offset:  8,
+		Index:   1,
 	}
 }
 
 func (TestModel) AgeField() *Field {
-	return &Field {
+	return &Field{
 		ColName: "age",
-		Type: reflect.TypeOf(int8(0)),
-		GoName: "Age",
-		Offset: 24,
-		Index: 2,
+		Type:    reflect.TypeOf(int8(0)),
+		GoName:  "Age",
+		Offset:  24,
+		Index:   2,
 	}
 }
 
 func (TestModel) LastNameField() *Field {
 	return &Field{
 		ColName: "last_name",
-		Type: reflect.TypeOf(&sql.NullString{}),
-		GoName: "LastName",
-		Offset: 32,
-		Index: 3,
+		Type:    reflect.TypeOf(&sql.NullString{}),
+		GoName:  "LastName",
+		Offset:  32,
+		Index:   3,
 	}
 }

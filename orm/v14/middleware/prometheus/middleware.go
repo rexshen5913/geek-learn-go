@@ -4,8 +4,8 @@ package prometheus
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/v14"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/v14"
 	"time"
 )
 

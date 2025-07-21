@@ -2,8 +2,8 @@ package prometheus
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/micro/observability"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/observability"
 	"google.golang.org/grpc"
 	"time"
 )

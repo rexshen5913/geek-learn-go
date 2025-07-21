@@ -2,14 +2,14 @@ package querylog
 
 import (
 	"context"
-	orm "gitee.com/geektime-geekbang/geektime-go/orm/demo4"
+	orm "github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4"
 	"time"
 )
 
 type MiddlewareBuilder struct {
 	// 慢查询的阈值，毫秒单位
 	threshold int64
-	logFunc func(sql string, args...any)
+	logFunc   func(sql string, args ...any)
 }
 
 func (m *MiddlewareBuilder) SlowQueryThreshold(threshold int64) *MiddlewareBuilder {
@@ -17,7 +17,7 @@ func (m *MiddlewareBuilder) SlowQueryThreshold(threshold int64) *MiddlewareBuild
 	return m
 }
 
-func (m *MiddlewareBuilder) LogFunc(logFunc func(sql string, args...any) ) *MiddlewareBuilder {
+func (m *MiddlewareBuilder) LogFunc(logFunc func(sql string, args ...any)) *MiddlewareBuilder {
 	m.logFunc = logFunc
 	return m
 }
@@ -37,7 +37,7 @@ func (m MiddlewareBuilder) Build() orm.Middleware {
 				duration := time.Now().Sub(start)
 				// 设置了慢查询阈值，并且触发了
 				// 我想知道是哪个数据库
-				if m.threshold >0 && duration.Milliseconds() > m.threshold {
+				if m.threshold > 0 && duration.Milliseconds() > m.threshold {
 					m.logFunc(q.SQL, q.Args...)
 				}
 			}()

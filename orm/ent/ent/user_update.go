@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitee.com/geektime-geekbang/geektime-go/orm/ent/ent/predicate"
-	"gitee.com/geektime-geekbang/geektime-go/orm/ent/ent/user"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/ent/ent/predicate"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/ent/ent/user"
 )
 
 // UserUpdate is the builder for updating User entities.

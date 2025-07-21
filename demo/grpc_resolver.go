@@ -2,7 +2,7 @@ package demo
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/registry"
 	"google.golang.org/grpc/attributes"
 	"google.golang.org/grpc/resolver"
 	"log"
@@ -16,7 +16,7 @@ type grpcResolverBuilder struct {
 
 func NewResolverBuilder(r registry.Registry, timeout time.Duration) resolver.Builder {
 	return &grpcResolverBuilder{
-		r: r,
+		r:       r,
 		timeout: timeout,
 	}
 }
@@ -24,10 +24,10 @@ func NewResolverBuilder(r registry.Registry, timeout time.Duration) resolver.Bui
 func (g *grpcResolverBuilder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
 
 	res := &grpcResolver{
-		target: target,
-		cc: cc,
-		r: g.r,
-		close: make(chan struct{}),
+		target:  target,
+		cc:      cc,
+		r:       g.r,
+		close:   make(chan struct{}),
 		timeout: g.timeout,
 	}
 	state := res.resolve()
@@ -41,9 +41,9 @@ func (g *grpcResolverBuilder) Scheme() string {
 
 type grpcResolver struct {
 	target resolver.Target
-	cc    resolver.ClientConn
-	r     registry.Registry
-	close chan struct{}
+	cc     resolver.ClientConn
+	r      registry.Registry
+	close  chan struct{}
 
 	timeout time.Duration
 
@@ -87,7 +87,7 @@ func (g *grpcResolver) watch() error {
 				//
 				// }
 				log.Println(event)
-			case <- g.close:
+			case <-g.close:
 				close(g.close)
 				return
 			}
@@ -130,7 +130,6 @@ func (g *grpcResolver) Close() {
 
 	g.close <- struct{}{}
 }
-
 
 func newAddress(ins registry.ServiceInstance) resolver.Address {
 	return resolver.Address{

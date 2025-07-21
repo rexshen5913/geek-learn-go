@@ -2,7 +2,7 @@ package homework2_fastest
 
 import (
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/micro/loadbalance"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/loadbalance"
 	"google.golang.org/grpc/balancer"
 	"google.golang.org/grpc/balancer/base"
 	"google.golang.org/grpc/resolver"
@@ -25,8 +25,7 @@ func (b *Balancer) Pick(info balancer.PickInfo) (balancer.PickResult, error) {
 	// 执行过滤，并且挑出响应时间最短的那个节点
 	b.mutex.RUnlock()
 
-	return balancer.PickResult{
-	}, nil
+	return balancer.PickResult{}, nil
 }
 
 func (b *Builder) Build(info base.PickerBuildInfo) balancer.Picker {
@@ -73,4 +72,3 @@ type conn struct {
 	// 响应时间
 	response time.Duration
 }
-

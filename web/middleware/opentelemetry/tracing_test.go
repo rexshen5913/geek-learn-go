@@ -1,7 +1,7 @@
 package opentelemetry
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/web"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web"
 	"go.opentelemetry.io/otel"
 	"testing"
 	"time"

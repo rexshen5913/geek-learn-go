@@ -4,7 +4,7 @@ package querylog
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/v14"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/v14"
 	"log"
 )
 

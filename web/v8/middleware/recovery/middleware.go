@@ -3,7 +3,7 @@
 package recovery
 
 import (
-	web "gitee.com/geektime-geekbang/geektime-go/web/v8"
+	web "github.com/rexshen5913/geek-learn-go/geektime-go /web/v8"
 )
 
 type MiddlewareBuilder struct {

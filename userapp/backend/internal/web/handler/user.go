@@ -2,11 +2,11 @@ package handler
 
 import (
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/domainobject/entity"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/service"
-	"gitee.com/geektime-geekbang/geektime-go/web"
-	"gitee.com/geektime-geekbang/geektime-go/web/session"
 	"github.com/google/uuid"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/domainobject/entity"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/service"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
@@ -27,6 +27,7 @@ func NewUserHandler(us service.UserService, sessMgr session.Manager) *UserHandle
 		sessMgr: sessMgr,
 	}
 }
+
 // vo => view object
 
 var (
@@ -43,7 +44,7 @@ func SetService(s service.UserService) {
 // 	service = service.NewUserService()
 // }
 
-func LoginV2(service service.UserService, sessMrg session.Manager, ctx *web.Context){
+func LoginV2(service service.UserService, sessMrg session.Manager, ctx *web.Context) {
 
 }
 
@@ -59,7 +60,7 @@ func LoginV1(service service.UserService, sessMrg session.Manager) web.HandleFun
 			return
 		}
 		usr, err := service.Login(ctx.Req.Context(), entity.User{
-			Email: req.Email,
+			Email:    req.Email,
 			Password: req.Password,
 		})
 
@@ -116,7 +117,7 @@ func Login(ctx *web.Context) {
 		return
 	}
 	usr, err := service.Login(ctx.Req.Context(), entity.User{
-		Email: req.Email,
+		Email:    req.Email,
 		Password: req.Password,
 	})
 
@@ -172,7 +173,7 @@ func (h *UserHandler) Login(ctx *web.Context) {
 		return
 	}
 	usr, err := h.service.Login(ctx.Req.Context(), entity.User{
-		Email: req.Email,
+		Email:    req.Email,
 		Password: req.Password,
 	})
 
@@ -220,7 +221,7 @@ func (h *UserHandler) Login(ctx *web.Context) {
 func (h *UserHandler) Update(ctx *web.Context) {
 	u := User{}
 	err := ctx.BindJSON(&u)
-	if err != nil{
+	if err != nil {
 		zap.L().Error("web: 解析 JSON 数据错误", zap.Error(err))
 		_ = ctx.RespJSON(http.StatusInternalServerError, Resp{
 			Msg: "系统异常",
@@ -238,8 +239,8 @@ func (h *UserHandler) Update(ctx *web.Context) {
 
 	err = h.service.EditProfile(ctx.Req.Context(), entity.User{
 		// 一般是前端传了什么，这边就往下传什么
-		Id: uid,
-		Name: u.Name,
+		Id:    uid,
+		Name:  u.Name,
 		Email: u.Email,
 	})
 	if err != nil {
@@ -274,8 +275,8 @@ func (h *UserHandler) Profile(ctx *web.Context) {
 	}
 	err = ctx.RespJSON(http.StatusOK, Resp{
 		Data: User{
-			Email: usr.Email,
-			Name: usr.Name,
+			Email:  usr.Email,
+			Name:   usr.Name,
 			Avatar: usr.Avatar,
 		},
 	})
@@ -296,7 +297,7 @@ func (h *UserHandler) SignUp(ctx *web.Context) {
 	}
 
 	_, err = h.service.CreateUser(ctx.Req.Context(), entity.User{
-		Email: u.Email,
+		Email:    u.Email,
 		Password: u.Password,
 	})
 	if errors.Is(err, service.ErrInvalidNewUser) {
@@ -328,7 +329,7 @@ func (h *UserHandler) SignUp(ctx *web.Context) {
 	}
 }
 
-func (h *UserHandler) getId(ctx *web.Context) (uint64, error){
+func (h *UserHandler) getId(ctx *web.Context) (uint64, error) {
 	sess, err := h.sessMgr.GetSession(ctx)
 	if err != nil {
 		return 0, err

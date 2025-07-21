@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"log"
 
-	"gitee.com/geektime-geekbang/geektime-go/orm/ent/ent/migrate"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/ent/ent/migrate"
 
-	"gitee.com/geektime-geekbang/geektime-go/orm/ent/ent/user"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/ent/ent/user"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -99,7 +99,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 //		User.
 //		Query().
 //		Count(ctx)
-//
 func (c *Client) Debug() *Client {
 	if c.debug {
 		return c

@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/advance/template/gen_answer/annotation"
-	"gitee.com/geektime-geekbang/geektime-go/advance/template/gen_answer/http"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /advance/template/gen_answer/annotation"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /advance/template/gen_answer/http"
 	"go/ast"
 	"go/parser"
 	"go/token"

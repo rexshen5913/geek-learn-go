@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/advance/ctx/graceful_shutdown/service"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /advance/ctx/graceful_shutdown/service"
 	"log"
 	"net/http"
 	"time"

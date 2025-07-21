@@ -3,8 +3,8 @@
 package orm
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/model"
-	"gitee.com/geektime-geekbang/geektime-go/orm/v13/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/v13/internal/errs"
 	"strings"
 )
 

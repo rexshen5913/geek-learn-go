@@ -2,14 +2,14 @@ package accesslog
 
 import (
 	"encoding/json"
-	web "gitee.com/geektime-geekbang/geektime-go/web/demo3"
+	web "github.com/rexshen5913/geek-learn-go/geektime-go /web/demo3"
 	"io/ioutil"
 )
 
-// logFunc = func(..) {
-//    logToFile
-//    logToConsole
-// }
+//	logFunc = func(..) {
+//	   logToFile
+//	   logToConsole
+//	}
 type MiddlewareBuilder struct {
 	logFunc func(accesslog []byte)
 }

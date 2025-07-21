@@ -2,7 +2,7 @@ package opentelemetry
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/micro/observability"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/observability"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"

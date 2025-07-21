@@ -1,7 +1,7 @@
 package roundrobin
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/micro/loadbalance"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/loadbalance"
 	"google.golang.org/grpc/balancer"
 	"google.golang.org/grpc/balancer/base"
 	"google.golang.org/grpc/resolver"

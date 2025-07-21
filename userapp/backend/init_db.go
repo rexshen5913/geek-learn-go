@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm"
-	"gitee.com/geektime-geekbang/geektime-go/orm/middleware/opentelemetry"
-	"gitee.com/geektime-geekbang/geektime-go/orm/middleware/prometheus"
-	"gitee.com/geektime-geekbang/geektime-go/orm/middleware/querylog"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/middleware/opentelemetry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/middleware/prometheus"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/middleware/querylog"
 	"go.uber.org/zap"
 )
 
@@ -80,9 +80,9 @@ func initDB() *orm.DB {
 			// 	}
 			// },
 			prometheus.MiddlewareBuilder{
-			Name:        "userapp",
-			Subsystem:   "orm",
-			ConstLabels: map[string]string{"db": "userapp"}}.Build(),
+				Name:        "userapp",
+				Subsystem:   "orm",
+				ConstLabels: map[string]string{"db": "userapp"}}.Build(),
 			opentelemetry.MiddlewareBuilder{}.Build(),
 			querylog.NewBuilder().LogFunc(func(sql string, args []any) {
 				// 一般不建议记录参数，因为参数里面可能有一些加密信息，

@@ -18,7 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/cache/redis-lock/mocks"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /cache/redis-lock/mocks"
 	"testing"
 	"time"
 

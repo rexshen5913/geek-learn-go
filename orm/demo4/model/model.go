@@ -1,7 +1,7 @@
 package model
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo4/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/internal/errs"
 	"reflect"
 )
 
@@ -72,5 +72,3 @@ type Field struct {
 type TableName interface {
 	TableName() string
 }
-
-

@@ -2,7 +2,7 @@ package demo
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/registry"
 	"google.golang.org/grpc"
 	"net"
 	"time"
@@ -15,13 +15,13 @@ type Server struct {
 	*grpc.Server
 	r        registry.Registry
 	listener net.Listener
-	weight uint32
-	group string
+	weight   uint32
+	group    string
 }
 
-func NewServer(name string, opts...ServerOption) *Server {
+func NewServer(name string, opts ...ServerOption) *Server {
 	res := &Server{
-		name: name,
+		name:   name,
 		Server: grpc.NewServer(),
 	}
 	for _, opt := range opts {
@@ -58,12 +58,12 @@ func (s *Server) Start(addr string) error {
 	// 严格地来说，是服务都启动了，才注册
 	if s.r != nil {
 		// defer s.r.Unregister()
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		err = s.r.Register(ctx, registry.ServiceInstance{
 			ServiceName: s.name,
-			Address: listener.Addr().String(),
-			Weight: s.weight,
-			Group: s.group,
+			Address:     listener.Addr().String(),
+			Weight:      s.weight,
+			Group:       s.group,
 		})
 		cancel()
 		if err != nil {

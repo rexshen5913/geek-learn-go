@@ -2,16 +2,16 @@ package orm
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo4/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo4/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/model"
 )
 
 type Inserter[T any] struct {
 	builder
 	core
-	sess Session
-	values []*T
-	columns []string
+	sess        Session
+	values      []*T
+	columns     []string
 	onDuplicate *Upsert
 }
 
@@ -44,7 +44,6 @@ func (i *Inserter[T]) Exec(ctx context.Context) Result {
 // func (m *PostgreSQL[T]) OnConflict(cols...string) *PostgreSQL[T] {
 //
 // }
-
 
 func (i *Inserter[T]) Build() (*Query, error) {
 	if len(i.values) == 0 {
@@ -80,7 +79,7 @@ func (i *Inserter[T]) Build() (*Query, error) {
 
 	i.sb.WriteByte(')')
 	i.sb.WriteString(" VALUES")
-	i.args = make([]any, 0, len(i.values) * len(m.Fields))
+	i.args = make([]any, 0, len(i.values)*len(m.Fields))
 	for idx, val := range i.values {
 		if idx > 0 {
 			i.sb.WriteByte(',')
@@ -111,7 +110,7 @@ func (i *Inserter[T]) Build() (*Query, error) {
 	i.sb.WriteByte(';')
 
 	return &Query{
-		SQL: i.sb.String(),
+		SQL:  i.sb.String(),
 		Args: i.args,
 	}, nil
 }
@@ -122,18 +121,18 @@ func (i *Inserter[T]) Update() *UpsertBuilder[T] {
 	}
 }
 
-func (i *Inserter[T]) Columns(cs...string) *Inserter[T]{
+func (i *Inserter[T]) Columns(cs ...string) *Inserter[T] {
 	i.columns = cs
 	return i
 }
 
 // Values 指定 INSERT INTO xxx VALUES 的 VALUES 部分
-func (i *Inserter[T]) Values(vals...*T) *Inserter[T]{
+func (i *Inserter[T]) Values(vals ...*T) *Inserter[T] {
 	i.values = vals
 	return i
 }
 
-func NewInserter[T any](sess Session) *Inserter[T]{
+func NewInserter[T any](sess Session) *Inserter[T] {
 	c := sess.getCore()
 	return &Inserter[T]{
 		builder: builder{
@@ -160,10 +159,10 @@ func (o *UpsertBuilder[T]) ConflictColumns(cols ...string) *UpsertBuilder[T] {
 // 	return o
 // }
 
-func (o *UpsertBuilder[T]) Update(assigns...Assignable) *Inserter[T] {
+func (o *UpsertBuilder[T]) Update(assigns ...Assignable) *Inserter[T] {
 	o.i.onDuplicate = &Upsert{
 		conflictColumns: o.conflictColumns,
-		assigns: assigns,
+		assigns:         assigns,
 	}
 	return o.i
 }
@@ -176,9 +175,7 @@ func (o *UpsertBuilder[T]) Update(assigns...Assignable) *Inserter[T] {
 // }
 
 type Upsert struct {
-	assigns []Assignable
+	assigns         []Assignable
 	conflictColumns []string
 	// doNothing bool
 }
-
-

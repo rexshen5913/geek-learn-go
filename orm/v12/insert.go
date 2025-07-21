@@ -5,8 +5,8 @@ package orm
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/v12/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/v12/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/v12/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/v12/model"
 )
 
 type UpsertBuilder[T any] struct {

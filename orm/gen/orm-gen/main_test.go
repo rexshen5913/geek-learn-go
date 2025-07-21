@@ -14,7 +14,7 @@ func TestGen(t *testing.T) {
 	assert.Equal(t, `package testdata
 
 import (
-    "gitee.com/geektime-geekbang/geektime-go/orm"
+    "github.com/rexshen5913/geek-learn-go/geektime-go /orm"
 
     "database/sql"
 )

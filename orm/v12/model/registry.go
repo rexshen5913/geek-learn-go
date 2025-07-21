@@ -3,7 +3,7 @@
 package model
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/v12/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/v12/internal/errs"
 	"reflect"
 	"strings"
 	"sync"

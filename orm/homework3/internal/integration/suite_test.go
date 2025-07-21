@@ -1,8 +1,9 @@
 //go:build e2e
+
 package integration
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
@@ -11,7 +12,7 @@ type Suite struct {
 	suite.Suite
 
 	driver string
-	dsn string
+	dsn    string
 
 	db *orm.DB
 }

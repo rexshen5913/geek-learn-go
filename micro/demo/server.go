@@ -3,9 +3,9 @@ package demo
 import (
 	"context"
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo/message"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo/serialize"
-	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/serialize/json"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo/message"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo/serialize"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/rpc/serialize/json"
 	"net"
 	"reflect"
 	"strconv"
@@ -13,7 +13,7 @@ import (
 )
 
 type Server struct {
-	services map[string]reflectionStub
+	services    map[string]reflectionStub
 	serializers []serialize.Serializer
 }
 
@@ -36,7 +36,7 @@ func (s *Server) MustRegister(service Service) {
 
 func (s *Server) Register(service Service) error {
 	s.services[service.Name()] = reflectionStub{
-		value: reflect.ValueOf(service),
+		value:       reflect.ValueOf(service),
 		serializers: s.serializers,
 	}
 	return nil
@@ -71,17 +71,17 @@ func (s *Server) Start(addr string) error {
 
 func (s *Server) handleConn(conn net.Conn) error {
 	for {
-		reqMsg, err:= ReadMsg(conn)
+		reqMsg, err := ReadMsg(conn)
 		if err != nil {
 			return err
 		}
 		req := message.DecodeReq(reqMsg)
 
 		resp := &message.Response{
-			Version: req.Version,
+			Version:    req.Version,
 			Compresser: req.Compresser,
 			Serializer: req.Serializer,
-			MessageId: req.MessageId,
+			MessageId:  req.MessageId,
 		}
 		// 可以考虑找到本地的服务，然后发起调用
 		service, ok := s.services[req.ServiceName]
@@ -154,7 +154,6 @@ type reflectionStub struct {
 	// 借鉴的是 bit array 或者 bitset 的思想
 	serializers []serialize.Serializer
 }
-
 
 func (s *reflectionStub) invoke(ctx context.Context, req *message.Request) ([]byte, error) {
 	methodName := req.MethodName

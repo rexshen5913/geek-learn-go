@@ -2,17 +2,15 @@ package demo
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/cache/demo/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /cache/demo/internal/errs"
 	"sync"
 	"time"
 )
 
-
-
 type LocalCache struct {
-	data map[string]any
-	mutex sync.RWMutex
-	close chan struct{}
+	data      map[string]any
+	mutex     sync.RWMutex
+	close     chan struct{}
 	closeOnce sync.Once
 
 	// onEvicted func(key string, val any) error
@@ -41,13 +39,13 @@ func NewLocalCache(onEvicted func(key string, val any)) *LocalCache {
 					if v.(*item).deadline.Before(time.Now()) {
 						res.delete(k, v.(*item).val)
 					}
-					cnt ++
+					cnt++
 					if cnt >= 1000 {
 						break
 					}
 				}
 				res.mutex.Unlock()
-			case <- res.close:
+			case <-res.close:
 				return
 			}
 		}
@@ -101,7 +99,7 @@ func (l *LocalCache) Set(ctx context.Context, key string, val any, expiration ti
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 	l.data[key] = &item{
-		val: val,
+		val:      val,
 		deadline: time.Now().Add(expiration),
 	}
 	return nil
@@ -118,7 +116,6 @@ func (l *LocalCache) Delete(ctx context.Context, key string) error {
 	return nil
 }
 
-
 // close 无缓存，调用两次 Close 呢？第二次会阻塞
 // close 1 缓存，调用三次就会阻塞
 func (l *LocalCache) Close() error {
@@ -126,13 +123,11 @@ func (l *LocalCache) Close() error {
 	// l.close <- struct{}{}
 	// close(l.close)
 
-
 	// 这种写法最好
 	l.closeOnce.Do(func() {
 		l.close <- struct{}{}
 		close(l.close)
 	})
-
 
 	// 使用 select + default 防止多次 close 阻塞调用者
 	// select {
@@ -148,6 +143,6 @@ func (l *LocalCache) Close() error {
 
 // 可以考虑用 sync.Pool 来复用的，是复用，不是缓存
 type item struct {
-	val any
+	val      any
 	deadline time.Time
 }

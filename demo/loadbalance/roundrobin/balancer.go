@@ -1,7 +1,7 @@
 package roundrobin
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/demo/loadbalance"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/loadbalance"
 	"google.golang.org/grpc/balancer"
 	"google.golang.org/grpc/balancer/base"
 	"google.golang.org/grpc/resolver"
@@ -9,8 +9,8 @@ import (
 )
 
 type Picker struct {
-	ins []instance
-	cnt uint64
+	ins    []instance
+	cnt    uint64
 	filter loadbalance.Filter
 }
 
@@ -40,7 +40,7 @@ func (p *Picker) Pick(info balancer.PickInfo) (balancer.PickResult, error) {
 
 			// 假如说出错了
 			// if info.Err != nil {
-				// 尝试把这个 subConn 置为不可用，或者临时移除出去
+			// 尝试把这个 subConn 置为不可用，或者临时移除出去
 			// }
 		},
 	}, nil
@@ -54,13 +54,13 @@ func (p *PickerBuilder) Build(info base.PickerBuildInfo) balancer.Picker {
 	conns := make([]instance, 0, len(info.ReadySCs))
 	for sub, subInfo := range info.ReadySCs {
 		conns = append(conns, instance{
-			sub: sub,
+			sub:     sub,
 			address: subInfo.Address,
 		})
 	}
 	return &Picker{
 		filter: p.Filter,
-		ins: conns,
+		ins:    conns,
 	}
 }
 
@@ -69,7 +69,6 @@ func (p *PickerBuilder) Name() string {
 }
 
 type instance struct {
-	sub balancer.SubConn
+	sub     balancer.SubConn
 	address resolver.Address
 }
-

@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo1"
-	gen2 "gitee.com/geektime-geekbang/geektime-go/micro/demo1/example/proto/gen"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo1"
+	gen2 "github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo1/example/proto/gen"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo1/registry"
 	"google.golang.org/grpc"
 	"log"
 	"time"

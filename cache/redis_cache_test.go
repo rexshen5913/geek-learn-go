@@ -2,9 +2,9 @@ package cache
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/cache/mocks"
 	redis "github.com/go-redis/redis/v9"
 	"github.com/golang/mock/gomock"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /cache/mocks"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -15,7 +15,7 @@ func TestRedisCache_Set(t *testing.T) {
 	defer ctrl.Finish()
 	// 不要使用这种整个测试范围的 mock，这样用例之间有依赖关系
 	// mockCmd := mocks.NewMockCmdable(ctrl)
-	testCases := []struct{
+	testCases := []struct {
 		name string
 
 		// mock 数据，这样可以做到用例直接互不影响
@@ -27,11 +27,11 @@ func TestRedisCache_Set(t *testing.T) {
 
 		// 输出
 		wantErr error
-	} {
+	}{
 		{
-			name:"success",
-			key: "key1",
-			val: 123,
+			name: "success",
+			key:  "key1",
+			val:  123,
 			mock: func() redis.Cmdable {
 				client := mocks.NewMockCmdable(ctrl)
 				cmd := redis.NewStatusCmd(context.Background())
@@ -55,4 +55,3 @@ func TestRedisCache_Set(t *testing.T) {
 		})
 	}
 }
-

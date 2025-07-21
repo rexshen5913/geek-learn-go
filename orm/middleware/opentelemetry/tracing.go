@@ -2,13 +2,13 @@ package opentelemetry
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
 
-const defaultInstrumentationName = "gitee.com/geektime-geekbang/geektime-go/orm/middleware/opentelemetry"
+const defaultInstrumentationName = "github.com/rexshen5913/geek-learn-go/geektime-go /orm/middleware/opentelemetry"
 
 type MiddlewareBuilder struct {
 	Tracer trace.Tracer

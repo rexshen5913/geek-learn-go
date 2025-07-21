@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package valuer
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/model"
 	"reflect"
 	"unsafe"
 )
@@ -64,7 +63,7 @@ func (u unsafeValue) SetColumns(rows *sql.Rows) error {
 		}
 		ptr := unsafe.Pointer(uintptr(u.addr) + cm.Offset)
 		val := reflect.NewAt(cm.Type, ptr)
-		colValues[i]=val.Interface()
+		colValues[i] = val.Interface()
 	}
 	return rows.Scan(colValues...)
 }

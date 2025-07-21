@@ -4,20 +4,20 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo4/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func Test_parseModel(t *testing.T) {
 	tests := []struct {
-		name string
-		input any
-		want *Model
+		name    string
+		input   any
+		want    *Model
 		wantErr error
 	}{
 		{
-			name: "ptr",
+			name:  "ptr",
 			input: &TestModel{},
 			want: &Model{
 				TableName: "test_model",
@@ -43,17 +43,17 @@ func Test_parseModel(t *testing.T) {
 			wantErr: errs.ErrPointerOnly,
 		},
 		{
-			name: "map",
-			input: map[string]string{},
+			name:    "map",
+			input:   map[string]string{},
 			wantErr: errs.ErrPointerOnly,
 		},
 		{
-			name: "nil",
-			input: nil,
+			name:    "nil",
+			input:   nil,
 			wantErr: errors.New("orm: 不支持 nil"),
 		},
 		{
-			name: "nil with type",
+			name:  "nil with type",
 			input: (*TestModel)(nil),
 			want: &Model{
 				TableName: "test_model",
@@ -73,7 +73,6 @@ func Test_parseModel(t *testing.T) {
 				},
 			},
 		},
-
 
 		{
 			name: "column tag",

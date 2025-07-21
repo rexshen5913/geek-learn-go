@@ -2,7 +2,7 @@ package errhdl
 
 import (
 	"bytes"
-	"gitee.com/geektime-geekbang/geektime-go/web"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web"
 	"html/template"
 	"testing"
 )

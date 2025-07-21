@@ -3,8 +3,8 @@ package rpc
 import (
 	"context"
 	"encoding/json"
-	"gitee.com/geektime-geekbang/geektime-go/micro/rpc/message"
-	json2 "gitee.com/geektime-geekbang/geektime-go/micro/rpc/serialize/json"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/rpc/message"
+	json2 "github.com/rexshen5913/geek-learn-go/geektime-go /micro/rpc/serialize/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"

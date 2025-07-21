@@ -1,38 +1,37 @@
-
 package orm
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestInserter_Build(t *testing.T) {
 	db := memoryDB(t)
-	testCases := []struct{
-		name string
+	testCases := []struct {
+		name      string
 		q         QueryBuilder
 		wantQuery *Query
 		wantErr   error
-	} {
+	}{
 		{
 			// 一个都不插入
-			name: "no value",
-			q: NewInserter[TestModel](db).Values(),
+			name:    "no value",
+			q:       NewInserter[TestModel](db).Values(),
 			wantErr: errs.ErrInsertZeroRow,
 		},
 		{
 			name: "single values",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}),
 			wantQuery: &Query{
-				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?);",
+				SQL:  "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?);",
 				Args: []any{int64(1), "Deng", int8(18), &sql.NullString{String: "Ming", Valid: true}},
 			},
 		},
@@ -40,16 +39,16 @@ func TestInserter_Build(t *testing.T) {
 			name: "multiple values",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				},
 				&TestModel{
-					Id: 2,
+					Id:        2,
 					FirstName: "Da",
-					Age: 19,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       19,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}),
 			wantQuery: &Query{
 				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?),(?,?,?,?);",
@@ -62,13 +61,13 @@ func TestInserter_Build(t *testing.T) {
 			name: "specify columns",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}).Columns("FirstName", "LastName"),
 			wantQuery: &Query{
-				SQL: "INSERT INTO `test_model`(`first_name`,`last_name`) VALUES(?,?);",
+				SQL:  "INSERT INTO `test_model`(`first_name`,`last_name`) VALUES(?,?);",
 				Args: []any{"Deng", &sql.NullString{String: "Ming", Valid: true}},
 			},
 		},
@@ -77,10 +76,10 @@ func TestInserter_Build(t *testing.T) {
 			name: "invalid columns",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}).Columns("FirstName", "Invalid"),
 			wantErr: errs.NewErrUnknownField("Invalid"),
 		},
@@ -90,10 +89,10 @@ func TestInserter_Build(t *testing.T) {
 			name: "upsert",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}).OnDuplicateKey().Update(Assign("FirstName", "Da")),
 			wantQuery: &Query{
 				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?) " +
@@ -106,10 +105,10 @@ func TestInserter_Build(t *testing.T) {
 			name: "upsert invalid column",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}).OnDuplicateKey().Update(Assign("Invalid", "Da")),
 			wantErr: errs.NewErrUnknownField("Invalid"),
 		},
@@ -118,16 +117,16 @@ func TestInserter_Build(t *testing.T) {
 			name: "upsert use insert value",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				},
 				&TestModel{
-					Id: 2,
+					Id:        2,
 					FirstName: "Da",
-					Age: 19,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       19,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}).OnDuplicateKey().Update(C("FirstName"), C("LastName")),
 			wantQuery: &Query{
 				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?),(?,?,?,?) " +
@@ -152,21 +151,21 @@ func TestInserter_Build(t *testing.T) {
 
 func TestUpsert_SQLite3_Build(t *testing.T) {
 	db := memoryDB(t, DBWithDialect(SQLite3))
-	testCases := []struct{
-		name string
+	testCases := []struct {
+		name      string
 		q         QueryBuilder
 		wantQuery *Query
 		wantErr   error
-	} {
+	}{
 		{
 			// upsert
 			name: "upsert",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}).OnDuplicateKey().ConflictColumns("Id").
 				Update(Assign("FirstName", "Da")),
 			wantQuery: &Query{
@@ -180,10 +179,10 @@ func TestUpsert_SQLite3_Build(t *testing.T) {
 			name: "upsert invalid column",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}).OnDuplicateKey().ConflictColumns("Id").
 				Update(Assign("Invalid", "Da")),
 			wantErr: errs.NewErrUnknownField("Invalid"),
@@ -193,10 +192,10 @@ func TestUpsert_SQLite3_Build(t *testing.T) {
 			name: "conflict invalid column",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}).OnDuplicateKey().ConflictColumns("Invalid").
 				Update(Assign("FirstName", "Da")),
 			wantErr: errs.NewErrUnknownField("Invalid"),
@@ -206,16 +205,16 @@ func TestUpsert_SQLite3_Build(t *testing.T) {
 			name: "upsert use insert value",
 			q: NewInserter[TestModel](db).Values(
 				&TestModel{
-					Id: 1,
+					Id:        1,
 					FirstName: "Deng",
-					Age: 18,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       18,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				},
 				&TestModel{
-					Id: 2,
+					Id:        2,
 					FirstName: "Da",
-					Age: 19,
-					LastName: &sql.NullString{String: "Ming", Valid: true},
+					Age:       19,
+					LastName:  &sql.NullString{String: "Ming", Valid: true},
 				}).OnDuplicateKey().ConflictColumns("Id").
 				Update(C("FirstName"), C("LastName")),
 			wantQuery: &Query{

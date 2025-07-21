@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"gitee.com/geektime-geekbang/geektime-go/orm/ent/ent"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/ent/ent"
 	// required by schema hooks.
-	_ "gitee.com/geektime-geekbang/geektime-go/orm/ent/ent/runtime"
+	_ "github.com/rexshen5913/geek-learn-go/geektime-go /orm/ent/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"gitee.com/geektime-geekbang/geektime-go/orm/ent/ent/migrate"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/ent/ent/migrate"
 )
 
 type (

@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/domainobject/entity"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/service"
-	usmocks "gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/service/mocks"
-	"gitee.com/geektime-geekbang/geektime-go/web"
-	"gitee.com/geektime-geekbang/geektime-go/web/session"
-	"gitee.com/geektime-geekbang/geektime-go/web/session/cookie"
-	"gitee.com/geektime-geekbang/geektime-go/web/session/memory"
 	"github.com/golang/mock/gomock"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/domainobject/entity"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/service"
+	usmocks "github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/service/mocks"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session/cookie"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session/memory"
 	"github.com/stretchr/testify/assert"
 	thttp "github.com/stretchr/testify/http"
 	"github.com/stretchr/testify/require"
@@ -28,7 +28,7 @@ func TestUserHandler_Login(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	testCases := []struct{
+	testCases := []struct {
 		name string
 		// 一般就是声明一个 mock 函数字段，然后它会返回所有需要的东西
 		mock func() service.UserService
@@ -49,7 +49,7 @@ func TestUserHandler_Login(t *testing.T) {
 			mock: func() service.UserService {
 				return nil
 			},
-			ctx: func() *web.Context{
+			ctx: func() *web.Context {
 				body := bytes.NewBuffer([]byte(`{`))
 				req, err := http.NewRequest(http.MethodPost, "/login", body)
 				require.NoError(t, err)
@@ -72,7 +72,7 @@ func TestUserHandler_Login(t *testing.T) {
 				us.EXPECT().Login(gomock.Any(), gomock.Any()).Return(entity.User{}, service.ErrInvalidUserOrPassword)
 				return us
 			},
-			ctx: func() *web.Context{
+			ctx: func() *web.Context {
 				body := bytes.NewBuffer([]byte(`{}`))
 				req, err := http.NewRequest(http.MethodPost, "/login", body)
 				require.NoError(t, err)
@@ -94,7 +94,7 @@ func TestUserHandler_Login(t *testing.T) {
 				us.EXPECT().Login(gomock.Any(), gomock.Any()).Return(entity.User{}, errors.New("mock db error"))
 				return us
 			},
-			ctx: func() *web.Context{
+			ctx: func() *web.Context {
 				body := bytes.NewBuffer([]byte(`{}`))
 				req, err := http.NewRequest(http.MethodPost, "/login", body)
 				require.NoError(t, err)
@@ -121,7 +121,7 @@ func TestUserHandler_Login(t *testing.T) {
 				}, nil)
 				return us
 			},
-			ctx: func() *web.Context{
+			ctx: func() *web.Context {
 				body := bytes.NewBuffer([]byte(`{}`))
 				req, err := http.NewRequest(http.MethodPost, "/login", body)
 				require.NoError(t, err)
@@ -142,7 +142,7 @@ func TestUserHandler_Login(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			us := tc.mock()
 			sessMgr := session.Manager{
-				Store: memory.NewStore(time.Minute * 15),
+				Store:      memory.NewStore(time.Minute * 15),
 				Propagator: cookie.NewPropagator("sessid"),
 				SessCtxKey: "_sess",
 			}

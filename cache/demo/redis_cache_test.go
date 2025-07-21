@@ -2,9 +2,9 @@ package demo
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/cache/demo/mocks"
 	"github.com/go-redis/redis/v9"
 	"github.com/golang/mock/gomock"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /cache/demo/mocks"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -13,15 +13,15 @@ import (
 func TestRedisCache_Set(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	testCases := []struct{
-		name string
-		mock func()redis.Cmdable
-		key string
-		val string
+	testCases := []struct {
+		name       string
+		mock       func() redis.Cmdable
+		key        string
+		val        string
 		expiration time.Duration
 
 		wantErr error
-	} {
+	}{
 		{
 			name: "return OK",
 			mock: func() redis.Cmdable {
@@ -32,8 +32,8 @@ func TestRedisCache_Set(t *testing.T) {
 					Return(cmd)
 				return res
 			},
-			key: "key1",
-			val: "value1",
+			key:        "key1",
+			val:        "value1",
 			expiration: time.Minute,
 		},
 
@@ -47,10 +47,10 @@ func TestRedisCache_Set(t *testing.T) {
 					Return(cmd)
 				return res
 			},
-			key: "key1",
-			val: "value1",
+			key:        "key1",
+			val:        "value1",
 			expiration: time.Minute,
-			wantErr: context.DeadlineExceeded,
+			wantErr:    context.DeadlineExceeded,
 		},
 	}
 

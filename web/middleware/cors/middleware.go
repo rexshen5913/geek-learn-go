@@ -1,7 +1,7 @@
 package cors
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/web"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web"
 	"net/http"
 )
 
@@ -19,7 +19,7 @@ func (m MiddlewareBuilder) Build() web.Middleware {
 			ctx.Resp.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 			// ctx.Resp.Header().Set("Access-Control-Allow-Origin", "*")
 			ctx.Resp.Header().Set("Access-Control-Allow-Credentials", "true")
-			if ctx.Resp.Header().Get("Access-Control-Allow-Headers") == ""{
+			if ctx.Resp.Header().Get("Access-Control-Allow-Headers") == "" {
 				ctx.Resp.Header().Add("Access-Control-Allow-Headers", "Content-Type")
 			}
 			if ctx.Req.Method == http.MethodOptions {

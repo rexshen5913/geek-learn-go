@@ -3,7 +3,7 @@ package orm
 import (
 	"context"
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo4/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/internal/errs"
 )
 
 // Selector 用于构造 SELECT 语句
@@ -13,7 +13,7 @@ type Selector[T any] struct {
 	table TableReference
 	where []Predicate
 	// db *DB
-	sess Session
+	sess    Session
 	columns []Selectable
 }
 
@@ -23,12 +23,12 @@ type Selectable interface {
 }
 
 // s.Select("id", "age")
-func (s *Selector[T]) Select(cols...Selectable) *Selector[T] {
+func (s *Selector[T]) Select(cols ...Selectable) *Selector[T] {
 	s.columns = cols
 	return s
 }
 
-func (s *Selector[T]) Use(ms...Middleware) *Selector[T] {
+func (s *Selector[T]) Use(ms ...Middleware) *Selector[T] {
 	s.ms = ms
 	return s
 }
@@ -41,8 +41,8 @@ func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
 		return nil, err
 	}
 	res := get[T](ctx, s.core, s.sess, &QueryContext{
-		Type: "SELECT",
-		Model: model,
+		Type:    "SELECT",
+		Model:   model,
 		Builder: s,
 		// TableName: s.table,
 		DBName: s.dbName,
@@ -116,14 +116,13 @@ func (s *Selector[T]) Build() (*Query, error) {
 				s.sb.WriteByte(')')
 			case RawExpr:
 				s.sb.WriteString(col.raw)
-				if len(col.args) >0 {
+				if len(col.args) > 0 {
 					s.args = append(s.args, col.args...)
 				}
 			}
 		}
 	}
 	s.sb.WriteString(" FROM ")
-
 
 	// 构造 WHERE
 	if len(s.where) > 0 {
@@ -173,7 +172,7 @@ func (s *Selector[T]) buildTable(t TableReference) error {
 			return err
 		}
 
-		if len(tbl.on) >0 {
+		if len(tbl.on) > 0 {
 			s.sb.WriteString(" ON ")
 			p := tbl.on[0]
 			for i := 1; i < len(tbl.on); i++ {
@@ -183,7 +182,7 @@ func (s *Selector[T]) buildTable(t TableReference) error {
 				return err
 			}
 		}
-		if len(tbl.using) >0 {
+		if len(tbl.using) > 0 {
 			s.sb.WriteString(" USING (")
 			for i, col := range tbl.using {
 				if i > 0 {
@@ -211,7 +210,7 @@ func (s *Selector[T]) buildColumn(c Column, useAlias bool) error {
 		return err
 	}
 
-	if tbl != nil  && tbl.tableAlias() != ""{
+	if tbl != nil && tbl.tableAlias() != "" {
 		// 假如没有别名，就给它一个
 		// if tbl.tableAlias() == "" {
 		// 	tbl.setAlias(autogenerateAlias())
@@ -220,7 +219,6 @@ func (s *Selector[T]) buildColumn(c Column, useAlias bool) error {
 		// t1.id 这种
 		s.quote(tbl.tableAlias())
 	}
-
 
 	s.quote(colName)
 	if useAlias {
@@ -234,7 +232,7 @@ func (s *Selector[T]) colName(t TableReference, fd string) (string, error) {
 	switch tbl := t.(type) {
 	case nil:
 		// 用户没有调用 FROM 方法
-		meta ,ok := s.model.FieldMap[fd]
+		meta, ok := s.model.FieldMap[fd]
 		if !ok {
 			return "", errs.NewErrUnknownField(fd)
 		}
@@ -244,7 +242,7 @@ func (s *Selector[T]) colName(t TableReference, fd string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		meta ,ok := m.FieldMap[fd]
+		meta, ok := m.FieldMap[fd]
 		if !ok {
 			return "", errs.NewErrUnknownField(fd)
 		}
@@ -259,7 +257,6 @@ func (s *Selector[T]) colName(t TableReference, fd string) (string, error) {
 		return "", errors.New("错误的表")
 	}
 }
-
 
 func (s *Selector[T]) buildExpression(e Expression) error {
 	if e == nil {

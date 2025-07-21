@@ -1,14 +1,14 @@
 package orm
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo2/model"
 	"strings"
 )
 
 type builder struct {
-	model *model.Model
-	sb strings.Builder
-	args []any
+	model   *model.Model
+	sb      strings.Builder
+	args    []any
 	dialect Dialect
 }
 

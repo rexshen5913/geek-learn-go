@@ -3,7 +3,7 @@ package querylog
 import (
 	"context"
 	"fmt"
-	orm "gitee.com/geektime-geekbang/geektime-go/orm/demo4"
+	orm "github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

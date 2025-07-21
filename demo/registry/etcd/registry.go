@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/registry"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/concurrency"
@@ -18,11 +18,11 @@ var typesMap = map[mvccpb.Event_EventType]registry.EventType{
 
 type Registry struct {
 	client *clientv3.Client
-	sess *concurrency.Session
+	sess   *concurrency.Session
 
-	mutex sync.RWMutex
+	mutex       sync.RWMutex
 	watchCancel []func()
-	close chan struct{}
+	close       chan struct{}
 }
 
 func NewRegistry(client *clientv3.Client) (*Registry, error) {
@@ -32,7 +32,7 @@ func NewRegistry(client *clientv3.Client) (*Registry, error) {
 	}
 	return &Registry{
 		client: client,
-		sess: sess,
+		sess:   sess,
 	}, nil
 }
 
@@ -94,7 +94,7 @@ func (r *Registry) Subscribe(serviceName string) (<-chan registry.Event, error) 
 	go func() {
 		for {
 			select {
-			case resp := <- watchCh:
+			case resp := <-watchCh:
 				if resp.Canceled {
 					return
 				}
@@ -112,7 +112,7 @@ func (r *Registry) Subscribe(serviceName string) (<-chan registry.Event, error) 
 						select {
 						case res <- registry.Event{}:
 						// case <- r.close:
-						case <- ctx.Done():
+						case <-ctx.Done():
 							return
 						}
 						continue
@@ -123,12 +123,12 @@ func (r *Registry) Subscribe(serviceName string) (<-chan registry.Event, error) 
 						Instance: ins,
 					}:
 					// case <- r.close:
-					case <- ctx.Done():
+					case <-ctx.Done():
 						return
 					}
 
 				}
-			case <- ctx.Done():
+			case <-ctx.Done():
 				return
 			}
 		}
@@ -151,4 +151,3 @@ func (r *Registry) Close() error {
 	// r.client.Close()
 	return nil
 }
-

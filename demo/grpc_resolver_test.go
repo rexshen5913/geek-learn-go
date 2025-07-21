@@ -1,9 +1,9 @@
 package demo
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry/mocks"
 	"github.com/golang/mock/gomock"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo1/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo1/registry/mocks"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/resolver"
 	"testing"
@@ -11,11 +11,9 @@ import (
 )
 
 func Test_grpcResolverBuilder_Build(t *testing.T) {
-	testCases := []struct{
+	testCases := []struct {
 		name string
-	} {
-
-	}
+	}{}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -27,14 +25,14 @@ func Test_grpcResolverBuilder_Build(t *testing.T) {
 func Test_grpcResolver_ResolveNow(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	testCases := []struct{
+	testCases := []struct {
 		name string
 
 		mock func() registry.Registry
 
 		wantState resolver.State
-		wantErr error
-	} {
+		wantErr   error
+	}{
 		{
 			name: "resolver success",
 			mock: func() registry.Registry {
@@ -44,7 +42,7 @@ func Test_grpcResolver_ResolveNow(t *testing.T) {
 						{
 							Address: "test-1",
 						},
-				}, nil)
+					}, nil)
 				return r
 			},
 			wantState: resolver.State{
@@ -61,11 +59,9 @@ func Test_grpcResolver_ResolveNow(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			cc := &mockClientConn{}
 			rs := &grpcResolver{
-				target: resolver.Target{
-
-				},
-				cc: cc,
-				r: tc.mock(),
+				target: resolver.Target{},
+				cc:     cc,
+				r:      tc.mock(),
 			}
 			rs.ResolveNow(resolver.ResolveNowOptions{})
 			state := cc.state
@@ -80,7 +76,7 @@ func Test_grpcResolver_ResolveNow(t *testing.T) {
 
 type mockClientConn struct {
 	state resolver.State
-	err error
+	err   error
 	resolver.ClientConn
 }
 
@@ -93,31 +89,29 @@ func (cc *mockClientConn) ReportError(err error) {
 	cc.err = err
 }
 
-
-
 func Test_grpcResolver_watch(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	testCases := []struct{
-		name string
-		mock func()(registry.Registry, chan registry.Event)
-		wantErr error
+	testCases := []struct {
+		name      string
+		mock      func() (registry.Registry, chan registry.Event)
+		wantErr   error
 		wantState resolver.State
-	} {
+	}{
 		{
 			name: "watched and close",
-			mock: func() (registry.Registry, chan registry.Event){
-				 r := mocks.NewMockRegistry(ctrl)
-				 ch := make(chan registry.Event)
-				 r.EXPECT().Subscribe(gomock.Any()).Return(ch, nil)
-				 r.EXPECT().ListService(gomock.Any(), gomock.Any()).
-					 Return([]registry.ServiceInstance{
-						 {
-							 Address: "test-1",
-						 },
-					 }, nil)
-				 return r, ch
-			 },
+			mock: func() (registry.Registry, chan registry.Event) {
+				r := mocks.NewMockRegistry(ctrl)
+				ch := make(chan registry.Event)
+				r.EXPECT().Subscribe(gomock.Any()).Return(ch, nil)
+				r.EXPECT().ListService(gomock.Any(), gomock.Any()).
+					Return([]registry.ServiceInstance{
+						{
+							Address: "test-1",
+						},
+					}, nil)
+				return r, ch
+			},
 			wantState: resolver.State{
 				Addresses: []resolver.Address{
 					{
@@ -134,18 +128,18 @@ func Test_grpcResolver_watch(t *testing.T) {
 			r, ch := tc.mock()
 			closeCh := make(chan struct{})
 			rs := &grpcResolver{
-				r: r,
-				cc:cc,
-				close: closeCh ,
+				r:     r,
+				cc:    cc,
+				close: closeCh,
 			}
 			err := rs.watch()
-			assert.Equal(t, tc.wantErr ,err)
+			assert.Equal(t, tc.wantErr, err)
 			ch <- registry.Event{}
 			time.Sleep(time.Second)
 			// 为了退出循环
 			rs.Close()
 			// 拿到零值，因为 closeCh 已经被 close 了
-			_, ok := <- closeCh
+			_, ok := <-closeCh
 			assert.False(t, ok)
 		})
 	}

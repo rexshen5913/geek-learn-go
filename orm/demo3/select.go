@@ -2,7 +2,7 @@ package orm
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo3/internal/errs"
 )
 
 // Selector 用于构造 SELECT 语句
@@ -12,7 +12,7 @@ type Selector[T any] struct {
 	table string
 	where []Predicate
 	// db *DB
-	sess Session
+	sess    Session
 	columns []Selectable
 }
 
@@ -21,9 +21,8 @@ type Selectable interface {
 	selectable()
 }
 
-
 // s.Select("id", "age")
-func (s *Selector[T]) Select(cols...Selectable) *Selector[T] {
+func (s *Selector[T]) Select(cols ...Selectable) *Selector[T] {
 	s.columns = cols
 	return s
 }
@@ -104,7 +103,7 @@ func (s *Selector[T]) Build() (*Query, error) {
 				s.sb.WriteByte(')')
 			case RawExpr:
 				s.sb.WriteString(col.raw)
-				if len(col.args) >0 {
+				if len(col.args) > 0 {
 					s.args = append(s.args, col.args...)
 				}
 			}
@@ -133,7 +132,7 @@ func (s *Selector[T]) Build() (*Query, error) {
 	}
 	s.sb.WriteString(";")
 	return &Query{
-		SQL: s.sb.String(),
+		SQL:  s.sb.String(),
 		Args: s.args,
 	}, nil
 }

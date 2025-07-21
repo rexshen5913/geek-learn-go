@@ -4,8 +4,8 @@ package orm
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/v11/internal/valuer"
-	"gitee.com/geektime-geekbang/geektime-go/orm/v11/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/v11/internal/valuer"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/v11/model"
 )
 
 type DBOption func(*DB)

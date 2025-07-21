@@ -2,19 +2,19 @@ package valuer
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo4/internal/errs"
-	orm "gitee.com/geektime-geekbang/geektime-go/orm/demo4/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/internal/errs"
+	orm "github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/model"
 	"reflect"
 )
 
 type reflectValue struct {
-	val reflect.Value
+	val   reflect.Value
 	model *orm.Model
 }
 
 func NewReflectValue(t any, model *orm.Model) Value {
 	return reflectValue{
-		val: reflect.ValueOf(t).Elem(),
+		val:   reflect.ValueOf(t).Elem(),
 		model: model,
 	}
 }

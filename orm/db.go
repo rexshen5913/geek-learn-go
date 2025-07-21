@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/valuer"
-	"gitee.com/geektime-geekbang/geektime-go/orm/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/valuer"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/model"
 	"log"
 	"time"
 )
@@ -41,11 +41,11 @@ func Open(driver string, dsn string, opts ...DBOption) (*DB, error) {
 	return OpenDB(db, opts...)
 }
 
-func OpenDB(db *sql.DB, opts...DBOption) (*DB, error) {
+func OpenDB(db *sql.DB, opts ...DBOption) (*DB, error) {
 	res := &DB{
 		core: core{
-			dialect: MySQL,
-			r:  model.NewRegistry(),
+			dialect:    MySQL,
+			r:          model.NewRegistry(),
 			valCreator: valuer.NewUnsafeValue,
 		},
 		db: db,
@@ -74,7 +74,7 @@ func DBUseReflectValuer() DBOption {
 	}
 }
 
-func DBWithMiddleware(ms...Middleware) DBOption {
+func DBWithMiddleware(ms ...Middleware) DBOption {
 	return func(db *DB) {
 		db.ms = ms
 	}

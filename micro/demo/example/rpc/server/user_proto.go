@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/micro/example/rpc/proto/gen"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/example/rpc/proto/gen"
 )
 
 // UserServiceProto 用来测试 protobuf 协议

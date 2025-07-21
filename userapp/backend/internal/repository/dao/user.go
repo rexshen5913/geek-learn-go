@@ -2,10 +2,10 @@ package dao
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/repository/dao/model"
 	"github.com/go-sql-driver/mysql"
 	"github.com/opentracing/opentracing-go"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/repository/dao/model"
 )
 
 //go:generate mockgen -source=user.go -destination=mocks/user_mock.gen.go -package=daomocks UserDAO

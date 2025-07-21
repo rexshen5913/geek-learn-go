@@ -1,27 +1,25 @@
-
 package prometheus
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3"
 	"time"
 )
 
-
 type MiddlewareBuilder struct {
-	Name string
-	Subsystem string
+	Name        string
+	Subsystem   string
 	ConstLabels map[string]string
-	Help string
+	Help        string
 }
 
 func (m *MiddlewareBuilder) Build() orm.Middleware {
 	summaryVec := prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Name:     m.Name,
-		Subsystem: m.Subsystem,
+		Name:        m.Name,
+		Subsystem:   m.Subsystem,
 		ConstLabels: m.ConstLabels,
-		Help: m.Help,
+		Help:        m.Help,
 	}, []string{"type", "table"})
 
 	return func(next orm.HandleFunc) orm.HandleFunc {
@@ -36,4 +34,3 @@ func (m *MiddlewareBuilder) Build() orm.Middleware {
 		}
 	}
 }
-

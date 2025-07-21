@@ -6,7 +6,7 @@ package mocks
 
 import (
 	context "context"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo1/registry"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"

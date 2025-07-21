@@ -2,7 +2,7 @@ package micro
 
 import (
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/micro/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/registry"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/balancer"

@@ -4,9 +4,9 @@ package integration
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm"
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/test"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"

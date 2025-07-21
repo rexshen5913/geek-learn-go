@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo1"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/example/proto/gen"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo1/registry/etcd"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo1"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo1/example/proto/gen"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo1/registry/etcd"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"golang.org/x/sync/errgroup"
 	"strconv"

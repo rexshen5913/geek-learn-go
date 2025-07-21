@@ -1,7 +1,7 @@
 package orm
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo2/internal/errs"
 )
 
 // Dialect 方言，构造个性部分
@@ -13,7 +13,6 @@ type Dialect interface {
 
 // SQL 标准的方言实现
 type standardSQL struct {
-
 }
 
 type mysqlDialect struct {

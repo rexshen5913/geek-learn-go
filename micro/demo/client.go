@@ -3,9 +3,9 @@ package demo
 import (
 	"context"
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo/message"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo/serialize"
-	"gitee.com/geektime-geekbang/geektime-go/micro/demo/serialize/json"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo/message"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo/serialize"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /micro/demo/serialize/json"
 	"github.com/silenceper/pool"
 	"net"
 	"reflect"
@@ -21,11 +21,11 @@ type Client struct {
 	serialzer serialize.Serializer
 }
 
-func NewClient(addr string) (*Client, error){
+func NewClient(addr string) (*Client, error) {
 	p, err := pool.NewChannelPool(&pool.Config{
 		InitialCap: 10,
-		MaxCap: 100,
-		MaxIdle: 50,
+		MaxCap:     100,
+		MaxIdle:    50,
 		Factory: func() (interface{}, error) {
 			return net.Dial("tcp", addr)
 		},
@@ -51,7 +51,7 @@ func (c *Client) Invoke(ctx context.Context, req *message.Request) (*message.Res
 
 	var (
 		resp *message.Response
-		err error
+		err  error
 	)
 
 	ch := make(chan struct{})
@@ -60,9 +60,9 @@ func (c *Client) Invoke(ctx context.Context, req *message.Request) (*message.Res
 		close(ch)
 	}()
 	select {
-	case <- ctx.Done():
+	case <-ctx.Done():
 		return nil, ctx.Err()
-	case <- ch:
+	case <-ch:
 		return resp, err
 	}
 }
@@ -81,7 +81,7 @@ func (c *Client) doInvoke(ctx context.Context, req *message.Request) (*message.R
 	data := message.EncodeReq(req)
 	i, err := conn.Write(data)
 	if err != nil {
-		return  nil, err
+		return nil, err
 	}
 
 	// 可以检测超时
@@ -128,8 +128,6 @@ func (c *Client) doInvoke(ctx context.Context, req *message.Request) (*message.R
 // 7. 编码响应
 // 8. 写回响应
 
-
-
 func (c *Client) InitService(service Service) error {
 	// 你可以做校验，确保它必须是一个指向结构体的指针
 	val := reflect.ValueOf(service).Elem()
@@ -168,7 +166,7 @@ func (c *Client) InitService(service Service) error {
 				}
 				msgId := atomic.AddUint32(&messageId, 1)
 
-				meta := make(map[string]string,2)
+				meta := make(map[string]string, 2)
 				// 能不能遍历 ctx 里面所有的 key？
 				// 然后传递给服务端？答案是不能
 				if isOneway(ctx) {
@@ -189,18 +187,18 @@ func (c *Client) InitService(service Service) error {
 
 					BodyLength: uint32(len(bs)),
 					// 这里要构建完整
-					Version: 0,
-					Compresser: 0,
-					Serializer: c.serialzer.Code(),
-					MessageId: msgId,
+					Version:     0,
+					Compresser:  0,
+					Serializer:  c.serialzer.Code(),
+					MessageId:   msgId,
 					ServiceName: service.Name(),
 					// 客户端和服务端可能叫不一样的名字
 					// ServiceName: typ.PkgPath() + typ.Name(),
 					// 服务名从哪里来？
 					// 对应的是字段名
 					MethodName: fieldType.Name,
-					Data: bs,
-					Meta: meta,
+					Data:       bs,
+					Meta:       meta,
 				}
 				req.CalHeadLength()
 				resp, err := c.Invoke(ctx, req)
@@ -228,17 +226,15 @@ func (c *Client) InitService(service Service) error {
 				if err != nil {
 					results = append(results, reflect.ValueOf(err))
 				} else {
-					results = append(results,  reflect.Zero(reflect.TypeOf(new(error)).Elem()))
+					results = append(results, reflect.Zero(reflect.TypeOf(new(error)).Elem()))
 				}
 
 				return
-		})
+			})
 		fieldValue.Set(fn)
 	}
 	return nil
 }
-
-
 
 type Service interface {
 	Name() string

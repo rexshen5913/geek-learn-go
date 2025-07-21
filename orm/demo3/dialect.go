@@ -1,7 +1,7 @@
 package orm
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo3/internal/errs"
 )
 
 // Dialect 方言，构造个性部分
@@ -15,7 +15,6 @@ type Dialect interface {
 
 // SQL 标准的方言实现
 type standardSQL struct {
-
 }
 
 type mysqlDialect struct {
@@ -65,7 +64,7 @@ func (dialect *sqliteDialect) buildDuplicateKey(b *builder, odk *Upsert) error {
 	// 你在这里可以进一步检测 assigns 是不是为空
 	// 构造 ON DUPLICATE KEY 部分
 	b.sb.WriteString(" ON CONFLICT")
-	if len(odk.conflictColumns) >0 {
+	if len(odk.conflictColumns) > 0 {
 		b.sb.WriteString(" (")
 		for i, col := range odk.conflictColumns {
 			if i > 0 {

@@ -1,42 +1,41 @@
-
 package orm
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/model"
 )
 
 type UpsertBuilder[T any] struct {
-	i *Inserter[T]
+	i               *Inserter[T]
 	conflictColumns []string
 }
 
 type Upsert struct {
 	conflictColumns []string
-	assigns []Assignable
+	assigns         []Assignable
 }
 
-func (o *UpsertBuilder[T]) ConflictColumns(cols...string) *UpsertBuilder[T] {
+func (o *UpsertBuilder[T]) ConflictColumns(cols ...string) *UpsertBuilder[T] {
 	o.conflictColumns = cols
 	return o
 }
 
 // Update 也可以看做是一个终结方法，重新回到 Inserter 里面
-func (o *UpsertBuilder[T]) Update(assigns...Assignable) *Inserter[T] {
+func (o *UpsertBuilder[T]) Update(assigns ...Assignable) *Inserter[T] {
 	o.i.upsert = &Upsert{
 		conflictColumns: o.conflictColumns,
-		assigns: assigns,
+		assigns:         assigns,
 	}
 	return o.i
 }
 
 type Inserter[T any] struct {
 	builder
-	values []*T
+	values  []*T
 	columns []string
-	upsert *Upsert
-	sess session
+	upsert  *Upsert
+	sess    session
 }
 
 func NewInserter[T any](sess session) *Inserter[T] {
@@ -44,14 +43,14 @@ func NewInserter[T any](sess session) *Inserter[T] {
 	return &Inserter[T]{
 		sess: sess,
 		builder: builder{
-			core: c,
+			core:    c,
 			dialect: c.dialect,
-			quoter: c.dialect.quoter(),
+			quoter:  c.dialect.quoter(),
 		},
 	}
 }
 
-func (i *Inserter[T]) Values(vals ...*T) *Inserter[T]{
+func (i *Inserter[T]) Values(vals ...*T) *Inserter[T] {
 	i.values = vals
 	return i
 }
@@ -65,7 +64,7 @@ func (i *Inserter[T]) OnDuplicateKey() *UpsertBuilder[T] {
 // Fields 指定要插入的列
 // TODO 目前我们只支持指定具体的列，但是不支持复杂的表达式
 // 例如不支持 VALUES(..., now(), now()) 这种在 MySQL 里面常用的
-func (i *Inserter[T]) Columns(cols...string) *Inserter[T] {
+func (i *Inserter[T]) Columns(cols ...string) *Inserter[T] {
 	i.columns = cols
 	return i
 }
@@ -96,7 +95,7 @@ func (i *Inserter[T]) Build() (*Query, error) {
 	}
 
 	// (len(i.values) + 1) 中 +1 是考虑到 UPSERT 语句会传递额外的参数
-	i.args = make([]any, 0, len(fields) * (len(i.values) + 1))
+	i.args = make([]any, 0, len(fields)*(len(i.values)+1))
 	for idx, fd := range fields {
 		if idx > 0 {
 			i.sb.WriteByte(',')
@@ -134,7 +133,7 @@ func (i *Inserter[T]) Build() (*Query, error) {
 
 	i.sb.WriteString(";")
 	return &Query{
-		SQL: i.sb.String(),
+		SQL:  i.sb.String(),
 		Args: i.args,
 	}, nil
 }
@@ -142,6 +141,6 @@ func (i *Inserter[T]) Build() (*Query, error) {
 func (i *Inserter[T]) Exec(ctx context.Context) Result {
 	return exec(ctx, i.sess, i.core, &QueryContext{
 		Builder: i,
-		Type: "INSERT",
+		Type:    "INSERT",
 	})
 }

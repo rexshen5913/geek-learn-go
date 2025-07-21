@@ -1,7 +1,7 @@
 package accesslog
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/web"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web"
 	"testing"
 	"time"
 )

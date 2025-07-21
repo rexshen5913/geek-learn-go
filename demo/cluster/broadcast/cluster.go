@@ -2,7 +2,7 @@ package broadcast
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/registry"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 )

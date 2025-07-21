@@ -3,24 +3,24 @@ package orm
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/model"
 )
 
 // Selector 用于构造 SELECT 语句
 type Selector[T any] struct {
 	builder
-	table TableReference
-	where []Predicate
-	having []Predicate
+	table   TableReference
+	where   []Predicate
+	having  []Predicate
 	columns []Selectable
 	groupBy []Column
-	offset int
-	limit int
-	sess  Session
+	offset  int
+	limit   int
+	sess    Session
 }
 
-func (s *Selector[T]) Select(cols...Selectable) *Selector[T] {
+func (s *Selector[T]) Select(cols ...Selectable) *Selector[T] {
 	s.columns = cols
 	return s
 }
@@ -89,7 +89,7 @@ func (s *Selector[T]) Build() (*Query, error) {
 
 	s.sb.WriteString(";")
 	return &Query{
-		SQL: s.sb.String(),
+		SQL:  s.sb.String(),
 		Args: s.args,
 	}, nil
 }
@@ -117,7 +117,6 @@ func (s *Selector[T]) buildTable(table TableReference) error {
 	}
 	return nil
 }
-
 
 func (s *Selector[T]) buildJoin(tab Join) error {
 	s.sb.WriteByte('(')
@@ -199,7 +198,7 @@ func (s *Selector[T]) Where(ps ...Predicate) *Selector[T] {
 }
 
 // GroupBy 设置 group by 子句
-func (s *Selector[T]) GroupBy(cols...Column) *Selector[T] {
+func (s *Selector[T]) GroupBy(cols ...Column) *Selector[T] {
 	s.groupBy = cols
 	return s
 }
@@ -224,17 +223,17 @@ func (s *Selector[T]) AsSubquery(alias string) Subquery {
 	if tbl == nil {
 		tbl = TableOf(new(T))
 	}
-	return Subquery {
-		s: s,
-		alias: alias,
-		table: tbl,
+	return Subquery{
+		s:       s,
+		alias:   alias,
+		table:   tbl,
 		columns: s.columns,
 	}
 }
 
 func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
 	var (
-		m *model.Model
+		m   *model.Model
 		err error
 	)
 
@@ -283,9 +282,9 @@ func NewSelector[T any](sess Session) *Selector[T] {
 	return &Selector[T]{
 		sess: sess,
 		builder: builder{
-			core: c,
+			core:    c,
 			dialect: c.dialect,
-			quoter: c.dialect.quoter(),
+			quoter:  c.dialect.quoter(),
 		},
 	}
 }

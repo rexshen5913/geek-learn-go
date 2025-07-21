@@ -3,7 +3,7 @@
 package orm
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/errs"
 	"reflect"
 	"unicode"
 )

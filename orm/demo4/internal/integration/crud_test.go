@@ -1,12 +1,13 @@
 //go:build e2e
+
 package integration
 
 import (
 	"context"
-	orm "gitee.com/geektime-geekbang/geektime-go/orm/demo4"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo4/internal/test"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
+	orm "github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/internal/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -18,7 +19,7 @@ type InsertTestSuite struct {
 	db *orm.DB
 
 	driver string
-	dsn string
+	dsn    string
 }
 
 func (i *InsertTestSuite) SetupSuite() {
@@ -34,18 +35,18 @@ func (i *InsertTestSuite) TestInsert() {
 	t := i.T()
 	db := i.db
 
-	testCases := []struct{
+	testCases := []struct {
 		name string
-		i *orm.Inserter[test.SimpleStruct]
+		i    *orm.Inserter[test.SimpleStruct]
 
 		affected int64
-		wantErr error
+		wantErr  error
 
 		wantData *test.SimpleStruct
 	}{
 		{
-			name: "insert single",
-			i: orm.NewInserter[test.SimpleStruct](db).Values(test.NewSimpleStruct(15)),
+			name:     "insert single",
+			i:        orm.NewInserter[test.SimpleStruct](db).Values(test.NewSimpleStruct(15)),
 			affected: 1,
 			wantData: test.NewSimpleStruct(15),
 		},
@@ -77,7 +78,7 @@ func TestMySQL(t *testing.T) {
 
 	suite.Run(t, &InsertTestSuite{
 		driver: "mysql",
-		dsn: "root:root@tcp(localhost:13306)/integration_test",
+		dsn:    "root:root@tcp(localhost:13306)/integration_test",
 	})
 }
 
@@ -93,4 +94,3 @@ func TestMySQL(t *testing.T) {
 // 		db: db,
 // 	})
 // }
-

@@ -2,7 +2,7 @@ package demo
 
 import (
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/demo/registry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /demo/registry"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/balancer"

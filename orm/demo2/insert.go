@@ -1,16 +1,16 @@
 package orm
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/internal/errs"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo2/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo2/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo2/model"
 	"reflect"
 )
 
 type Inserter[T any] struct {
 	builder
-	db *DB
-	values []*T
-	columns []string
+	db          *DB
+	values      []*T
+	columns     []string
 	onDuplicate *OnDuplicateKey
 }
 
@@ -48,7 +48,7 @@ func (i *Inserter[T]) Build() (*Query, error) {
 
 	i.sb.WriteByte(')')
 	i.sb.WriteString(" VALUES")
-	i.args = make([]any, 0, len(i.values) * len(m.Fields))
+	i.args = make([]any, 0, len(i.values)*len(m.Fields))
 	for idx, val := range i.values {
 		if idx > 0 {
 			i.sb.WriteByte(',')
@@ -75,7 +75,7 @@ func (i *Inserter[T]) Build() (*Query, error) {
 	i.sb.WriteByte(';')
 
 	return &Query{
-		SQL: i.sb.String(),
+		SQL:  i.sb.String(),
 		Args: i.args,
 	}, nil
 }
@@ -86,18 +86,18 @@ func (i *Inserter[T]) OnDuplicateKey() *OnDuplicateKeyBuilder[T] {
 	}
 }
 
-func (i *Inserter[T]) Columns(cs...string) *Inserter[T]{
+func (i *Inserter[T]) Columns(cs ...string) *Inserter[T] {
 	i.columns = cs
 	return i
 }
 
 // Values 指定 INSERT INTO xxx VALUES 的 VALUES 部分
-func (i *Inserter[T]) Values(vals...*T) *Inserter[T]{
+func (i *Inserter[T]) Values(vals ...*T) *Inserter[T] {
 	i.values = vals
 	return i
 }
 
-func NewInserter[T any](db *DB) *Inserter[T]{
+func NewInserter[T any](db *DB) *Inserter[T] {
 	return &Inserter[T]{
 		builder: builder{
 			dialect: db.dialect,
@@ -110,7 +110,7 @@ type OnDuplicateKeyBuilder[T any] struct {
 	i *Inserter[T]
 }
 
-func (o *OnDuplicateKeyBuilder[T]) Update(assigns...Assignable) *Inserter[T] {
+func (o *OnDuplicateKeyBuilder[T]) Update(assigns ...Assignable) *Inserter[T] {
 	o.i.onDuplicate = &OnDuplicateKey{
 		assigns: assigns,
 	}
@@ -120,5 +120,3 @@ func (o *OnDuplicateKeyBuilder[T]) Update(assigns...Assignable) *Inserter[T] {
 type OnDuplicateKey struct {
 	assigns []Assignable
 }
-
-

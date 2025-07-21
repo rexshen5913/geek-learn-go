@@ -3,8 +3,8 @@ package ent
 import (
 	"context"
 	"entgo.io/ent/dialect"
-	"gitee.com/geektime-geekbang/geektime-go/orm/ent/ent"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/ent/ent"
 	"log"
 	"testing"
 )

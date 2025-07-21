@@ -2,17 +2,17 @@ package orm
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo4/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/model"
 )
 
 type QueryContext struct {
 	// 用在 UPDATE，DELETE，SELECT，以及 INSERT 语句上的
-	Type string
+	Type    string
 	Builder QueryBuilder
 
-	Model *model.Model
+	Model     *model.Model
 	TableName string
-	DBName string
+	DBName    string
 }
 
 type QueryResult struct {
@@ -23,8 +23,8 @@ type QueryResult struct {
 	Err error
 }
 
-
 type Handler func(ctx context.Context, qc *QueryContext) *QueryResult
+
 //
 // type HandlerV1 func(qc *QueryContext) *QueryResult
 // type HandlerV2 func(qc *QueryContext) (*QueryResult, error)

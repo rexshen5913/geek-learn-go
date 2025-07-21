@@ -1,7 +1,7 @@
 package model
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework1/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework1/internal/errs"
 	"reflect"
 	"strings"
 	"sync"
@@ -15,7 +15,7 @@ type Registry interface {
 	// Get 查找元数据
 	Get(val any) (*Model, error)
 	// Register 注册一个模型
-	Register(val any, opts...Option) (*Model, error)
+	Register(val any, opts ...Option) (*Model, error)
 }
 
 // registry 基于标签和接口的实现
@@ -38,7 +38,7 @@ func (r *registry) Get(val any) (*Model, error) {
 	return r.Register(val)
 }
 
-func (r *registry) Register(val any, opts...Option) (*Model, error) {
+func (r *registry) Register(val any, opts ...Option) (*Model, error) {
 	m, err := r.parseModel(val)
 	if err != nil {
 		return nil, err
@@ -80,12 +80,12 @@ func (r *registry) parseModel(val any) (*Model, error) {
 		}
 		f := &Field{
 			ColName: colName,
-			Type: fdType.Type,
-			GoName: fdType.Name,
-			Offset: fdType.Offset,
+			Type:    fdType.Type,
+			GoName:  fdType.Name,
+			Offset:  fdType.Offset,
 		}
 		fds[fdType.Name] = f
-		colMap[colName]= f
+		colMap[colName] = f
 	}
 	var tableName string
 	if tn, ok := val.(TableName); ok {
@@ -103,7 +103,7 @@ func (r *registry) parseModel(val any) (*Model, error) {
 	}, nil
 }
 
-func(r *registry) parseTag(tag reflect.StructTag) (map[string]string, error) {
+func (r *registry) parseTag(tag reflect.StructTag) (map[string]string, error) {
 	ormTag := tag.Get("orm")
 	if ormTag == "" {
 		// 返回一个空的 map，这样调用者就不需要判断 nil 了
@@ -141,7 +141,6 @@ func underscoreName(tableName string) string {
 	}
 	return string(buf)
 }
-
 
 func WithTableName(tableName string) Option {
 	return func(model *Model) error {

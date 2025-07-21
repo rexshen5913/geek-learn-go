@@ -2,7 +2,7 @@ package valuer
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo3/model"
 )
 
 // 先来一个反射和 unsafe 的抽象

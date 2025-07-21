@@ -1,26 +1,25 @@
-
 package orm
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/internal/errs"
 )
 
 type Updater[T any] struct {
 	builder
 	assigns []Assignable
-	val *T
-	where []Predicate
-	sess session
+	val     *T
+	where   []Predicate
+	sess    session
 }
 
-func NewUpdater[T any](sess session) *Updater[T]{
+func NewUpdater[T any](sess session) *Updater[T] {
 	c := sess.getCore()
 	return &Updater[T]{
 		builder: builder{
-			core: c,
+			core:    c,
 			dialect: c.dialect,
-			quoter: c.dialect.quoter(),
+			quoter:  c.dialect.quoter(),
 		},
 		sess: sess,
 	}
@@ -31,7 +30,7 @@ func (u *Updater[T]) Update(t *T) *Updater[T] {
 	return u
 }
 
-func (u *Updater[T]) Set(assigns...Assignable) *Updater[T] {
+func (u *Updater[T]) Set(assigns ...Assignable) *Updater[T] {
 	u.assigns = assigns
 	return u
 }
@@ -77,7 +76,7 @@ func (u *Updater[T]) Build() (*Query, error) {
 	}
 	if len(u.where) > 0 {
 		u.sb.WriteString(" WHERE ")
-		if err = u.buildPredicates(u.where);err != nil {
+		if err = u.buildPredicates(u.where); err != nil {
 			return nil, err
 		}
 	}

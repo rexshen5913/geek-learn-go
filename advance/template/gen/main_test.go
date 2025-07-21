@@ -2,8 +2,8 @@ package main
 
 import (
 	"errors"
-	"gitee.com/geektime-geekbang/geektime-go/advance/template/gen/annotation"
-	"gitee.com/geektime-geekbang/geektime-go/advance/template/gen/http"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /advance/template/gen/annotation"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /advance/template/gen/http"
 	"github.com/stretchr/testify/assert"
 	"go/ast"
 	"os"

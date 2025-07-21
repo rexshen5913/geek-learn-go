@@ -2,7 +2,7 @@ package orm
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/model"
 )
 
 type QueryContext struct {
@@ -32,11 +32,9 @@ type QueryResult struct {
 	// Selector.GetMulti，这会是一个切片
 	// 其它情况下，它会是 Result 类型
 	Result any
-	Err error
+	Err    error
 }
 
 type Middleware func(next HandleFunc) HandleFunc
 
 type HandleFunc func(ctx context.Context, qc *QueryContext) *QueryResult
-
-

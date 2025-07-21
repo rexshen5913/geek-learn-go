@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/cache"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/domainobject/entity"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/repository/dao"
-	"gitee.com/geektime-geekbang/geektime-go/userapp/backend/internal/repository/dao/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /cache"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/domainobject/entity"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/repository/dao"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /userapp/backend/internal/repository/dao/model"
 	"go.uber.org/zap"
 	"time"
 )
@@ -25,19 +25,19 @@ type UserRepository interface {
 
 func NewUserRepository(dao dao.UserDAO, c cache.Cache) UserRepository {
 	return &cacheUserRepository{
-		dao: dao,
+		dao:   dao,
 		cache: c,
 	}
 }
 
 type cacheUserRepository struct {
-	dao dao.UserDAO
+	dao   dao.UserDAO
 	cache cache.Cache
 }
 
 func (c *cacheUserRepository) UpdateUser(ctx context.Context, user entity.User) error {
 	err := c.dao.UpdateUser(ctx, &model.User{
-		Name: user.Name,
+		Name:  user.Name,
 		Email: user.Email,
 	})
 	if err != nil {
@@ -62,12 +62,12 @@ func (c *cacheUserRepository) GetUserById(ctx context.Context, id uint64) (entit
 		return entity.User{}, err
 	}
 	return entity.User{
-		Id: mu.Id,
-		Name: mu.Name,
-		Avatar: mu.Avatar,
-		Email: mu.Email,
+		Id:       mu.Id,
+		Name:     mu.Name,
+		Avatar:   mu.Avatar,
+		Email:    mu.Email,
 		Password: mu.Password,
-		Salt: mu.Salt,
+		Salt:     mu.Salt,
 	}, nil
 }
 
@@ -84,12 +84,12 @@ func (c *cacheUserRepository) GetUserByEmail(ctx context.Context, email string) 
 		return entity.User{}, err
 	}
 	return entity.User{
-		Id: u.Id,
-		Name: u.Name,
-		Avatar: u.Avatar,
-		Email: u.Email,
+		Id:       u.Id,
+		Name:     u.Name,
+		Avatar:   u.Avatar,
+		Email:    u.Email,
 		Password: u.Password,
-		Salt: u.Salt,
+		Salt:     u.Salt,
 	}, nil
 }
 
@@ -101,7 +101,7 @@ func (c *cacheUserRepository) CreateUser(ctx context.Context, user entity.User) 
 		Name:       user.Name,
 		Avatar:     user.Avatar,
 		Email:      user.Email,
-		Salt: user.Salt,
+		Salt:       user.Salt,
 		Password:   user.Password,
 		CreateTime: now,
 		UpdateTime: now,

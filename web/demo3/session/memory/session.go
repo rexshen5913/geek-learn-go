@@ -3,8 +3,8 @@ package memory
 import (
 	"context"
 	"errors"
-	web "gitee.com/geektime-geekbang/geektime-go/web/demo3/session"
 	"github.com/patrickmn/go-cache"
+	web "github.com/rexshen5913/geek-learn-go/geektime-go /web/demo3/session"
 	"sync"
 	"time"
 )

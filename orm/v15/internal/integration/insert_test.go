@@ -1,11 +1,12 @@
 //go:build e2e
+
 package integration
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm"
-	"gitee.com/geektime-geekbang/geektime-go/orm/internal/test"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/internal/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -24,13 +25,12 @@ func (i *InsertTestSuite) TearDownTest() {
 
 func TestInsertMySQL8(t *testing.T) {
 	suite.Run(t, &InsertTestSuite{
-		Suite: Suite {
+		Suite: Suite{
 			driver: "mysql",
-			dsn: "root:root@tcp(localhost:13306)/integration_test",
+			dsn:    "root:root@tcp(localhost:13306)/integration_test",
 		},
 	})
 }
-
 
 // func testInsert(t *testing.T, driver string, dsn string) {
 // 	db, err := orm.Open(driver, dsn)
@@ -87,24 +87,24 @@ func (i *InsertTestSuite) TestInsert() {
 		orm.RawQuery[any](db, "TRUNCATE TABLE `simple_struct`").Exec(context.Background())
 	}()
 	require.NoError(t, err)
-	testCases := []struct{
-		name string
-		i *orm.Inserter[test.SimpleStruct]
-		wantData *test.SimpleStruct
+	testCases := []struct {
+		name         string
+		i            *orm.Inserter[test.SimpleStruct]
+		wantData     *test.SimpleStruct
 		rowsAffected int64
-		wantErr error
-	} {
+		wantErr      error
+	}{
 		{
-			name: "id only",
-			i: orm.NewInserter[test.SimpleStruct](db).Values(&test.SimpleStruct{Id: 1}),
+			name:         "id only",
+			i:            orm.NewInserter[test.SimpleStruct](db).Values(&test.SimpleStruct{Id: 1}),
 			rowsAffected: 1,
-			wantData: &test.SimpleStruct{ Id: 1},
+			wantData:     &test.SimpleStruct{Id: 1},
 		},
 		{
-			name: "all field",
-			i: orm.NewInserter[test.SimpleStruct](db).Values(test.NewSimpleStruct(2)),
+			name:         "all field",
+			i:            orm.NewInserter[test.SimpleStruct](db).Values(test.NewSimpleStruct(2)),
 			rowsAffected: 1,
-			wantData: test.NewSimpleStruct(2),
+			wantData:     test.NewSimpleStruct(2),
 		},
 	}
 	for _, tc := range testCases {

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"gitee.com/geektime-geekbang/geektime-go/web"
-	"gitee.com/geektime-geekbang/geektime-go/web/middleware/accesslog"
-	"gitee.com/geektime-geekbang/geektime-go/web/middleware/cors"
-	"gitee.com/geektime-geekbang/geektime-go/web/middleware/opentelemetry"
-	"gitee.com/geektime-geekbang/geektime-go/web/middleware/prometheus"
-	"gitee.com/geektime-geekbang/geektime-go/web/middleware/recovery"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/middleware/accesslog"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/middleware/cors"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/middleware/opentelemetry"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/middleware/prometheus"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/middleware/recovery"
 	"go.uber.org/zap"
 	"net/http"
 )
@@ -45,7 +45,7 @@ func initSever() *web.HTTPServer {
 		}).Build(),
 		recovery.MiddlewareBuilder{
 			StatusCode: http.StatusInternalServerError,
-			ErrMsg: "系统异常",
+			ErrMsg:     "系统异常",
 			LogFunc: func(ctx *web.Context, err any) {
 				zap.L().Error("服务 panic", zap.Any("panic", err),
 					// 发生 panic 的时候，可能都还没到路由查找那里
@@ -53,7 +53,7 @@ func initSever() *web.HTTPServer {
 			},
 		}.Build(),
 		prometheus.MiddlewareBuilder{
-			Name: "userapp",
+			Name:      "userapp",
 			Subsystem: "web",
 			// 可以考虑在这里设置 instance id 之类的东西
 			// ConstLabels: map[string]string{},

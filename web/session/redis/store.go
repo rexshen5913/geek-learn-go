@@ -4,26 +4,27 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitee.com/geektime-geekbang/geektime-go/web/session"
 	"github.com/go-redis/redis/v9"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /web/session"
 	"time"
 )
 
 var errSessionNotExist = errors.New("redis-session: session 不存在")
+
 type StoreOption func(store *Store)
 
 type Store struct {
-	prefix string
-	client redis.Cmdable
+	prefix     string
+	client     redis.Cmdable
 	expiration time.Duration
 }
 
 // NewStore 创建一个 Store 的实例
 // 实际上，这里也可以考虑使用 Option 设计模式，允许用户控制过期检查的间隔
-func NewStore(client redis.Cmdable, opts...StoreOption) *Store {
+func NewStore(client redis.Cmdable, opts ...StoreOption) *Store {
 	res := &Store{
-		client: client,
-		prefix: "session",
+		client:     client,
+		prefix:     "session",
 		expiration: time.Minute * 15,
 	}
 	for _, opt := range opts {
@@ -52,7 +53,6 @@ return redis.call("pexpire", KEYS[1], ARGV[3])
 func (s *Store) key(id string) string {
 	return fmt.Sprintf("%s_%s", s.prefix, id)
 }
-
 
 func (s *Store) Refresh(ctx context.Context, id string) error {
 	key := s.key(id)
@@ -89,8 +89,8 @@ func (s *Store) Get(ctx context.Context, id string) (session.Session, error) {
 }
 
 type Session struct {
-	key string
-	id string
+	key    string
+	id     string
 	client redis.Cmdable
 }
 
@@ -120,4 +120,3 @@ func (m *Session) Get(ctx context.Context, key string) (string, error) {
 func (m *Session) ID() string {
 	return m.id
 }
-

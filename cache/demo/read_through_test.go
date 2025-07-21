@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm"
 	"strings"
 	"testing"
 	"time"
-	"gitee.com/geektime-geekbang/geektime-go/orm"
 )
 
 func TestReadThroughCache_Get(t *testing.T) {
@@ -16,7 +16,7 @@ func TestReadThroughCache_Get(t *testing.T) {
 	})
 	var db *orm.DB
 	cache := &ReadThroughCache{
-		Cache: local,
+		Cache:      local,
 		Expiration: time.Minute,
 		LoadFunc: func(ctx context.Context, key string) (any, error) {
 			if strings.HasPrefix(key, "/user/") {
@@ -38,7 +38,7 @@ func TestReadThroughCache_Get(t *testing.T) {
 	cache.Get(context.Background(), "/user/123")
 
 	userCache := &ReadThroughCache{
-		Cache: local,
+		Cache:      local,
 		Expiration: time.Minute,
 		LoadFunc: func(ctx context.Context, key string) (any, error) {
 			if strings.HasPrefix(key, "/user/") {
@@ -57,7 +57,7 @@ func TestReadThroughCache_Get(t *testing.T) {
 	// orderCache
 
 	userCacheV1 := &ReadThroughCacheV1[*User]{
-		Cache: local,
+		Cache:      local,
 		Expiration: time.Minute,
 		LoadFunc: func(ctx context.Context, key string) (*User, error) {
 			if strings.HasPrefix(key, "/user/") {
@@ -76,7 +76,6 @@ func TestReadThroughCache_Get(t *testing.T) {
 	// val 还是 any, 我干嘛用泛型？？？？？我干嘛要 v1??
 	fmt.Println(val)
 	fmt.Println(err)
-
 
 	userCacheV2 := &ReadThroughCacheV2[*User]{
 		// 这边要考虑创建一个 CacheV2
@@ -98,7 +97,6 @@ func TestReadThroughCache_Get(t *testing.T) {
 	user, err := userCacheV2.Get(context.Background(), "/user/123")
 	fmt.Println(user.Name)
 	fmt.Println(err)
-
 
 	userCacheV3 := &ReadThroughCacheV3{
 		Loader: LoadFunc(func(ctx context.Context, key string) (any, error) {

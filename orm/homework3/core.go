@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package orm
 
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/internal/valuer"
-	"gitee.com/geektime-geekbang/geektime-go/orm/homework3/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/internal/valuer"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/homework3/model"
 )
 
 type core struct {
-	r model.Registry
-	dialect  Dialect
+	r          model.Registry
+	dialect    Dialect
 	valCreator valuer.Creator
-	ms []Middleware
+	ms         []Middleware
 }
 
-func getHandler[T any] (ctx context.Context,
+func getHandler[T any](ctx context.Context,
 	sess session,
 	c core,
 	qc *QueryContext) *QueryResult {
@@ -63,7 +62,7 @@ func getHandler[T any] (ctx context.Context,
 	err = val.SetColumns(rows)
 	return &QueryResult{
 		Result: tp,
-		Err: err,
+		Err:    err,
 	}
 }
 
@@ -72,7 +71,7 @@ func get[T any](ctx context.Context, c core, sess session, qc *QueryContext) *Qu
 		return getHandler[T](ctx, sess, c, qc)
 	}
 	ms := c.ms
-	for i := len(ms) - 1; i >=0; i-- {
+	for i := len(ms) - 1; i >= 0; i-- {
 		handler = ms[i](handler)
 	}
 	return handler(ctx, qc)
@@ -90,10 +89,10 @@ func exec(ctx context.Context, sess session, c core, qc *QueryContext) Result {
 		return &QueryResult{Err: err, Result: res}
 	}
 	ms := c.ms
-	for i := len(ms) - 1; i >=0; i-- {
+	for i := len(ms) - 1; i >= 0; i-- {
 		handler = ms[i](handler)
 	}
-	qr :=  handler(ctx, qc)
+	qr := handler(ctx, qc)
 	var res sql.Result
 	if qr.Result != nil {
 		res = qr.Result.(sql.Result)

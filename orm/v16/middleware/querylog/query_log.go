@@ -1,9 +1,10 @@
 //go:build v16
+
 package querylog
 
 import (
 	"context"
-	"gitee.com/geektime-geekbang/geektime-go/orm"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm"
 	"log"
 )
 

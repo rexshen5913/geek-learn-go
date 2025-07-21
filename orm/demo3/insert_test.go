@@ -2,36 +2,36 @@ package orm
 
 import (
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo3/internal/errs"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo3/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestInserter_Build(t *testing.T) {
 	db := memoryDB(t)
-	testCases := []struct{
-		name string
-		i QueryBuilder
+	testCases := []struct {
+		name      string
+		i         QueryBuilder
 		wantQuery *Query
-		wantErr error
+		wantErr   error
 	}{
 		{
 			// 一个都不插入
-			name: "no value",
-			i: NewInserter[TestModel](db).Values(),
+			name:    "no value",
+			i:       NewInserter[TestModel](db).Values(),
 			wantErr: errs.ErrInsertZeroRow,
 		},
 		{
 			// 插入当个值的全部列，其实就是插入一行
 			name: "single value",
 			i: NewInserter[TestModel](db).Values(&TestModel{
-				Id: 12,
+				Id:        12,
 				FirstName: "Tom",
-				Age: 18,
-				LastName: &sql.NullString{Valid: true, String: "Jerry"},
+				Age:       18,
+				LastName:  &sql.NullString{Valid: true, String: "Jerry"},
 			}),
 			wantQuery: &Query{
-				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?);",
+				SQL:  "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?);",
 				Args: []any{int64(12), "Tom", int8(18), &sql.NullString{Valid: true, String: "Jerry"}},
 			},
 		},
@@ -39,15 +39,15 @@ func TestInserter_Build(t *testing.T) {
 			// 插入多行
 			name: "multi value",
 			i: NewInserter[TestModel](db).Values(&TestModel{
-				Id: 12,
+				Id:        12,
 				FirstName: "Tom",
-				Age: 18,
-				LastName: &sql.NullString{Valid: true, String: "Jerry"},
+				Age:       18,
+				LastName:  &sql.NullString{Valid: true, String: "Jerry"},
 			}, &TestModel{
-				Id: 13,
+				Id:        13,
 				FirstName: "XiaoMing",
-				Age: 17,
-				LastName: &sql.NullString{Valid: true, String: "Deng"},
+				Age:       17,
+				LastName:  &sql.NullString{Valid: true, String: "Deng"},
 			}),
 			wantQuery: &Query{
 				// INSERT INTO `test_model` (`id`, `age`) VALUES, `id` + 1)
@@ -63,13 +63,13 @@ func TestInserter_Build(t *testing.T) {
 		{
 			name: "specify columns",
 			i: NewInserter[TestModel](db).Values(&TestModel{
-				Id: 12,
+				Id:        12,
 				FirstName: "Tom",
-				Age: 18,
-				LastName: &sql.NullString{Valid: true, String: "Jerry"},
+				Age:       18,
+				LastName:  &sql.NullString{Valid: true, String: "Jerry"},
 			}).Columns("Age", "FirstName"),
 			wantQuery: &Query{
-				SQL: "INSERT INTO `test_model`(`age`,`first_name`) VALUES(?,?);",
+				SQL:  "INSERT INTO `test_model`(`age`,`first_name`) VALUES(?,?);",
 				Args: []any{int8(18), "Tom"},
 			},
 		},
@@ -77,10 +77,10 @@ func TestInserter_Build(t *testing.T) {
 		{
 			name: "upsert",
 			i: NewInserter[TestModel](db).Values(&TestModel{
-				Id: 12,
+				Id:        12,
 				FirstName: "Tom",
-				Age: 18,
-				LastName: &sql.NullString{Valid: true, String: "Jerry"},
+				Age:       18,
+				LastName:  &sql.NullString{Valid: true, String: "Jerry"},
 			}).Update().Update(Assign("Age", 19)),
 			wantQuery: &Query{
 				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?)" +
@@ -92,10 +92,10 @@ func TestInserter_Build(t *testing.T) {
 		{
 			name: "upsert multiple",
 			i: NewInserter[TestModel](db).Values(&TestModel{
-				Id: 12,
+				Id:        12,
 				FirstName: "Tom",
-				Age: 18,
-				LastName: &sql.NullString{Valid: true, String: "Jerry"},
+				Age:       18,
+				LastName:  &sql.NullString{Valid: true, String: "Jerry"},
 			}).Update().Update(Assign("Age", 19), C("FirstName")),
 			wantQuery: &Query{
 				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?)" +
@@ -107,10 +107,10 @@ func TestInserter_Build(t *testing.T) {
 		{
 			name: "upsert use columns",
 			i: NewInserter[TestModel](db).Values(&TestModel{
-				Id: 12,
+				Id:        12,
 				FirstName: "Tom",
-				Age: 18,
-				LastName: &sql.NullString{Valid: true, String: "Jerry"},
+				Age:       18,
+				LastName:  &sql.NullString{Valid: true, String: "Jerry"},
 			}).Update().Update(C("Age")),
 			wantQuery: &Query{
 				SQL: "INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`) VALUES(?,?,?,?)" +
@@ -119,7 +119,7 @@ func TestInserter_Build(t *testing.T) {
 			},
 		},
 	}
-	for _, tc :=range testCases {
+	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			q, err := tc.i.Build()
 			assert.Equal(t, tc.wantErr, err)

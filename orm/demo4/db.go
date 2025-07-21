@@ -3,8 +3,8 @@ package orm
 import (
 	"context"
 	"database/sql"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo4/internal/valuer"
-	"gitee.com/geektime-geekbang/geektime-go/orm/demo4/model"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/internal/valuer"
+	"github.com/rexshen5913/geek-learn-go/geektime-go /orm/demo4/model"
 	"go.uber.org/multierr"
 )
 
@@ -13,7 +13,7 @@ type DBOption func(*DB)
 // DB 是sql.DB 的装饰器
 type DB struct {
 	core
-	db *sql.DB
+	db      *sql.DB
 	dialect Dialect
 }
 
@@ -27,7 +27,7 @@ func (db *DB) Begin(ctx context.Context, opts *sql.TxOptions) (*Tx, error) {
 	}, nil
 }
 func (db *DB) DoTx(ctx context.Context, opts *sql.TxOptions,
-	task func(ctx context.Context, tx *Tx) error ) (err error) {
+	task func(ctx context.Context, tx *Tx) error) (err error) {
 	tx, err := db.Begin(ctx, opts)
 	if err != nil {
 		return err
@@ -42,10 +42,11 @@ func (db *DB) DoTx(ctx context.Context, opts *sql.TxOptions,
 		}
 	}()
 
-	err =  task(ctx, tx)
+	err = task(ctx, tx)
 	panicked = false
 	return
 }
+
 // 如果用户指定了 registry，就用用户指定的，否则用默认的
 
 // db := Open()
@@ -54,7 +55,7 @@ func (db *DB) DoTx(ctx context.Context, opts *sql.TxOptions,
 // db1 := Open(r1)
 // db2 := Open(r1)
 
-func Open(driver string, dsn string, opts...DBOption) (*DB, error) {
+func Open(driver string, dsn string, opts ...DBOption) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 
 	if err != nil {
@@ -66,14 +67,14 @@ func Open(driver string, dsn string, opts...DBOption) (*DB, error) {
 // OpenDB
 // 我可以利用 OpenDB 来传入一个 mock 的DB
 // sqlmock.Open 的 DB
-func OpenDB(db *sql.DB, opts...DBOption) (*DB, error) {
+func OpenDB(db *sql.DB, opts ...DBOption) (*DB, error) {
 	res := &DB{
 		core: core{
 			r:          model.NewRegistry(),
 			valCreator: valuer.NewUnsafeValue,
-			dialect: &mysqlDialect{},
+			dialect:    &mysqlDialect{},
 		},
-		db:         db,
+		db: db,
 	}
 	for _, opt := range opts {
 		opt(res)
@@ -87,7 +88,7 @@ func DBName(name string) DBOption {
 	}
 }
 
-func DBWithMiddlewares(ms...Middleware) DBOption {
+func DBWithMiddlewares(ms ...Middleware) DBOption {
 	return func(db *DB) {
 		db.ms = ms
 	}
@@ -104,7 +105,6 @@ func DBWithDialect(dialect Dialect) DBOption {
 		db.dialect = dialect
 	}
 }
-
 
 // func MustNewDB(opts...DBOption) *DB{
 // 	res, err := Open(opts...)
@@ -124,11 +124,11 @@ func (db *DB) getCore() core {
 	return db.core
 }
 
-func  (db *DB) queryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
+func (db *DB) queryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
 	return db.db.QueryContext(ctx, query, args...)
 }
 
-func  (db *DB) execContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
+func (db *DB) execContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	return db.db.ExecContext(ctx, query, args...)
 }
 
