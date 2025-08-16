@@ -11,11 +11,20 @@ import (
 )
 
 type Context struct {
-	Resp       http.ResponseWriter
-	Req        *http.Request
+
+	// 如果用戶直接使用這個，那麼他們就繞開了 respData 和 respStatusCode
+	// 這樣的話，部分 middleware 就無法正常運作
+	Resp http.ResponseWriter
+	Req  *http.Request
+
+	// 這個主要是讓 middleware 讀寫用的
+	RespData       []byte
+	RespStatusCode int
+
 	PathParams map[string]string
 
-	queryValues url.Values
+	queryValues  url.Values
+	MatchedRoute string
 }
 
 // 泛型 QueryValueV2[int]("key1") 希望返回 int
@@ -57,12 +66,13 @@ func (c *Context) RespJSON(status int, val any) error {
 	}
 	c.Resp.Header().Set("Content-Type", "application/json")
 	c.Resp.Header().Set("Content-Length", strconv.Itoa(len(data)))
-	c.Resp.WriteHeader(status)
-	n, err := c.Resp.Write(data)
-	if n != len(data) {
-		return errors.New("web: 未寫完全部數據")
-	}
-	return err
+
+	c.RespStatusCode = status
+	c.RespData = data
+
+	// 不要立即写入响应，让框架的 flushResp 统一处理
+	// 这样中间件才能正常工作
+	return nil
 }
 
 func (c *Context) BindJSON(val any) error {

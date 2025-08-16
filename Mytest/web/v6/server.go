@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 )
@@ -24,13 +25,31 @@ type Server interface {
 // 	HttpServer
 // }
 
+type HTTPServerOption func(server *HttpServer)
+
 type HttpServer struct {
 	router
+	middlewares []Middleware
+
+	log func(msg string, args ...any)
 }
 
-func NewHttpServer() *HttpServer {
-	return &HttpServer{
+func NewHttpServer(opts ...HTTPServerOption) *HttpServer {
+	server := &HttpServer{
 		router: newRouter(),
+		log: func(msg string, args ...any) {
+			fmt.Printf(msg, args...)
+		},
+	}
+	for _, opt := range opts {
+		opt(server)
+	}
+	return server
+}
+
+func ServerWithMiddleware(middlewares ...Middleware) HTTPServerOption {
+	return func(server *HttpServer) {
+		server.middlewares = middlewares
 	}
 }
 
@@ -42,19 +61,58 @@ func (h *HttpServer) ServeHTTP(writer http.ResponseWriter, request *http.Request
 		Req:  request,
 	}
 
-	h.serve(ctx)
+	// 最後一個是這個
+	root := h.serve
+	// 利用最後一個不斷往前回朔組裝鏈條
+	// 從後往前
+	// 把後一個作為前一個的 next
+	for i := len(h.middlewares) - 1; i >= 0; i-- {
+		root = h.middlewares[i](root)
+	}
+
+	// 這裡就是執行的時候，就是從前往後了
+
+	// 這裡最後一個步驟，就是把 RespData 和 RespStatusCode 刷新到響應中
+	var m Middleware = func(next HandleFunc) HandleFunc {
+		return func(ctx *Context) {
+			// 就設置好了 RespData 和 RespStatusCode
+			next(ctx)
+			h.flushResp(ctx)
+		}
+	}
+
+	// 因為會需要最後一個執行
+	root = m(root)
+
+	root(ctx)
+	// h.serve(ctx)
+}
+
+func (h *HttpServer) flushResp(ctx *Context) {
+	if ctx.RespStatusCode != 0 {
+		ctx.Resp.WriteHeader(ctx.RespStatusCode)
+	}
+	n, err := ctx.Resp.Write(ctx.RespData)
+	if err != nil || n != len(ctx.RespData) {
+		// log.Fatalln("web: 寫入響應數據失敗", err)
+		h.log("web: 寫入響應數據失敗 %v", err)
+	}
 }
 
 func (h *HttpServer) serve(ctx *Context) {
 	// 接下來就是查找路由並執行命中的業務邏輯
 	info, ok := h.findRoute(ctx.Req.Method, ctx.Req.URL.Path)
 	if !ok || info.n.handler == nil {
-		ctx.Resp.WriteHeader(http.StatusNotFound)
-		_, _ = ctx.Resp.Write([]byte("Not Found"))
+		// ctx.Resp.WriteHeader(http.StatusNotFound)
+		// _, _ = ctx.Resp.Write([]byte("Not Found"))
+		ctx.RespStatusCode = http.StatusNotFound
+		ctx.RespData = []byte("Not Found")
 		return
 	}
 
 	ctx.PathParams = info.pathParams
+	// 應該是要叫 pattern 比較準確，但一般都是叫 path
+	ctx.MatchedRoute = info.n.route
 
 	info.n.handler(ctx)
 }

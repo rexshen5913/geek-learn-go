@@ -63,6 +63,7 @@ func (r *router) addRoute(method string, path string, handleFunc HandleFunc) {
 			panic("web: 路由不能重複註冊 [/]")
 		}
 		root.handler = handleFunc
+		root.route = "/"
 		return
 	}
 
@@ -84,6 +85,7 @@ func (r *router) addRoute(method string, path string, handleFunc HandleFunc) {
 		panic("web: 路由不能重複註冊 [" + path + "]")
 	}
 	root.handler = handleFunc
+	root.route = path
 	fmt.Printf("注册路由后的树结构:\n")
 	r.printTree()
 }
@@ -219,6 +221,8 @@ func (n *node) childOfCreate(seg string) *node {
 }
 
 type node struct {
+	route string
+
 	path string
 
 	// 静态节点

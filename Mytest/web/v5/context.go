@@ -30,6 +30,7 @@ type Context struct {
 // 	return val, nil
 // }
 
+// 這個是通用的，可以適用於任何型別，但實務上，不常用
 func QueryValueV3[T any](c *Context, key string, parse func(string) (T, error)) (T, error) {
 	var zero T
 	if c.queryValues == nil {
